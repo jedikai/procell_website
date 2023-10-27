@@ -1,0 +1,3 @@
+export const GET_COUNTRY_LIST = "GET_COUNTRY_LIST";
+export const GET_STATE_LIST = "GET_STATE_LIST";
+export const GET_LANGUAGE_LIST = "GET_LANGUAGE_LIST";
