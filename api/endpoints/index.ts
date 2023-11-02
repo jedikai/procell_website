@@ -41,12 +41,17 @@ export const endpoints = {
     delete_profile:'web/portal/profile',
     quotation_list:'web/portal/quotes',
     sales_list:'web/portal/orders',
+    invoice_list:'web/portal/invoices',
+    download_invoice:'web/download/invoice_pdf',
     purchase_list:'web/portal/purchases',
     cart_list:'web/cart',
     delete_item_from_cart:'web/cart/update',
     add_item_to_cart:'web/cart/update',
     update_cart_item_quantity:'web/cart/update',
     change_password:'web/portal/change_passwd',
+    delivery_method_list:'web/delivery_methods',
+    shipment_rate:'web/carrier_rate_shipment',
+    update_shipping_mode:'web/update_carrier',
   }
 };
 

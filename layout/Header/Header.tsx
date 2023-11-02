@@ -37,6 +37,7 @@ import { useLogout } from "@/hooks/react-qurey/query-hooks/logoutQuery.hooks";
 import { getCookie } from "@/lib/functions/storage.lib";
 import { destroyCookie } from "nookies";
 import { useProfileDetails } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
+import { useAppSelector } from "@/hooks/useAppSelector";
 
 // const CustomButton = dynamic(() => import("@/ui/Buttons/CustomButton"));
 
@@ -50,7 +51,7 @@ interface Props {
 
 const drawerWidth = 240;
 
-export default function Header(props: Props) {
+export default React.memo(function Header(props: Props) {
   const navItems = [
     {
       name: "Clinical studies",
@@ -77,9 +78,13 @@ export default function Header(props: Props) {
   // const { userData, isLoggedIn } = useAppSelector((state) => state.userSlice);
   // const dispatch = useAppDispatch();
   const router = useRouter();
-
+  const { refresh } = useAppSelector((s) => s.userProfileImgSlice);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const { data, isLoading, refetch, isFetched } = useProfileDetails();
+  const { data, isLoading, refetch, isFetched } = useProfileDetails(
+    () => {},
+    () => {},
+    true
+  );
   const { mutate: logout } = useLogout();
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -302,12 +307,17 @@ export default function Header(props: Props) {
                       onClick={handleClick}
                       className="user_btn"
                     >
-                      <img
-                        src={data ? data[0]?.image_1920_url : assest?.avatr_img}
-                        alt="image"
-                        width={36}
-                        height={36}
-                      />
+                      {data && data?.length > 0 && data[0]?.image_1920_url && (
+                        <img
+                          src={
+                            data ? data[0]?.image_1920_url : assest?.avatr_img
+                          }
+                          alt="image"
+                          width={36}
+                          height={36}
+                          key={refresh ? "render" : "no-render"}
+                        />
+                      )}
                       {/* <Typography
                         variant="caption"
                         sx={{ display: { xs: "none" } }}
@@ -429,4 +439,4 @@ export default function Header(props: Props) {
       </MuiModalWrapper>
     </HeaderWrap>
   );
-}
+})

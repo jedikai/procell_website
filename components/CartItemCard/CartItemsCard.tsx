@@ -57,7 +57,7 @@ const CartItemsCard = ({
     formData.append("product_variant_id", `${product_id}`);
     formData.append("line_id", `${line_id}`);
     formData.append("set_qty", `${quantity}`);
-    updateItemQuantity(formData, { onSuccess: () => alert("hi") });
+    updateItemQuantity(formData);
   };
   return (
     <CardItemCardWrapper>

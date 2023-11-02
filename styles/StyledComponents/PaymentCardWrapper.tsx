@@ -117,4 +117,9 @@ export const PaymentCardWrapper = styled(Card)`
     display: flex;
     justify-content: space-between;
   }
+  .payment_bill_btn {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
 `;

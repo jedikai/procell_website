@@ -7,9 +7,12 @@ import {
 } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
 import { useLogout } from "@/hooks/react-qurey/query-hooks/logoutQuery.hooks";
 import { GET_PROFILE_DETAILS } from "@/hooks/react-qurey/query-keys/dashboardQuery.keys";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
 import { getCookie } from "@/lib/functions/storage.lib";
+import { refreshProfileImg } from "@/reduxtoolkit/slices/userProfle.slice";
 import { SideBarWrapper } from "@/styles/StyledComponents/SideBarWrapper";
 import { primaryColors } from "@/themes/_muiPalette";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
@@ -41,6 +44,8 @@ import { useQueryClient } from "react-query";
 export default function SideNavbar() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
+  const { refresh } = useAppSelector((s) => s.userProfileImgSlice);
   const { toastSuccess, toastError } = useNotiStack();
   const handleClose = () => {
     const sidebar = document.getElementById("sidebar");
@@ -49,6 +54,7 @@ export default function SideNavbar() {
   };
   const [openmod, setopenmod] = React.useState(false);
   const [renderedSec, setRenderedSec] = React.useState(false);
+  // const [refresh, setRefresh] = React.useState(false);
   const [userDetails, setUserDetails] = React.useState<any>({
     short_name: null,
     joining_date: null,
@@ -84,7 +90,10 @@ export default function SideNavbar() {
   };
   const onProfileDetailsError = (response: any) => {
     console.log("error", response);
+    toastError("Your profile is not authorized, please log in.");
+    router.push("/auth/login");
   };
+
   const {
     data: userProfileDetailsData,
     isLoading,
@@ -96,7 +105,6 @@ export default function SideNavbar() {
     if (typeof window !== "undefined") {
       localStorage.removeItem("userName");
       router.push("/auth/login");
-
 
       if (typeof window !== "undefined") {
         localStorage.removeItem("userDetails");
@@ -290,9 +298,10 @@ export default function SideNavbar() {
     updateProfile(formData, {
       onSuccess: (response: any) => {
         refetch();
+        dispatch(refreshProfileImg(!refresh));
+        // setRefresh(!refresh);
         // queryClient.invalidateQueries(GET_PROFILE_DETAILS);
         toastSuccess(response?.data?.message);
-        
       },
       onError: (response: any) => {
         toastError(response?.response?.data?.message ?? "Somehing went wrong.");
@@ -300,7 +309,7 @@ export default function SideNavbar() {
     });
   };
 
-  console.log("getUserDetails", userProfileDetailsData);
+  console.log("getUserDetails", refresh);
   return (
     <SideBarWrapper id="sidebar">
       <IconButton className="close_btn" onClick={handleClose}>
@@ -310,14 +319,17 @@ export default function SideNavbar() {
         <Box className="sidebar_upper">
           {renderedSec && (
             <>
-              <i className="avatr_img">
-                <img
-                  src={userDetails?.dp ?? assest?.avatr_img}
-                  alt="avatr image"
-                  width={250}
-                  height={250}
-                />
-              </i>
+              {userDetails?.dp && (
+                <i className="avatr_img">
+                  <img
+                    src={userDetails?.dp ?? assest?.avatr_img}
+                    alt="avatr image"
+                    width={250}
+                    height={250}
+                    key={refresh ? "render" : "no-render"}
+                  />
+                </i>
+              )}
 
               {userDetails && userDetails?.short_name && (
                 <Typography variant="h4">{userDetails?.short_name}</Typography>

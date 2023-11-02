@@ -1,5 +1,7 @@
-import { useMutation, useQuery } from "react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "react-query";
 import {
+  GET_INVOICE_DOWNLOAD,
+  GET_INVOICE_LIST,
   GET_PROFILE_DETAILS,
   GET_PURCHASE_LIST,
   GET_QUOTATION_LIST,
@@ -16,12 +18,13 @@ const getProfileDetails = async () => {
 
 export const useProfileDetails = (
   onSuccess: any = () => {},
-  onError: any = () => {}
+  onError: any = () => {},
+  enabled: boolean = false
 ) =>
   useQuery([GET_PROFILE_DETAILS], getProfileDetails, {
     onSuccess,
     onError,
-    enabled: false,
+    enabled,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -40,39 +43,85 @@ const deleteProfile = async (body: object) => {
 export const useDeleteProfile = () => useMutation(deleteProfile);
 
 // <------------------------------ QUATATION SECTION APIS------------------------------>
-const getQuotationList = async () => {
+const getQuotationList = async (page: number, type: string) => {
   const res = await axiosInstance.get(
-    `${endpoints.app.quotation_list}?sortby=date`
+    `${endpoints.app.quotation_list}/page/${page}?sortby=${type}`
   );
   return res;
 };
 
 export const useQuotationList = (
+  page: number = 1,
+  type: string = "date",
   onSuccess: any = () => {},
   onError: any = () => {}
 ) =>
-  useQuery([GET_QUOTATION_LIST], getQuotationList, {
-    onSuccess,
-    onError,
-    select: (data) => data?.data?.data ?? []
-  });
+  useQuery(
+    [GET_QUOTATION_LIST, page, type],
+    () => getQuotationList(page, type),
+    {
+      onSuccess,
+      onError,
+      select: (data) => data?.data?.data ?? []
+    }
+  );
 // <------------------------------ SALES SECTION APIS------------------------------>
-const getSalesList = async () => {
+const getSalesList = async (page: number, type: string) => {
   const res = await axiosInstance.get(
-    `${endpoints.app.sales_list}?sortby=date`
+    `${endpoints.app.sales_list}/page/${page}?sortby=${type}`
   );
   return res;
 };
 
 export const useSalesList = (
+  page: number = 1,
+  type: string = "date",
   onSuccess: any = () => {},
   onError: any = () => {}
 ) =>
-  useQuery([GET_SALES_LIST], getSalesList, {
+  useQuery([GET_SALES_LIST, page, type], () => getSalesList(page, type), {
     onSuccess,
     onError,
     select: (data) => data?.data?.data ?? []
   });
+// <------------------------------ INVOICE SECTION APIS ------------------------------>
+const getInvoiceList = async (page: number, type: string) => {
+  const res = await axiosInstance.get(
+    `${endpoints.app.invoice_list}/page/${page}?sortby=${type}`
+  );
+  return res;
+};
+
+export const useInvoiceList = (
+  page: number = 1,
+  type: string = "date",
+  onSuccess: any = () => {},
+  onError: any = () => {}
+) =>
+  useQuery([GET_INVOICE_LIST, page, type], () => getInvoiceList(page, type), {
+    onSuccess,
+    onError,
+    select: (data) => data?.data?.data ?? []
+  });
+// <------------------------------ INVOICE DOWNLOAD SECTION APIS ------------------------------>
+const getInvoiceDownload = async (id: number | string) => {
+  const res = await axiosInstance.get(
+    `${endpoints.app.download_invoice}/${id}`
+  );
+  return res;
+};
+
+export const useInvoiceDownload = (
+  id: number | string,
+  onSuccess: any = () => {},
+  onError: any = () => {}
+) =>
+  useQuery([GET_INVOICE_DOWNLOAD, id], () => getInvoiceDownload(id), {
+    onSuccess,
+    onError,
+    // select: (data) => data?.data?.data ?? []
+  });
+
 // <------------------------------ PURCHASE SECTION APIS------------------------------>
 const getPurchaseList = async () => {
   const res = await axiosInstance.get(

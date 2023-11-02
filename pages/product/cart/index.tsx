@@ -5,6 +5,7 @@
 import { animationURL } from "@/components/AnimationUrl/AnimationUrl";
 import CartItemsCard from "@/components/CartItemCard/CartItemsCard";
 import InnerHeader from "@/components/InnerHeader/InnerHeader";
+import PaymentBillDetails from "@/components/PaymentBillDetails/PaymentBillDetails";
 import PaymentCardDetailsCard from "@/components/PaymentCardDetails/PaymentCardDetailsCard";
 import { useCartList } from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
 import assest from "@/json/assest";
@@ -15,14 +16,15 @@ import { Grid, SelectChangeEvent } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { Box, Container, Stack } from "@mui/system";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import Lottie from "react-lottie-player";
 // import animation from "./animation.json";
 // const MyLottieAnimation = React.lazy(() => import("@/components/ReactLottiePlayer/ReactLottiePlayer"));
 
 const Cart = () => {
-  const [value, setValue] = React.useState("");
-  const [cartList, setCartList] = React.useState([]);
+  const [value, setValue] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [cartList, setCartList] = useState([]);
   const onSuccessCartList = (response: any) => {
     console.log("response", response);
 
@@ -30,6 +32,15 @@ const Cart = () => {
       response && response?.length > 0 && response[0]
         ? response[0].order_line
         : []
+    );
+    setAmount(
+      response && response?.length > 0 && response[0]
+        ? response[0].order_line?.reduce(
+            (accumulator: any, currentValue: any) =>
+              accumulator + currentValue?.price_reduce_taxexcl,
+            0
+          )
+        : 0
     );
   };
   const onErrorCartList = () => {};
@@ -137,7 +148,8 @@ const Cart = () => {
             </Grid>
             <Grid item lg={4.5} xs={12}>
               <Box className="cart_right">
-                <PaymentCardDetailsCard subtotal={3000.0} shipping={20.0} />
+                {/* <PaymentCardDetailsCard subtotal={3000.0} shipping={20.0} /> */}
+                <PaymentBillDetails subtotal={amount} shipping={0} totalAmount={amount}/>
               </Box>
             </Grid>
           </Grid>

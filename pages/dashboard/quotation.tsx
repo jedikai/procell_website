@@ -24,20 +24,58 @@ import {
   TableRow,
   Typography
 } from "@mui/material";
-import React from "react";
+import { useInView } from "react-intersection-observer";
+import React, { useEffect } from "react";
 
 function Quotation() {
-  const [value, setValue] = React.useState("");
-  const [quotationList, setQuotationList] = React.useState([]);
-  const [type, setType] = React.useState("");
+  const { ref, inView, entry } = useInView({
+    /* Optional options */
+    threshold: 0
+  });
+  const [value, setValue] = React.useState("Order Date");
+  const [type, setType] = React.useState("date");
+  const [page, setPage] = React.useState(1);
+  const [quotationList, setQuotationList] = React.useState<any>([]);
   const onQuotationListSuccess = (response: any) => {
-    setQuotationList(response ? response?.quotations_data : []);
+    setQuotationList([
+      ...quotationList,
+      ...(response ? response?.quotations_data : [])
+    ]);
   };
-  const { data } = useQuotationList(onQuotationListSuccess);
+  const { data, isLoading } = useQuotationList(
+    page,
+    type,
+    onQuotationListSuccess
+  );
 
   const handleChange = (event: SelectChangeEvent | any) => {
+    console.log(event.target, "SelectChangeEvent");
+    if (event.target.value == "Order Date") {
+      setType("date");
+    } else if (event.target.value == "Order Name") {
+      setType("name");
+    } else {
+      setType("stage");
+    }
+    setPage(1);
+    setQuotationList([]);
     setValue(event.target.value);
   };
+  const fetchList = (isInview: boolean) => {
+    console.log("isInview", isInview);
+
+    if (isInview && !isLoading) {
+      if (data?.page_count > page) {
+        setPage(page + 1);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (inView) {
+      fetchList(inView);
+    }
+  }, [inView]);
   console.log("data", quotationList);
 
   return (
@@ -72,7 +110,7 @@ function Quotation() {
                     onChange={handleChange}
                   >
                     <MenuItem value="" sx={{ display: "none" }}>
-                      Order Date
+                      {value}
                     </MenuItem>
                     orderDataSelect
                     {quationselectlList.map((item) => (
@@ -117,17 +155,21 @@ function Quotation() {
                       </TableCell>
                       <TableCell align="left">
                         <Typography variant="body1">
-                          {row?.date_order}
+                          {row?.date_order
+                            ?.replaceAll("-", "/")
+                            ?.replaceAll(" ", " - ")}
                         </Typography>
                       </TableCell>
                       <TableCell align="center">
                         <Typography variant="body1">
-                          {row?.validity_date}
+                          {row?.validity_date == false
+                            ? " - "
+                            : row?.validity_date?.replaceAll("-", "/")}
                         </Typography>
                       </TableCell>
                       <TableCell align="center">
                         <Typography variant="body1">
-                          {row?.amount_total}
+                          ${row?.amount_total}
                         </Typography>
                       </TableCell>
                       <TableCell align="center">
@@ -148,6 +190,7 @@ function Quotation() {
                   ))}
                 </TableBody>
               </CommonTable>
+              <>{!isLoading && <div ref={ref}></div>}</>
             </Box>
           </QuotationWrapper>
         </Box>

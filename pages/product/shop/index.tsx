@@ -22,44 +22,45 @@ export default function index() {
     if (page > lastPage) {
       return false;
     }
-    const newListData = data?.products_info;
-    console.log("onSuccessProductList", newListData);
-    const modifiedListData = [...productList, ...newListData];
+    const newListData = data?.products_info ?? [];
+    // console.log("onSuccessProductList", newListData);
+    // const modifiedListData = [...productList, ...newListData];
 
-    const uniqueObjects = new Set();
+    // const uniqueObjects = new Set();
 
-    // Filter the array to remove duplicates
-    const filteredArray = modifiedListData.filter((obj) => {
-      const objString = JSON.stringify(obj);
-      const isUnique = !uniqueObjects.has(objString);
-      if (isUnique) {
-        uniqueObjects.add(objString);
-      }
-      return isUnique;
-    });
+    // // Filter the array to remove duplicates
+    // const filteredArray = modifiedListData.filter((obj) => {
+    //   const objString = JSON.stringify(obj);
+    //   const isUnique = !uniqueObjects.has(objString);
+    //   if (isUnique) {
+    //     uniqueObjects.add(objString);
+    //   }
+    //   return isUnique;
+    // });
 
-    // Convert the Set back to an array
-    let uniqueArray = Array.from(filteredArray);
-    console.log("uniqueArray", uniqueArray);
+    // // Convert the Set back to an array
+    // let uniqueArray = Array.from(filteredArray);
+    // console.log("uniqueArray", uniqueArray);
 
-    // oldList.current = Array.from(filteredArray);
-    if (sort == "order=name+asc") {
-      uniqueArray = uniqueArray.sort((a: any, b: any) =>
-        a?.name.localeCompare(b?.name)
-      );
-    } else if (sort == "order=list_price+asc") {
-      uniqueArray = uniqueArray.sort(
-        (a: any, b: any) => a?.list_price - b?.list_price
-      );
-    } else if (sort == "order=list_price+desc") {
-      uniqueArray = uniqueArray.sort(
-        (a: any, b: any) => b?.list_price - a?.list_price
-      );
-    } else if (sort.includes("search")) {
-      setProductList(newListData);
-      return false;
-    }
-    setProductList(uniqueArray);
+    // // oldList.current = Array.from(filteredArray);
+    // if (sort == "order=name+asc") {
+    //   uniqueArray = uniqueArray.sort((a: any, b: any) =>
+    //     a?.name.localeCompare(b?.name)
+    //   );
+    // } else if (sort == "order=list_price+asc") {
+    //   uniqueArray = uniqueArray.sort(
+    //     (a: any, b: any) => a?.list_price - b?.list_price
+    //   );
+    // } else if (sort == "order=list_price+desc") {
+    //   uniqueArray = uniqueArray.sort(
+    //     (a: any, b: any) => b?.list_price - a?.list_price
+    //   );
+    // } else if (sort.includes("search")) {
+    //   setProductList(newListData);
+    //   return false;
+    // }
+    // setProductList(uniqueArray);
+    setProductList([...productList, ...newListData]);
   };
   const onErrorProductList = () => {};
   const { data, isLoading } = useProductList(
@@ -72,7 +73,7 @@ export default function index() {
     console.log("isInview", isInview);
 
     if (isInview && !isLoading) {
-      if (data?.pager?.page_count > page) {
+      if (data?.pager?.page_count >= page) {
         setPage(page + 1);
       }
     }
@@ -106,6 +107,7 @@ export default function index() {
           setSort(``);
         }
       }
+      setProductList([]);
     },
     [sort, page]
   );

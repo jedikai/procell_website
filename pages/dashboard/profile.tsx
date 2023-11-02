@@ -9,11 +9,14 @@ import {
   useUpdateProfile
 } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
 import { GET_PROFILE_DETAILS } from "@/hooks/react-qurey/query-keys/dashboardQuery.keys";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
 import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
 import validationText from "@/json/messages/validationText";
 import DashboardWrapper from "@/layout/DashboardWrapper/DashboardWrapper";
 import Wrapper from "@/layout/wrapper/Wrapper";
+import { refreshProfileImg } from "@/reduxtoolkit/slices/userProfle.slice";
 import { ProfileWrapper } from "@/styles/StyledComponents/ProfileWrapper";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
@@ -75,6 +78,8 @@ const validationSchema = yup.object().shape({
 export default function Profile(): JSX.Element {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
+  const { refresh } = useAppSelector((s) => s.userProfileImgSlice);
   const apiGivenDP = useRef<string | null>(null);
   const [apiGivenrofilePic, setApiGivenrofilePic] = useState<
     string | null | undefined
@@ -149,10 +154,10 @@ export default function Profile(): JSX.Element {
   };
   const onProfileDetailsError = (response: any) => {
     console.log("error", response);
-    toastError("Your profile is not authorized, please log in.");
-    router.push("/auth/login");
+    // toastError("Your profile is not authorized, please log in.");
+    // router.push("/auth/login");
   };
-  const { data, isLoading, refetch, isFetched } = useProfileDetails(
+  const { data, isLoading, refetch } = useProfileDetails(
     onProfileDetailsSuccess,
     onProfileDetailsError
   );
@@ -271,9 +276,9 @@ export default function Profile(): JSX.Element {
         });
         setProfilePic(null);
         refetch();
+        dispatch(refreshProfileImg(!refresh));
         // queryClient.invalidateQueries(GET_PROFILE_DETAILS);
         toastSuccess(response?.data?.message);
-        
       },
       onError: (response: any) => {
         toastError(response?.response?.data?.message ?? "Somehing went wrong.");
@@ -324,6 +329,7 @@ export default function Profile(): JSX.Element {
                         alt="image"
                         width={147}
                         height={147}
+                        key={refresh ? "render" : "no-render"}
                       />
                     </figure>
                     <Box className="form_Sec">
@@ -450,6 +456,7 @@ export default function Profile(): JSX.Element {
                           alt="image"
                           width={147}
                           height={147}
+                          key={refresh ? "render" : "no-render"}
                         />
                       )}
                       {/* IF USER DO NOT HAVE PROFILE PIC */}

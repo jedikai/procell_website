@@ -7,8 +7,9 @@ export interface userSliceData {
 
 export interface registrationData {}
 
-
-
 export interface globalStateInterface {
   counter: number;
+}
+export interface userProfileImageInterface {
+  refresh: boolean;
 }

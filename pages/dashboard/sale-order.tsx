@@ -4,9 +4,8 @@
 /* eslint-disable mui-path-imports/mui-path-imports */
 import CommonTable from "@/components/CommonTable/CommonTable";
 import { useSalesList } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
-import { quationselectlList } from "@/json/mock/quationselectlList.mock";
+import { salesSelectlList } from "@/json/mock/quationselectlList.mock";
 
-import { salesorderList } from "@/json/mock/salesorderList.mock";
 import DashboardWrapper from "@/layout/DashboardWrapper/DashboardWrapper";
 import Wrapper from "@/layout/wrapper/Wrapper";
 import { QuotationWrapper } from "@/styles/StyledComponents/QuotationWrapper";
@@ -24,21 +23,53 @@ import {
   TableRow,
   Typography
 } from "@mui/material";
-import React from "react";
+import React, { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 
 function Index() {
-  const [value, setValue] = React.useState("");
-  const [salesList, setSalesList] = React.useState([]);
-  const [type, setType] = React.useState("");
+  const { ref, inView, entry } = useInView({
+    /* Optional options */
+    threshold: 0
+  });
+  const [value, setValue] = React.useState("Order Date");
+  const [salesList, setSalesList] = React.useState<any>([]);
+  const [type, setType] = React.useState("date");
+  const [page, setPage] = React.useState(1);
   const onSalesListSuccess = (response: any) => {
-    setSalesList(response ? response?.orders_data : []);
+    setSalesList([...salesList, ...(response ? response?.orders_data : [])]);
   };
-  const { data } = useSalesList(onSalesListSuccess);
+  const { data, isLoading } = useSalesList(page, type, onSalesListSuccess);
 
   const handleChange = (event: SelectChangeEvent | any) => {
+    console.log(event.target, "SelectChangeEvent");
+    if (event.target.value == "Order Date") {
+      setType("date");
+    } else if (event.target.value == "Order Name") {
+      setType("name");
+    } else {
+      setType("stage");
+    }
+    setPage(1);
+    setSalesList([]);
     setValue(event.target.value);
   };
-  console.log("salesList", salesList);
+
+  const fetchList = (isInview: boolean) => {
+    console.log("isInview", isInview);
+
+    if (isInview && !isLoading) {
+      if (data?.page_count > page) {
+        setPage(page + 1);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (inView) {
+      fetchList(inView);
+    }
+  }, [inView]);
+  console.log("salesList", page, salesList?.length, data);
 
   return (
     <Wrapper>
@@ -71,9 +102,9 @@ function Index() {
                   }}
                 >
                   <MenuItem value="" sx={{ display: "none" }}>
-                    Order Date
+                    {value}
                   </MenuItem>
-                  {quationselectlList.map((item) => (
+                  {salesSelectlList?.map((item) => (
                     <MenuItem
                       key={item?.name}
                       value={item?.name}
@@ -86,6 +117,7 @@ function Index() {
               </Stack>
             </Stack>
             <Box className="tableWrapper">
+              {/* <button onClick={() => setPage(page + 1)}>refetch</button> */}
               <CommonTable>
                 <TableHead>
                   <TableRow>
@@ -111,12 +143,14 @@ function Index() {
                       </TableCell>
                       <TableCell align="left">
                         <Typography variant="body1">
-                          {row?.date_order}
+                          {row?.date_order
+                            ?.replaceAll("-", "/")
+                            ?.replaceAll(" ", " - ")}
                         </Typography>
                       </TableCell>
                       <TableCell align="center">
                         <Typography variant="body1">
-                          {row?.amount_total}
+                          ${row?.amount_total}
                         </Typography>
                       </TableCell>
 
@@ -124,16 +158,17 @@ function Index() {
                         <Typography
                           variant="body1"
                           className={
-                            row?.state === "Delivered" ? "delivered" : ""
+                            row?.order_status === "Delivered" ? "delivered" : ""
                           }
                         >
-                          {row?.state}
+                          {row?.order_status}
                         </Typography>
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </CommonTable>
+              <>{!isLoading && <div ref={ref}></div>}</>
             </Box>
           </QuotationWrapper>
         </Box>
