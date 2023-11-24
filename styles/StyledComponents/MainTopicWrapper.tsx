@@ -4,7 +4,6 @@ import styled from "@emotion/styled";
 import { Box } from "@mui/material";
 
 export const MainTopicWrapper = styled(Box)`
-
   .topic_wrpp {
     h3 {
       color: ${primaryColors.black};
@@ -31,6 +30,9 @@ export const MainTopicWrapper = styled(Box)`
         &:hover {
           color: ${primaryColors.primary};
         }
+      }
+      a.active {
+        color: ${primaryColors.primary};
       }
 
       &:last-child {

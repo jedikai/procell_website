@@ -38,6 +38,9 @@ import { getCookie } from "@/lib/functions/storage.lib";
 import { destroyCookie } from "nookies";
 import { useProfileDetails } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
 import { useAppSelector } from "@/hooks/useAppSelector";
+import { useCartList, useCartListWithAuthCred } from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { getAuthorizationNetCred } from "@/reduxtoolkit/slices/userProfle.slice";
 
 // const CustomButton = dynamic(() => import("@/ui/Buttons/CustomButton"));
 
@@ -71,19 +74,37 @@ export default React.memo(function Header(props: Props) {
     }
   ];
 
+  const dispatch = useAppDispatch();
   // const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [cardListData, setCardListData] = React.useState<any>([]);
   const [authenticUser, setAuthenticUser] = React.useState(false);
   const [sessionId, setSessionId] = React.useState("");
   // const { userData, isLoggedIn } = useAppSelector((state) => state.userSlice);
   // const dispatch = useAppDispatch();
   const router = useRouter();
-  const { refresh } = useAppSelector((s) => s.userProfileImgSlice);
+  const { refresh, image } = useAppSelector((s) => s.userProfileImgSlice);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { data, isLoading, refetch, isFetched } = useProfileDetails(
-    () => {},
-    () => {},
+    () => { },
+    () => { },
     true
+  );
+  // const { data: cardListData, isLoading: cartListloader } = useCartList(
+  //   () => { },
+  //   () => { }
+  // );
+  const onAuthorizationCredSuccess = (response: any) => {
+    const { data, providers_data }: any = response ?? {}
+    // console.log('onAuthorizationCredSuccess', data, providers_data);
+
+    setCardListData(data)
+    const authorizationCred: { login_id: string, client_key: string } = { login_id: providers_data ? providers_data[0]?.login_id : '', client_key: providers_data ? providers_data[0]?.client_key : '' }
+    dispatch(getAuthorizationNetCred(authorizationCred))
+  }
+  const { data: authorizationData, isLoading: authorizationloader } = useCartListWithAuthCred(
+    onAuthorizationCredSuccess,
+    () => { }
   );
   const { mutate: logout } = useLogout();
   const open = Boolean(anchorEl);
@@ -133,7 +154,7 @@ export default React.memo(function Header(props: Props) {
             destroyCookie(null, "userDetails", { path: "/" });
             router.push("/auth/login");
           },
-          onError: () => {}
+          onError: () => { }
         }
       );
     }
@@ -166,7 +187,14 @@ export default React.memo(function Header(props: Props) {
             localStorage.getItem("userDetails") ?? ""
           );
         } else {
-          getUserDetails = JSON.parse(getCookie("userDetails") ?? "");
+          if (getCookie("userDetails")) {
+            try {
+              getUserDetails = JSON.parse(getCookie("userDetails") ?? '');
+            } catch (error) {
+              console.error("Error parsing user details:", error);
+            }
+          }
+          // getUserDetails = JSON.parse(getCookie("userDetails") ?? "");
         }
         // if (getUserDetails && getUserDetails?.cred)
         if (sessionStorage.getItem("session_id")) {
@@ -202,8 +230,8 @@ export default React.memo(function Header(props: Props) {
         </Link>
         <Divider />
         <List>
-          {navItems.map((item) => (
-            <ListItem disablePadding>
+          {navItems.map((item: any, index: number) => (
+            <ListItem key={index + 1} disablePadding>
               <Link
                 href={item?.route}
                 key={item.name}
@@ -230,6 +258,15 @@ export default React.memo(function Header(props: Props) {
       </Box>
     </DrawerWrapper>
   );
+
+  const cartItemsNumber = React.useMemo(() => {
+    if (cardListData) {
+      return cardListData && cardListData?.length > 0 && cardListData[0]
+        ? cardListData[0]?.order_line?.length
+        : 0;
+    }
+  }, [cardListData]);
+  // console.log("header ========>", authorizationData);
 
   return (
     <HeaderWrap sx={{ display: "flex" }} className="main_head">
@@ -268,10 +305,10 @@ export default React.memo(function Header(props: Props) {
                   Training acadamy
                 </Link>
               )}
-              {navItems.map((item) => (
+              {navItems.map((item: any, index: number) => (
                 <Link
                   href={item?.route}
-                  key={item?.route}
+                  key={index + 1}
                   className={router.pathname === item.route ? "active" : ""}
                 >
                   {item?.name}
@@ -291,7 +328,12 @@ export default React.memo(function Header(props: Props) {
               )}
               <Box className="cart_icon">
                 <Link href="/product/cart">
-                  <Badge color="primary" variant="dot">
+                  <Badge
+                    color="primary"
+                    // variant="dot"
+                    badgeContent={cartItemsNumber}
+                  // invisible={!!cartItemsNumber}
+                  >
                     <CartIcon IconHeight="24" IconWidth="24" />
                   </Badge>
                 </Link>
@@ -308,9 +350,11 @@ export default React.memo(function Header(props: Props) {
                       className="user_btn"
                     >
                       {data && data?.length > 0 && data[0]?.image_1920_url && (
+                        // {!!image && (
                         <img
                           src={
                             data ? data[0]?.image_1920_url : assest?.avatr_img
+                            // !!image ? image : assest?.avatr_img
                           }
                           alt="image"
                           width={36}
@@ -439,4 +483,4 @@ export default React.memo(function Header(props: Props) {
       </MuiModalWrapper>
     </HeaderWrap>
   );
-})
+});

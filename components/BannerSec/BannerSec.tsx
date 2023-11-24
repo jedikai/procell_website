@@ -10,7 +10,7 @@ import MuteIcon from "@/ui/Icons/MuteIcon";
 import UnMuteIcon from "@/ui/Icons/UnMuteIcon";
 import WhiteArrowIcon from "@/ui/Icons/WhiteArrowIcon";
 import { Box, Button, Container, Typography } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 
 export default function BannerSec() {
   const [muted, setMuted] = useState(true);
@@ -29,7 +29,7 @@ export default function BannerSec() {
           <source src={assest.banner_vdo} type="video/mp4" />
         </video>
         <Button onClick={handleToggleMute} className="mute_icon">
-          {muted ? <MuteIcon /> :<UnMuteIcon /> }
+          {muted ? <MuteIcon /> : <UnMuteIcon />}
         </Button>
 
         <Box className="banner_wrapper">

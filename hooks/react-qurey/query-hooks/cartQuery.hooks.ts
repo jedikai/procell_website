@@ -1,6 +1,6 @@
 import axiosInstance from "@/api/axiosInstance";
 import { endpoints } from "@/api/endpoints";
-import { CART_LIST } from "../query-keys/cartQuery.keys";
+import { CART_LIST, CART_LIST_WITH_AUTHORIZATION } from "../query-keys/cartQuery.keys";
 import { useMutation, useQuery } from "react-query";
 
 const getCartList = async () => {
@@ -17,6 +17,23 @@ export const useCartList = (
     onError,
     // enabled: false,
     select: (data) => data?.data?.data ?? []
+  });
+//   <------------------ CART LIST WITH AUTHORIZATION.NET CRED ------------------->
+
+const getCartListWithAuthCred = async () => {
+  const res = await axiosInstance.get(endpoints.app.cart_list);
+  return res;
+};
+
+export const useCartListWithAuthCred = (
+  onSuccess: any = () => {},
+  onError: any = () => {}
+) =>
+  useQuery([CART_LIST_WITH_AUTHORIZATION], getCartListWithAuthCred, {
+    onSuccess,
+    onError,
+    // enabled: false,
+    select: (data) => data?.data ?? {}
   });
 
 //   <------------------ DELETE ITEMS FROM CART LIST ------------------->

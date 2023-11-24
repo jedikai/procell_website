@@ -10,11 +10,11 @@ function PurchesorderStatusBar() {
     <PurchesorderStatusBarWrapper>
       <Box className="statusTree">
         <List disablePadding>
-          {statusdetailsList.map((item) => (
+          {statusdetailsList.map((item: any, index: number) => (
             <ListItem
               disablePadding
               className={item?.status === "completed" ? "active" : ""}
-              key={item?.ordercurrentstatus}
+              key={index + 1}
             >
               <Box className="statusTreeBox">
                 <Typography variant="body1" className="orderStautsdetails">

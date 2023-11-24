@@ -193,13 +193,13 @@ const Filter1Dropdown = ({ onDataCallback, dataset }: SelectProps) => {
     >
       {dataset.map((name) => (
         <MenuItem
-          key={name.name}
-          value={name.name}
+          key={name?.name}
+          value={name?.name}
           className="menu_item"
           style={menuItemStyle}
           disableRipple
         >
-          <img src={name.icon} alt="" /> {name.name}
+          <img src={name?.icon} alt="" /> {name?.name}
         </MenuItem>
       ))}
     </CustomSelectWrapper>

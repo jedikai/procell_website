@@ -1,3 +1,4 @@
+import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import {
   useInvoiceDownload,
   useInvoiceList
@@ -10,18 +11,50 @@ import {
   InvoiceWrapper
 } from "@/styles/StyledComponents/InvoiceWrapper";
 import DownloadIcon from "@/ui/Icons/DownloadIcon";
+import { CircularProgress } from "@mui/material";
 import Chip from "@mui/material/Chip";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Typography from "@mui/material/Typography";
 import { Box } from "@mui/system";
+import axios from "axios";
+import { removeDuplicates } from "common/functions/removeDublicate";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
 
 export function InvoiceCard({ ...props }: any) {
   const router = useRouter();
-
+  const [loading, setLoading] = useState<boolean>(false);
+  const downloadPdf = async (id: string) => {
+    setLoading(true);
+    const sessionId = sessionStorage.getItem("session_id") || "";
+    const pdfDownloadInstance = axios.create({
+      baseURL: process.env.NEXT_APP_BASE_URL,
+      responseType: "blob",
+      headers: {
+        "Content-Type": "application/pdf"
+      },
+      params: { session_id: sessionId }
+    });
+    await pdfDownloadInstance
+      .get(`/web/download/invoice_pdf/${id}`)
+      .then((response: any) => {
+        setLoading(false);
+        const blob = new Blob([response.data]);
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `invoice-${props?.sale_order}.pdf`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch((error: any) => {
+        setLoading(false);
+        console.error("An error occurred:", error);
+      });
+  };
   return (
     <InvoiceCardWrap direction="row" flexWrap="wrap">
       <Box className="left_block">
@@ -47,22 +80,22 @@ export function InvoiceCard({ ...props }: any) {
         </Typography>
         <List disablePadding>
           <ListItem disablePadding>
-            <Chip
-              icon={<DownloadIcon />}
-              label="Download invoice"
-              className="invoice_chip"
-              onClick={() => {
-                // router.push(props?.pdf_download_url);
-                // const link = document.createElement("a");
-                // // link.href = "https://picsum.photos/id/1/200/300";
-                // link.href = props?.pdf_download_url ?? "";
-                // link.download = `${props?.name ?? "Document"}.pdf`; // specify the filename
-                // // document.body.appendChild(link);
-                // link.target = "_blank";
-                // link.click();
-                // // document.body.removeChild(link);
-              }}
-            />
+            {loading ? (
+              <Chip
+                icon={<CircularProgress size={20} thickness={4} />}
+                label="Downloading invoice"
+                className="invoice_chip"
+              />
+            ) : (
+              <Chip
+                icon={<DownloadIcon />}
+                label="Download invoice"
+                className="invoice_chip"
+                onClick={() => {
+                  downloadPdf(props?.id);
+                }}
+              />
+            )}
           </ListItem>
           <ListItem disablePadding>
             <Chip label={props?.invoice_state} className="deliver_chip" />
@@ -83,10 +116,12 @@ export default function Index() {
   const [type, setType] = useState("date");
   const [page, setPage] = useState(1);
   const onSuccessInvoiceList = (response: any) => {
-    setInvoiceList([
-      ...invoiceList,
-      ...(response ? response?.invoice_data : [])
-    ]);
+    setInvoiceList(
+      removeDuplicates([
+        ...invoiceList,
+        ...(response && response?.invoice_data ? response?.invoice_data : [])
+      ])
+    );
   };
   const { data, isLoading } = useInvoiceList(page, "", onSuccessInvoiceList);
   const { data: pdf } = useInvoiceDownload(297187);
@@ -108,44 +143,31 @@ export default function Index() {
     }
     return btoa(binary);
   };
-  const downloadPdf = async () => {
-    const responseData = pdf?.data ?? "";
-    const encoder: TextEncoder = new TextEncoder();
-    const data: Uint8Array = encoder.encode(responseData);
-    // const blob= new Blob([data])
-    // try {
-    //   const url = window.URL.createObjectURL(blob);
-    //   const link = document.createElement('a');
-    //   if (link.download !== undefined) { // feature detection
-    //     link.setAttribute('href', url);
-    //     // link.setAttribute('download', fileName);
-    //     // link.style.visibility = 'hidden';
-    //     document.body.appendChild(link);
-    //     link.click();
-    //     document.body.removeChild(link);
-    //   }
-    // } catch (e) {
-    //   console.error('BlobToSaveAs error', e);
-    // }
-    // Convert the binary data to base64
-    const base64: string = base64ArrayBuffer(data);
-    console.log(pdf?.data, "objectURL");
-    // const linkSource = `data:application/pdf;base64,${base64}`;
-    const linkSource = `data:application/pdf;base64,${''}`;
-    const downloadLink = document.createElement("a");
-    const fileName = "Document-test.pdf";
-    downloadLink.href = linkSource;
-    downloadLink.download = fileName;
-    downloadLink.click();
-    
-    // const link = document.createElement("a");
-    // const blob = new Blob([pdf?.data], { type: "application/pdf" });
-    // let objectURL = URL.createObjectURL(blob);
-    // link.href = pdf?.data
-    // link.download = "download"
-    // link.target = "_blank";
-    // link.click();
-    
+  const downloadPdf = async (id: string) => {
+    const sessionId = sessionStorage.getItem("session_id") || "";
+    const pdfDownloadInstance = axios.create({
+      baseURL: process.env.NEXT_APP_BASE_URL,
+      responseType: "blob",
+      headers: {
+        "Content-Type": "application/pdf"
+      },
+      params: { session_id: sessionId }
+    });
+    await pdfDownloadInstance
+      .get(`/web/download/invoice_pdf/${id}`)
+      .then((response: any) => {
+        const blob = new Blob([response.data]);
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "invoice.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch((error: any) => {
+        console.error("An error occurred:", error);
+      });
   };
 
   useEffect(() => {
@@ -153,35 +175,35 @@ export default function Index() {
       fetchList(inView);
     }
   }, [inView]);
-  console.log("useInvoiceList", pdf?.data);
+  console.log("useInvoiceList", invoiceList);
   return (
     <Wrapper>
       <DashboardWrapper>
-        <Box className="cmn_box">
-          <Chip
-            icon={<DownloadIcon />}
-            label="Download invoice"
-            className="invoice_chip"
-            onClick={() => {
-              downloadPdf();
-              // // router.push(props?.pdf_download_url);
-              // const link = document.createElement("a");
-              // link.href = pdf ? window.URL.createObjectURL(pdf?.data) : "";
-              // // link.href = props?.pdf_download_url;
-              // link.download = "document.pdf"; // specify the filename
-              // // document.body.appendChild(link);
-              // link.target = "_blank";
-              // link.click();
-              // // alert("came here");
-              // // document.body.removeChild(link);
-            }}
-          />
-          <InvoiceWrapper>
-            {invoiceList?.map((item: any) => (
-              <InvoiceCard {...item} key={item?.orderId} />
-            ))}
-          </InvoiceWrapper>
-          <>{!isLoading && <div ref={ref}></div>}</>
+        <Box className="cmn_box FixedHeightContainer">
+          <div className="Content">
+            <InvoiceWrapper>
+              {invoiceList && invoiceList?.length > 0 ? (
+                invoiceList?.map((item: any) => (
+                  <InvoiceCard {...item} key={item?.orderId} />
+                ))
+              ) : !isLoading ? (
+                <Typography variant="body1" style={{ textAlign: "center" }}>
+                  There is no invoices & bills
+                </Typography>
+              ) : (
+                <></>
+              )}
+            </InvoiceWrapper>
+            <>
+              {!isLoading ? (
+                <div ref={ref}></div>
+              ) : (
+                <div style={{ marginTop: "10px" }}>
+                  <ButtonLoaderSecondary />
+                </div>
+              )}
+            </>
+          </div>
         </Box>
       </DashboardWrapper>
     </Wrapper>

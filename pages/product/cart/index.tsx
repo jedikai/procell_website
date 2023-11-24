@@ -33,17 +33,19 @@ const Cart = () => {
         ? response[0].order_line
         : []
     );
-    setAmount(
-      response && response?.length > 0 && response[0]
-        ? response[0].order_line?.reduce(
-            (accumulator: any, currentValue: any) =>
-              accumulator + currentValue?.price_reduce_taxexcl,
-            0
-          )
-        : 0
-    );
+    // setAmount(
+    //   response && response?.length > 0 && response[0]
+    //     ? response[0].order_line?.reduce(
+    //       (accumulator: any, currentValue: any) =>
+    //         accumulator +
+    //         currentValue?.price_reduce_taxexcl *
+    //         currentValue?.product_uom_qty,
+    //       0
+    //     )
+    //     : 0
+    // );
   };
-  const onErrorCartList = () => {};
+  const onErrorCartList = () => { };
   const { data: cardListData, isLoading: cartListloader } = useCartList(
     onSuccessCartList,
     onErrorCartList
@@ -57,7 +59,7 @@ const Cart = () => {
   // const animationURL =
   //   "https://lottie.host/df01b107-9ab3-44c4-b5e1-863aa2981e99/ePRGrl6wcx.json";
 
-  // console.log(animationURL, "animationURL");
+  console.log("cardListData", cardListData);
   return (
     <Wrapper>
       <InnerHeader
@@ -70,42 +72,12 @@ const Cart = () => {
       <CartWrapper className="cmn_gap">
         <Container fixed>
           <Grid container spacing={3}>
-            <Grid item lg={7.5} xs={12}>
+            <Grid item lg={cartList && cartList?.length > 0 ? 7.5 : 12} xs={12}>
               <Box className="cart_left">
                 <Box className="cart_filter">
-                  <Link href="/#">
+                  <Link href="/product/shop">
                     <ArrowLeftIcon /> Continue shopping
                   </Link>
-
-                  {/* <Stack
-                    direction="row"
-                    justifyContent="center"
-                    alignItems="center"
-                    className="sort_by"
-                  >
-                    <Typography variant="body1">Sort by</Typography>
-                    <CustomSelect
-                      IconComponent={(props) => {
-                        return (
-                          <IconButton {...props}>
-                            <DropDownIcon />
-                          </IconButton>
-                        );
-                      }}
-                      value={value}
-                      onChange={handleChange}
-                    >
-                      <MenuItem value="" sx={{ display: "none" }}>
-                        Price
-                      </MenuItem>
-
-                      {CartSortingOptions.map((item) => (
-                        <MenuItem key={item} value={item} className="menu_item">
-                          {item}
-                        </MenuItem>
-                      ))}
-                    </CustomSelect>
-                  </Stack> */}
                 </Box>
                 {cartList && cartList?.length > 0 && (
                   <Box className="cart_banner">
@@ -115,10 +87,11 @@ const Cart = () => {
                   </Box>
                 )}
 
-                <Stack className="cart_items">
-                  {!cartListloader && cartList && cartList?.length > 0 ? (
-                    cartList.map((item: any) => (
+                {!cartListloader && <Stack className="cart_items">
+                  {cartList && cartList?.length > 0 ? (
+                    cartList.map((item: any, index: number) => (
                       <CartItemsCard
+                        key={index + 1}
                         image={item?.product_image_url ?? ""}
                         name={item?.name_short ?? ""}
                         price={item?.price_reduce_taxexcl ?? ""}
@@ -143,15 +116,22 @@ const Cart = () => {
                       </Typography>
                     </Box>
                   )}
-                </Stack>
+                </Stack>}
               </Box>
             </Grid>
-            <Grid item lg={4.5} xs={12}>
+            {!cartListloader && cartList && cartList?.length > 0 && <Grid item lg={4.5} xs={12}>
               <Box className="cart_right">
                 {/* <PaymentCardDetailsCard subtotal={3000.0} shipping={20.0} /> */}
-                <PaymentBillDetails subtotal={amount} shipping={0} totalAmount={amount}/>
+                <PaymentBillDetails
+                  subtotal={cardListData ? cardListData[0]?.amount_untaxed : 0}
+                  shipping={0}
+                  totalAmount={cardListData ? cardListData[0]?.amount_untaxed : 0}
+                  isRedirectionEnable={
+                    !cartListloader && cartList && cartList?.length > 0
+                  }
+                />
               </Box>
-            </Grid>
+            </Grid>}
           </Grid>
         </Container>
       </CartWrapper>

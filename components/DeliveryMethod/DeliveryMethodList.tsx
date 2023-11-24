@@ -28,7 +28,7 @@ export default function DeliveryMethodList({
   customlabel,
   ...props
 }: CustomRadioProps & RadioProps & RadioGroupProps) {
-    
+
   return (
     <FormControl className="radio_group">
       <RadioGroup
@@ -37,23 +37,24 @@ export default function DeliveryMethodList({
         {...props}
       >
         {customlabel
-          ? radioList?.map((radio_item) => (
-              <VendorSection radio_item={radio_item} props={props} />
-            ))
-          : radioList?.map((radio_item) => (
-              <FormControlLabel
-                value={radio_item?.value}
-                control={
-                  <Radio
-                    disableRipple
-                    icon={<RadioUncheckedIcon />}
-                    checkedIcon={<RadioCheckedIcon />}
-                    {...props}
-                  />
-                }
-                label={radio_item?.label}
-              />
-            ))}
+          ? radioList?.map((radio_item: any, index: number) => (
+            <VendorSection radio_item={radio_item} props={props} key={index + 1} />
+          ))
+          : radioList?.map((radio_item: any, index: number) => (
+            <FormControlLabel
+              key={index + 1}
+              value={radio_item?.value}
+              control={
+                <Radio
+                  disableRipple
+                  icon={<RadioUncheckedIcon />}
+                  checkedIcon={<RadioCheckedIcon />}
+                  {...props}
+                />
+              }
+              label={radio_item?.label}
+            />
+          ))}
       </RadioGroup>
     </FormControl>
   );

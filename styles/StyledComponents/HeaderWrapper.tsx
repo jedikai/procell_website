@@ -56,15 +56,24 @@ export const HeaderWrap = styled(Box)`
       }
     }
     .MuiBadge-badge {
-      right: 4px;
-      top: 5px;
+      right: 0;
+      top: 3px;
+
       min-width: 10px;
-      height: 10px;
+      height: 22px;
+      width: 22px;
+      color: ${primaryColors.white};
+      @media (max-width: 599px) {
+        right: 2px;
+        top: 5px;
+        width: 17px;
+        height: 17px;
+      }
     }
     .cart_icon {
       margin-right: 18px;
       cursor: pointer;
-    
+
       @media (max-width: 599px) {
         margin: 0;
         width: 21px;
@@ -99,7 +108,7 @@ export const HeaderWrap = styled(Box)`
     @media (max-width: 599px) {
       width: 80px;
     }
-    img{
+    img {
       width: 100%;
     }
   }

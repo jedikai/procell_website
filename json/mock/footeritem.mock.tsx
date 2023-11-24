@@ -37,6 +37,14 @@ const foooterItems = [
   {
     name: "Contact us",
     route: "/contact"
+  },
+  {
+    name: "Contact with CEO",
+    route: "/contact-the-ceo"
+  },
+  {
+    name: "Get help",
+    route: "/get-help"
   }
 ];
 
@@ -87,4 +95,4 @@ const social_links2 = [
   }
 ];
 
-export { social_links, foooterItems, social_links2 };
+export { foooterItems, social_links, social_links2 };

@@ -67,9 +67,9 @@ function OurProduct({
         </Box>
         <Box className="ourProductSliderwrapperSection">
           <Slider {...settings}>
-            {ourproductList.map((item , index:number) => (
+            {ourproductList.map((item: any, index: number) => (
               <OurProductSlider
-              key={index}
+                key={index + 1}
                 OurProductsliderImg={item.productImg}
                 productSlidertext={item.productTitle}
                 productSliderPrice={item.productprice}

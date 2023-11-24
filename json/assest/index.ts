@@ -81,6 +81,18 @@ export default {
   pinkWindGradinet: "/assets/images/pngwingGradient.png",
   logoutGradient: "/assets/images/logoutgradienticon.svg",
   noProfile_img: "/assets/images/profileImgNo_imgs.png",
-  workshopBackground:"/assets/images/workshopBackground.png",
-  videoposter:"/assets/images/videoposter.png"
+  workshopBackground: "/assets/images/workshopBackground.png",
+  videoposter: "/assets/images/videoposter.png",
+  blogdetailsmainimage: "/assets/images/blog_details_main.png",
+  blog_image_one: "/assets/images/blg_img1.png",
+  slide_image_one: "/assets/images/slide_image_one.png",
+  blog_image_two: "/assets/images/blog_image_two.png",
+  slide_image_two: "/assets/images/slide_image_two.png",
+  blog_image_three: "/assets/images/blog_image_three.png",
+  slide_image_three: "/assets/images/slide_image_three.png",
+  moreBlogOne: "/assets/images/moreblog1.png",
+  moreBlogTwo: "/assets/images/moreblog2.png",
+  moreBlogThree: "/assets/images/moreblog3.png",
+  getHelpImage: "/assets/images/get-help.png",
+  contactCeoImage: "/assets/images/contact-ceo.png"
 };

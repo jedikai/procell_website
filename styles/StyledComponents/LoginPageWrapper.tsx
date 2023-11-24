@@ -168,6 +168,7 @@ export const LoginPageWrapper = styled(Box)`
           display: flex;
           justify-content: flex-start;
           &.checkbox-one {
+            gap: 10px;
             svg {
               display: none;
               opacity: 0;

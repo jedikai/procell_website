@@ -7,7 +7,6 @@ export const primaryColors = {
   primary: "#16A6DF",
   primary1: "#C2A6F4",
 
-
   primary_600: "#5871D0",
   secondary: "rgba(0, 0, 0, 0.31)",
   secondaryBorder: "#F380A5",
@@ -85,15 +84,16 @@ export const primaryColors = {
   banner_bg: "rgba(84, 55, 149, 0.05)",
   greyPurple: "#797596",
   lightGreytxt: "#b5b9c1",
-  color313131:"#313131",
+  color313131: "#313131",
   userBtnColor: "#1c1b1f",
-  bordershadowcolor:"#ccc",
-  slideractive:"#C5C5C5",
-  sliderbuttongray:"#EDEDED",
-  shadowGray:"#B8B8B8",
-  textBoldgray:"#555",
-  minusgray:"rgba(0, 0, 0, 0.71)",
- 
+  bordershadowcolor: "#ccc",
+  slideractive: "#C5C5C5",
+  sliderbuttongray: "#EDEDED",
+  shadowGray: "#B8B8B8",
+  textBoldgray: "#555",
+  minusgray: "rgba(0, 0, 0, 0.71)",
+  coloreee: "#eee",
+  colorF7F7F7: "#F7F7F7"
 };
 
 export const pallete = (mode: PaletteMode): PaletteOptions => {

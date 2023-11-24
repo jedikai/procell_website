@@ -1,13 +1,13 @@
 import axiosInstance from "@/api/axiosInstance";
 import { endpoints } from "@/api/endpoints";
 import { useMutation, useQuery } from "react-query";
-import { DELIVERY_METHODS_LIST } from "../query-keys/checkoutQuery.keys";
+import { DELIVERY_ADDRESS_LIST, DELIVERY_METHODS_LIST } from "../query-keys/checkoutQuery.keys";
 
+// <------------------------------ GET DELIVERY METHODS APIS ------------------------------>
 const getDeliveryMethodsList = async () => {
   const res = await axiosInstance.get(`${endpoints.app.delivery_method_list}`);
   return res;
 };
-// <------------------------------ GET DELIVERY METHODS APIS ------------------------------>
 
 export const useDeliveryMethodsList = (
   onSuccess: any = () => {},
@@ -36,3 +36,37 @@ const updateDeleveryMode = async (body: object) => {
 };
 
 export const useUpdateDeleveryMode = () => useMutation(updateDeleveryMode);
+
+// <------------------------------ GET DELIVERY ADDRESS APIS ------------------------------>
+const getAddressList = async () => {
+  const res = await axiosInstance.get(`${endpoints.app.checkout_address_list}`);
+  return res;
+};
+
+export const useAddressList = (
+  onSuccess: any = () => {},
+  onError: any = () => {}
+) =>
+  useQuery([DELIVERY_ADDRESS_LIST], getAddressList, {
+    onSuccess,
+    onError,
+    select: (data) => data?.data?.data ?? []
+  });
+
+
+  // <------------------------------ EDIT ADDRESS APIS ------------------------------>
+
+const editAddress = async (body: object) => {
+  const res = await axiosInstance.post(endpoints.app.edit_address, body);
+  return res;
+};
+
+export const useEditAddress = () => useMutation(editAddress);
+  // <------------------------------ CREATE ADDRESS APIS ------------------------------>
+
+const createAddress = async (body: object) => {
+  const res = await axiosInstance.post(endpoints.app.create_address, body);
+  return res;
+};
+
+export const useCreateAddress = () => useMutation(createAddress);

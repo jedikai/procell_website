@@ -153,6 +153,7 @@ type InputFieldCommonProps = StandardTextFieldProps & {
   style3?: boolean;
   disabled?: boolean;
   defaultValues?:string;
+  pattern?: string;
 };
 
 const InputFieldCommon = forwardRef<HTMLInputElement, InputFieldCommonProps>(

@@ -94,7 +94,7 @@ export const CardItemCardWrapper = styled(Box)`
         margin: 0 14px;
 
         .MuiInputAdornment-root {
-          
+          display: none;
         }
         .MuiFormControl-root {
           .MuiInputBase-adornedEnd {

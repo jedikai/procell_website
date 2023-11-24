@@ -1,5 +1,7 @@
+import { endpoints } from "@/api/endpoints";
 import EventListeners from "@/components/EventListener/EventListener";
 import { checkWindow } from "@/lib/functions/_helpers.lib";
+import { getCookie } from "@/lib/functions/storage.lib";
 import { checkLoggedInServer } from "@/reduxtoolkit/slices/userSlice";
 import { store } from "@/reduxtoolkit/store/store";
 import "@/styles/global.scss";
@@ -9,10 +11,11 @@ import { userData } from "@/types/common.type";
 import ToastifyProvider from "@/ui/toastify/ToastifyProvider";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
+import axios from "axios";
 import type { AppContext, AppProps } from "next/app";
 import App from "next/app";
 import nookies from "nookies";
-import React from "react";
+import React, { useEffect } from "react";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { Provider } from "react-redux";
 
@@ -23,8 +26,7 @@ function fixSSRLayout() {
   // suppress useLayoutEffect (and its warnings) when not running in a browser
   // hence when running in SSR mode
   if (!checkWindow()) {
-    React.useLayoutEffect = () => {
-    };
+    React.useLayoutEffect = () => {};
   }
 }
 
@@ -48,6 +50,21 @@ export default function CustomApp({
   fixSSRLayout();
 
   store.dispatch(checkLoggedInServer({ hasToken, user }));
+  useEffect(() => {
+    const isUserLoggedIn =
+      !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
+    console.log("APP_isUserLoggedIn", isUserLoggedIn);
+    if (!isUserLoggedIn) {
+      let isSessionIdAvailable = !!sessionStorage.getItem("session_id");
+      if (!isSessionIdAvailable) {
+        axios.get(endpoints.app.create_session_id).then((response) => {
+          const { session_id }: any = response ? response?.data?.data : {};
+          console.log("onSuccessGetSessionId", session_id);
+          sessionStorage.setItem("session_id", session_id);
+        });
+      }
+    }
+  }, []);
 
   return (
     <Provider store={store}>

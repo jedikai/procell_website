@@ -15,13 +15,15 @@ interface PaymentCardProps {
   shipping: number | null | string;
   totalAmount?: number | null | string;
   loader?: boolean;
+  isRedirectionEnable?: boolean;
 }
 
 const PaymentBillDetails = ({
   subtotal,
   shipping,
   totalAmount,
-  loader = false
+  loader = false,
+  isRedirectionEnable = false
 }: PaymentCardProps) => {
   const router = useRouter();
   const redirectionHandler = () => {
@@ -53,14 +55,16 @@ const PaymentBillDetails = ({
           </List>
 
           {/* {shipping && ( */}
-          <CustomButtonPrimary
-            variant="contained"
-            color="primary"
-            className="payment_bill_btn"
-            onClick={redirectionHandler}
-          >
-            <Typography variant="body1">Proceed to checkout</Typography>
-          </CustomButtonPrimary>
+          {isRedirectionEnable && (
+            <CustomButtonPrimary
+              variant="contained"
+              color="primary"
+              className="payment_bill_btn"
+              onClick={redirectionHandler}
+            >
+              <Typography variant="body1">Proceed to checkout</Typography>
+            </CustomButtonPrimary>
+          )}
           {/* )} */}
         </>
       </PaymentCardWrapper>

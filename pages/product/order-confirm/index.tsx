@@ -18,7 +18,7 @@ function index() {
       <Container fixed>
         <OrderconfirmWrapper>
           <Box className="confirmstatus">
-          <Box className="icon_wrap">
+            <Box className="icon_wrap">
               <Image
                 src={assest.success_modal_img}
                 alt="success"
@@ -29,7 +29,7 @@ function index() {
             <Typography variant="h4">Order confirmed</Typography>
           </Box>
           <Box className="userdetails">
-          <Image className="pinkWingGradinetbox" src={assest.pinkWindGradinet} alt={"pinkgradient"} width={504} height={589}/>
+            <Image className="pinkWingGradinetbox" src={assest.pinkWindGradinet} alt={"pinkgradient"} width={504} height={589} />
             <Typography variant="body1" className=" userName">
               Hello Alison,
             </Typography>
@@ -54,50 +54,51 @@ function index() {
             </Box>
           </Box>
           <Box className="confirmProductDetials">
-          <Image className="pinkWingGradinet" src={assest.pinkWindGradinet} alt={"pinkgradient"} width={504} height={589}/>
-           <Box className="productSectionListWrap">
-           
-           {
-                confirmproductList.map((item)=>(
-                    <Box className="confirmproductWrapper">
-                        <figure>
-                            <Image src={item.productimg} alt={"productimg"} width={58} height={76}/>
-                        </figure>
-                        <Box className="ProductDetailWrap">
-                        <Typography variant="body1" className="productname">{item.productName}</Typography>
-                        <Typography variant="body1" className="productprice">{item.price}</Typography>
-                        </Box>
-                    </Box> 
+            <Image className="pinkWingGradinet" src={assest.pinkWindGradinet} alt={"pinkgradient"} width={504} height={589} />
+            <Box className="productSectionListWrap">
+
+              {
+                confirmproductList.map((item: any, index: number) => (
+                  <Box className="confirmproductWrapper" key={index + 1}>
+                    <figure>
+                      <Image src={item.productimg} alt={"productimg"} width={58} height={76} />
+                    </figure>
+                    <Box className="ProductDetailWrap">
+                      <Typography variant="body1" className="productname">{item.productName}</Typography>
+                      <Typography variant="body1" className="productprice">{item.price}</Typography>
+                    </Box>
+                  </Box>
                 ))
-            }
-           </Box>
+              }
+            </Box>
             <List disablePadding className="orderTotalvalue">
-               <ListItem disablePadding className="orderPriceWrap">
-               <Typography variant="body1" className="product_Price">subtotal</Typography>
-               <Typography variant="body1" className="product_priceSection">$3,000.00</Typography>
-              
-               </ListItem>
-               <ListItem disablePadding className="orderPriceWrap">
-               <Typography variant="body1" className="product_Price">shipping</Typography>
-               <Typography variant="body1" className="product_priceSection">$20.00</Typography>
-              
-               </ListItem>
-               <ListItem disablePadding className="orderPriceWrap">
-               <Typography variant="body1" className="product_Price">Total ( tax incl.)</Typography>
-               <Typography variant="body1" className="product_priceSection">$3020.00</Typography>
-              
-               </ListItem>
+              <ListItem disablePadding className="orderPriceWrap">
+                <Typography variant="body1" className="product_Price">subtotal</Typography>
+                <Typography variant="body1" className="product_priceSection">$3,000.00</Typography>
+
+              </ListItem>
+              <ListItem disablePadding className="orderPriceWrap">
+                <Typography variant="body1" className="product_Price">shipping</Typography>
+                <Typography variant="body1" className="product_priceSection">$20.00</Typography>
+
+              </ListItem>
+              <ListItem disablePadding className="orderPriceWrap">
+                <Typography variant="body1" className="product_Price">Total ( tax incl.)</Typography>
+                <Typography variant="body1" className="product_priceSection">$3020.00</Typography>
+
+              </ListItem>
             </List>
           </Box>
-            <Box className="confirmProductbutton">
+          <Box className="confirmProductbutton">
             <CustomButtonPrimary
-          type="button"
-          variant="contained"
-          color="primary"
-        >
-          <Typography>Continue shopping</Typography>
-        </CustomButtonPrimary>
-            </Box>
+              type="button"
+              variant="contained"
+              color="primary"
+              href="/product/shop/"
+            >
+              <Typography>Continue shopping</Typography>
+            </CustomButtonPrimary>
+          </Box>
         </OrderconfirmWrapper>
       </Container>
     </Wrapper>

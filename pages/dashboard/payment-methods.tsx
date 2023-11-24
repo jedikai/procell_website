@@ -1,21 +1,30 @@
 /* eslint-disable react/jsx-curly-brace-presence */
 /* eslint-disable react/self-closing-comp */
 /* eslint-disable mui-path-imports/mui-path-imports */
-import CardType from "@/ui/CustomCheckbox/CardType";
 import assest from "@/json/assest";
 import DashboardWrapper from "@/layout/DashboardWrapper/DashboardWrapper";
 import Wrapper from "@/layout/wrapper/Wrapper";
 import { PaymentMethodsWrapper } from "@/styles/StyledComponents/PaymentMethodsWrapper";
-import InputFieldCommon from "@/ui/CommonInput/CommonInput";
-import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
-import { Box, Grid, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 
-import React, { useState } from "react";
+import AuthorizedNet from "@/components/AuthorizedNet/AuthorizedNet";
+import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
+import { useCreateCustomerProfile } from "@/hooks/react-qurey/query-hooks/authorizeNetQuery.hooks";
+import {
+  useAuthorizePayment,
+  useCardDelete,
+  useCardList,
+  usePaymentTransaction
+} from "@/hooks/react-qurey/query-hooks/cardQuery.hooks";
+import { GET_CARD_LIST } from "@/hooks/react-qurey/query-keys/cardQuery.keys";
+import useNotiStack from "@/hooks/useNotistack";
 import validationText from "@/json/messages/validationText";
-import * as yup from "yup";
-import { useForm } from "react-hook-form";
+import { getCookie } from "@/lib/functions/storage.lib";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Image from "next/image";
+import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useQueryClient } from "react-query";
+import * as yup from "yup";
 
 type Inputs = {
   cardName: string;
@@ -60,21 +69,54 @@ const cardsArray = [
   }
 ];
 function PaymentMethods() {
+  const queryClient = useQueryClient();
+  const clearInputs = useRef(false);
+  const { toastSuccess, toastError } = useNotiStack();
   const [cardList, setCardList] = useState(cardsArray);
-  const [cvv, setCvv] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
+  const [paymentTransactionInfo, setPaymentTransactionInfo] = useState<any>({});
+  const [authorizedData, setAuthorizedData] = useState<any>({});
+  const [cardSaveLoader, setCardSaveLoader] = useState(false);
   const [savedCards, setSavedCards] = useState<any>([
-    {
-      cardName: "Bank of Baroda",
-      cardNumber: "4242 4242 4242 4242",
-      expDate: "06/24",
-      cvv: "323",
-      cardImg: "/assets/images/mastercard2.png",
-      isSelected: true,
-      cardImgWidth: 47,
-      cardImgHeight: 37
-    }
+    // {
+    //   cardName: "Bank of Baroda",
+    //   cardNumber: "4242 4242 4242 4242",
+    //   expDate: "06/24",
+    //   cvv: "323",
+    //   cardImg: "/assets/images/mastercard2.png",
+    //   isSelected: true,
+    //   cardImgWidth: 47,
+    //   cardImgHeight: 37
+    // }
   ]);
+  const onSuccessCardList = (response: any) => {
+    const {
+      providers,
+      tokens,
+      reference_prefix,
+      partner_id,
+      access_token,
+      transaction_route,
+      landing_route
+    } = response ?? {};
+    setAuthorizedData(providers && providers?.length > 0 ? providers[0] : {});
+    setSavedCards(tokens && tokens?.length > 0 ? tokens : []);
+    setPaymentTransactionInfo({
+      reference_prefix,
+      partner_id,
+      access_token,
+      transaction_route,
+      landing_route
+    });
+  };
+  const { mutate: createCustomerProfile } = useCreateCustomerProfile();
+  const { mutate: paymentTransaction } = usePaymentTransaction();
+  const { mutate: cardDelete } = useCardDelete();
+  const { mutate: authorizePayment } = useAuthorizePayment();
+  const {
+    data: getCardListData,
+    isLoading,
+    refetch
+  } = useCardList(onSuccessCardList);
   const {
     register,
     handleSubmit,
@@ -110,188 +152,242 @@ function PaymentMethods() {
     setValue("expDate", expDate);
     setValue("cvv", cvv);
   };
-  const deleteCard = (cardNumber: string) => {
+  const deleteCard = (cardNumber: string | number) => {
     console.log("savedCards", cardNumber);
-    setSavedCards(
-      savedCards.filter((_c: any) => _c?.cardNumber !== cardNumber)
-    );
+    const formData: FormData = new FormData();
+    formData.append("token_id", `${cardNumber}`);
+    cardDelete(formData, {
+      onSuccess: (response) => {
+        console.log("response", response);
+        // Payment provider deleted successfully.
+        toastSuccess(
+          response?.data?.message ?? "Payment provider deleted successfully."
+        );
+        queryClient.invalidateQueries(GET_CARD_LIST);
+      },
+      onError: (error: any) => {
+        toastError(error?.response?.data?.message ?? "Something went wrong.");
+      }
+    });
+
+    // setSavedCards(
+    //   savedCards.filter((_c: any) => _c?.cardNumber !== cardNumber)
+    // );
   };
+  const getToken = (data: any) => {
+    setCardSaveLoader(true);
+    const {
+      token,
+      cardNumber,
+      year,
+      month,
+      cardZipCode,
+      email,
+      description,
+      merchantCustomerId,
+      name,
+      transactionKey
+    } = data ?? {};
+    let savedEmail = "";
+    const isUserLoggedIn =
+      !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
+    if (isUserLoggedIn) {
+      let getUserDetails: any = {};
+      if (!!localStorage.getItem("userDetails")) {
+        getUserDetails = JSON.parse(localStorage.getItem("userDetails") ?? "");
+      } else {
+        if (getCookie("userDetails")) {
+          try {
+            getUserDetails = JSON.parse(getCookie("userDetails") ?? "");
+          } catch (error) {
+            console.error("Error parsing user details:", error);
+          }
+        }
+      }
+      savedEmail = !!getUserDetails ? getUserDetails?.email : "";
+    }
+
+    if (!!token?.dataValue) {
+      // createCustomerProfile(
+      //   {
+      //     cardNumber,
+      //     expirationDate: `${year}-${month}`,
+      //     email: savedEmail,
+      //     description,
+      //     merchantCustomerId,
+      //     name,
+      //     transactionKey
+      //   },
+      //   {
+      //     onSuccess: (response: any) => {
+      //       const {
+      //         customerProfileId,
+      //         customerPaymentProfileIdList,
+      //         customerShippingAddressIdList,
+      //         messages
+      //       } = response ?? {};
+      //       if (messages?.resultCode == "Ok") {
+      //         console.log(
+      //           "createCustomerProfile",
+      //           customerProfileId,
+      //           customerPaymentProfileIdList,
+      //           customerShippingAddressIdList
+      //         );
+      //       }
+      //     }
+      //   }
+      // );
+      const formData: FormData = new FormData();
+      formData.append("partner_id", `${paymentTransactionInfo?.partner_id}`);
+      formData.append(
+        "access_token",
+        `${paymentTransactionInfo?.access_token}`
+      );
+      formData.append("payment_option_id", `${authorizedData?.id}`);
+      formData.append(
+        "reference_prefix",
+        `${paymentTransactionInfo?.reference_prefix}`
+      );
+      formData.append("flow", `direct`);
+      formData.append("tokenization_requested", `True`);
+      formData.append("is_validation", `True`);
+      formData.append("card_zip", `${cardZipCode}`);
+      formData.append(
+        "landing_route",
+        `/web/payment_method`
+        // `${paymentTransactionInfo?.landing_route}`
+      );
+      // flow, tokenization_requested, is_validation, landing_route
+      paymentTransaction(formData, {
+        onSuccess: (response: any) => {
+          console.log("paymentTransaction response", response?.data?.data);
+          const {
+            provider_id,
+            provider_code,
+            reference,
+            amount,
+            currency_id,
+            partner_id,
+            access_token
+          } = response?.data?.data ?? {};
+          const formData: FormData = new FormData();
+          formData.append("reference", `${reference}`);
+          formData.append("partner_id", `${partner_id}`);
+          formData.append("access_token", `${access_token}`);
+          formData.append("opaque_data", token);
+          // formData.append("opaque_data", JSON.stringify(token));
+
+          const payload = {
+            reference,
+            partner_id,
+            access_token,
+            opaque_data: token
+          };
+          authorizePayment(formData, {
+            onSuccess: (response: any) => {
+              console.log("authorizePayment onSuccess", response);
+              queryClient.invalidateQueries(GET_CARD_LIST);
+              toastSuccess(response?.data?.message ?? "Card saved.");
+              setCardSaveLoader(false);
+              clearInputs.current = true;
+            },
+            onError: (error: any) => {
+              console.log("authorizePayment onError", error);
+              toastError(
+                error?.response?.data?.message ?? "Something went wrong."
+              );
+              setCardSaveLoader(false);
+              clearInputs.current = true;
+            }
+          });
+          // Payment provider deleted successfully.
+          // toastSuccess(
+          //   response?.data?.message ?? "Payment provider deleted successfully."
+          // );
+        },
+        onError: (error: any) => {
+          console.log(
+            "paymentTransaction response err",
+            error?.response?.data?.message
+          );
+          toastError(error?.response?.data?.message ?? "Something went wrong.");
+          setCardSaveLoader(false);
+        }
+      });
+    }
+    console.log("getToken", data);
+  };
+
+  console.log("createCustomerProfile", savedCards);
+
   return (
     <Wrapper>
       <DashboardWrapper>
-        <Box className="cmn_box">
-          <PaymentMethodsWrapper>
-            <div className="card_area">
-              <h2>Your saved cards</h2>
-              <div className="grid-container">
-                {savedCards.map((_card: any) => (
-                  <div className="saved_cards_outer">
-                    <div className="saved_cards">
-                      <Image
-                        className="cardtypeimg"
-                        src={_card?.cardImg}
-                        alt={"cardtype"}
-                        width={_card?.cardImgWidth}
-                        height={_card?.cardImgHeight}
-                      />
-                      <div className="card_details">
-                        <p>{_card?.cardName ?? "Bank of Baroda"}</p>
-                        <span>
-                          {_card?.cardNumber ?? "4242 4242 4242 4242"}
-                        </span>
+        {!isLoading ? (
+          <Box className="cmn_box">
+            <PaymentMethodsWrapper>
+              <div className="card_area">
+                <h2>Your saved cards</h2>
+                <div className="grid-container">
+                  {savedCards.map((_card: any, index: number) => (
+                    <div className="saved_cards_outer" key={index + 1}>
+                      <div className="saved_cards">
+                        {/* <Image
+                          className="cardtypeimg"
+                          src={_card?.cardImg}
+                          alt={"cardtype"}
+                          width={_card?.cardImgWidth}
+                          height={_card?.cardImgHeight}
+                        /> */}
+                        <div className="card_details">
+                          <p>{_card?.display_name ?? ""}</p>
+                          {/* <span>
+                            {_card?.cardNumber ?? "4242 4242 4242 4242"}
+                          </span> */}
+                        </div>
+                      </div>
+                      <div className="tooltip">
+                        <svg
+                          id="Layer_1"
+                          data-name="Layer 1"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 29.96 122.88"
+                          fill="black"
+                          height="20px"
+                          width="20px"
+                          // {...props}
+                        >
+                          <defs>
+                            <style>{".cls-1{fill-rule:evenodd;}"}</style>
+                          </defs>
+                          <title>{"3-vertical-dots"}</title>
+                          <path
+                            className="cls-1"
+                            d="M15,0A15,15,0,1,1,0,15,15,15,0,0,1,15,0Zm0,92.93a15,15,0,1,1-15,15,15,15,0,0,1,15-15Zm0-46.47a15,15,0,1,1-15,15,15,15,0,0,1,15-15Z"
+                          />
+                        </svg>
+                        <div className="tooltiptext">
+                          {/* <span onClick={() => editCard(_card)}>Edit</span> */}
+                          <span onClick={() => deleteCard(_card?.id)}>
+                            Delete
+                          </span>
+                        </div>
                       </div>
                     </div>
-                    <div className="tooltip">
-                      <svg
-                        id="Layer_1"
-                        data-name="Layer 1"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 29.96 122.88"
-                        fill="black"
-                        height="20px"
-                        width="20px"
-                        // {...props}
-                      >
-                        <defs>
-                          <style>{".cls-1{fill-rule:evenodd;}"}</style>
-                        </defs>
-                        <title>{"3-vertical-dots"}</title>
-                        <path
-                          className="cls-1"
-                          d="M15,0A15,15,0,1,1,0,15,15,15,0,0,1,15,0Zm0,92.93a15,15,0,1,1-15,15,15,15,0,0,1,15-15Zm0-46.47a15,15,0,1,1-15,15,15,15,0,0,1,15-15Z"
-                        />
-                      </svg>
-                      <div className="tooltiptext">
-                        <span onClick={() => editCard(_card)}>Edit</span>
-                        <span onClick={() => deleteCard(_card?.cardNumber)}>
-                          Delete
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <form onSubmit={handleSubmit(onFormSubmit)}>
-              <Box className="cardtype">
-                <Typography variant="h4">Card type</Typography>
-                <Grid container columnSpacing={2.5} rowSpacing={2.5}>
-                  {cardList.map((_card, idx) => (
-                    <Grid item sm={3} xs={6} key={idx + 1}>
-                      <CardType
-                        cardimg={_card?.cardImg ?? ""}
-                        cardImgWidth={_card?.cardImgWidth}
-                        cardImgHeight={_card?.cardImgHeight}
-                        isSelected={_card?.isSelected}
-                        click={selectCardHandler}
-                      />
-                    </Grid>
                   ))}
-                  {/* <Grid item sm={3} xs={6}>
-                    <CardType
-                      cardimg={assest.visacard}
-                      cardImgWidth={70}
-                      cardImgHeight={20}
-                    />
-                  </Grid>
-                  <Grid item sm={3} xs={6}>
-                    <CardType
-                      cardimg={assest.AmericanExpress}
-                      cardImgWidth={84}
-                      cardImgHeight={24}
-                    />
-                  </Grid>
-                  <Grid item sm={3} xs={6}>
-                    <CardType
-                      cardimg={assest.paypal}
-                      cardImgWidth={47}
-                      cardImgHeight={40}
-                    />
-                  </Grid> */}
-                </Grid>
-              </Box>
-
-              <Box className="cardDetails">
-                <Typography variant="h4">Card details</Typography>
-                <Grid container columnSpacing={2} rowSpacing={2.2}>
-                  <Grid item lg={6} xs={12}>
-                    <InputFieldCommon
-                      placeholder="Card name"
-                      {...register("cardName")}
-                    />
-                    {errors.cardName && (
-                      <div className="profile_error">
-                        {errors.cardName.message}
-                      </div>
-                    )}
-                  </Grid>
-                  <Grid item lg={6} xs={12}>
-                    <InputFieldCommon
-                      placeholder="Card number"
-                      {...register("cardNumber")}
-                    />
-                    {errors.cardNumber && (
-                      <div className="profile_error">
-                        {errors.cardNumber.message}
-                      </div>
-                    )}
-                  </Grid>
-                  <Grid item lg={6} xs={12}>
-                    <InputFieldCommon
-                      placeholder="Expiry date"
-                      {...register("expDate")}
-                      value={expiryDate}
-                      onChange={(e) => {
-                        if (e.target.value.length <= 5) {
-                          console.log(e.target.value);
-                          let data=e.target.value
-                          if(data?.length==2){
-                            data=data+'/'
-                          }
-                          setExpiryDate(data)
-                          // setCvv(e.target.value);
-                          return false;
-                        }
-                      }}
-                    />
-                    {errors.expDate && (
-                      <div className="profile_error">
-                        {errors.expDate.message}
-                      </div>
-                    )}
-                  </Grid>
-                  <Grid item lg={6} xs={12}>
-                    <InputFieldCommon
-                      placeholder="CVV"
-                      value={cvv}
-                      {...register("cvv")}
-                      onChange={(e) => {
-                        if (e.target.value.length <= 3) {
-                          console.log(e.target.value);
-                          setCvv(e.target.value);
-                          return false;
-                        }
-                      }}
-                    />
-                    {errors.cvv && (
-                      <div className="profile_error">{errors.cvv.message}</div>
-                    )}
-                  </Grid>
-                </Grid>
-              </Box>
-              <Box className="paymentSubmitBtn">
-                <CustomButtonPrimary
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                >
-                  <Typography variant="caption">Save payment method</Typography>
-                </CustomButtonPrimary>
-              </Box>
-            </form>
-          </PaymentMethodsWrapper>
-        </Box>
+                </div>
+              </div>
+              <AuthorizedNet
+                getToken={getToken}
+                authorizedData={authorizedData}
+                buttonloading={cardSaveLoader}
+                clearInputs={clearInputs.current}
+              />
+            </PaymentMethodsWrapper>
+          </Box>
+        ) : (
+          <ButtonLoaderSecondary />
+        )}
       </DashboardWrapper>
     </Wrapper>
   );

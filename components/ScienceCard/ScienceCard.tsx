@@ -12,7 +12,7 @@ export default function ScienceCard({title,image,link}:scienceCardProps) {
     <ScienceCardWrapper>
         <Box className='card_wrapper'>
             <figure>
-                <Image src={image} alt='' width={360} height={370} />
+                <img src={image} alt='' width={360} height={370} />
             </figure>
             <Typography variant="h4" >{title}</Typography>
             <Link href={link}>Know more <KnowMoreIcon/>   </Link>

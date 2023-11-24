@@ -37,6 +37,7 @@ export default function ProductComponent({ productDetails }: any) {
                 heading={name ?? ""}
                 para={website_description ?? ""}
                 price={list_price ?? ""}
+                image={product_images ?? ""}
               />
             </Grid>
           </Grid>

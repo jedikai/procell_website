@@ -12,7 +12,7 @@ import { useAppSelector } from "@/hooks/useAppSelector";
 import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
 import { getCookie } from "@/lib/functions/storage.lib";
-import { refreshProfileImg } from "@/reduxtoolkit/slices/userProfle.slice";
+import { refreshProfileImg, updatedProfileImg } from "@/reduxtoolkit/slices/userProfle.slice";
 import { SideBarWrapper } from "@/styles/StyledComponents/SideBarWrapper";
 import { primaryColors } from "@/themes/_muiPalette";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
@@ -45,7 +45,7 @@ export default function SideNavbar() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
-  const { refresh } = useAppSelector((s) => s.userProfileImgSlice);
+  const { refresh, image } = useAppSelector((s) => s.userProfileImgSlice);
   const { toastSuccess, toastError } = useNotiStack();
   const handleClose = () => {
     const sidebar = document.getElementById("sidebar");
@@ -87,6 +87,7 @@ export default function SideNavbar() {
       dp: image_1920_url
     });
     console.log("sidebarnav", response[0]);
+    dispatch(updatedProfileImg(image_1920_url));
   };
   const onProfileDetailsError = (response: any) => {
     console.log("error", response);
@@ -127,7 +128,7 @@ export default function SideNavbar() {
               destroyCookie(null, "userDetails", { path: "/" });
               router.push("/auth/login");
             },
-            onError: () => {}
+            onError: () => { }
           }
         );
       }
@@ -309,7 +310,7 @@ export default function SideNavbar() {
     });
   };
 
-  console.log("getUserDetails", refresh);
+  // console.log("getUserDetails side navbar", image);
   return (
     <SideBarWrapper id="sidebar">
       <IconButton className="close_btn" onClick={handleClose}>

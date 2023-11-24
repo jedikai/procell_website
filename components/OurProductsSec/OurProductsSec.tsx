@@ -74,8 +74,9 @@ export default memo(function OurProductsSec({ productList, filterList }: any) {
         <Box className="product_btm">
           <Grid container spacing={{ lg: 4, md: 2, xs: 2 }}>
             {productList?.map((item: any) => (
-              <Grid item xs={12} md={4} sm={6}>
+              <Grid item xs={12} md={4} sm={6} key={item?.id}>
                 <OurProductSlider
+                  key={item?.id}
                   OurProductsliderImg={item?.image_1920_url}
                   productSlidertext={item?.name}
                   productSliderPrice={item?.list_price}

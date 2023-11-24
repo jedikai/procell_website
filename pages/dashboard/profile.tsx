@@ -16,7 +16,10 @@ import assest from "@/json/assest";
 import validationText from "@/json/messages/validationText";
 import DashboardWrapper from "@/layout/DashboardWrapper/DashboardWrapper";
 import Wrapper from "@/layout/wrapper/Wrapper";
-import { refreshProfileImg } from "@/reduxtoolkit/slices/userProfle.slice";
+import {
+  refreshProfileImg,
+  updatedProfileImg
+} from "@/reduxtoolkit/slices/userProfle.slice";
 import { ProfileWrapper } from "@/styles/StyledComponents/ProfileWrapper";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
@@ -151,6 +154,7 @@ export default function Profile(): JSX.Element {
     if (state_id) {
       setValue("state", state_id[0]);
     }
+    dispatch(updatedProfileImg(image_1920_url));
   };
   const onProfileDetailsError = (response: any) => {
     console.log("error", response);
@@ -323,15 +327,17 @@ export default function Profile(): JSX.Element {
               <ProfileWrapper>
                 {!edit ? (
                   <Box className="profile_content">
-                    <figure className="profile_avatar">
-                      <img
-                        src={apiGivenrofilePic ?? assest?.avatr_img}
-                        alt="image"
-                        width={147}
-                        height={147}
-                        key={refresh ? "render" : "no-render"}
-                      />
-                    </figure>
+                    {!!apiGivenrofilePic && (
+                      <figure className="profile_avatar">
+                        <img
+                          src={apiGivenrofilePic ?? assest?.avatr_img}
+                          alt="image"
+                          width={147}
+                          height={147}
+                          key={refresh ? "render" : "no-render"}
+                        />
+                      </figure>
+                    )}
                     <Box className="form_Sec">
                       {/* <form onSubmit={handleSubmit(onFormSubmit)} id="edit_form"> */}
                       <Grid container spacing={2}>

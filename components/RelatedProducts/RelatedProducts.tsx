@@ -71,10 +71,11 @@ export default function RelatedProducts({ productDetails }: any) {
                   <Slider {...settings} ref={slider}>
                     {alternative_product_info.map((item: any) => (
                       <OurProductSlider
-                        OurProductsliderImg={item.image_1920_url}
-                        productSlidertext={item.name}
-                        productSliderPrice={item.list_price}
-                        link={item.id}
+                        key={item?.id}
+                        OurProductsliderImg={item?.image_1920_url}
+                        productSlidertext={item?.name}
+                        productSliderPrice={item?.list_price}
+                        link={item?.id}
                       />
                     ))}
                   </Slider>

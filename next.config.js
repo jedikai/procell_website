@@ -37,7 +37,10 @@ module.exports = withPWA({
     removeConsole: process.env.NODE_ENV === "production"
   },
   env: {
-    NEXT_APP_BASE_URL: process.env.NEXT_APP_BASE_URL
+    NEXT_APP_BASE_URL: process.env.NEXT_APP_BASE_URL,
+    NEXT_AUTHORIZATION_LOGIN_ID: process.env.NEXT_AUTHORIZATION_LOGIN_ID,
+    NEXT_AUTHORIZATION_CLIENT_KEY: process.env.NEXT_AUTHORIZATION_CLIENT_KEY,
+    NEXT_AUTHORIZATION_INSTAGRAM_ACCESS_TOKEN: process.env.NEXT_AUTHORIZATION_INSTAGRAM_ACCESS_TOKEN
   },
   eslint: {
     ignoreDuringBuilds: true

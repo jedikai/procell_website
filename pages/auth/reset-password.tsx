@@ -26,7 +26,7 @@ const validationSchema = yup.object().shape({
   password: yup
     .string()
     .required(validationText.error.enter_password)
-    .min(8, validationText.error.min_8_password),
+    .min(2, validationText.error.min_8_password),
   confirmPassword: yup
     .string()
     .required(validationText.error.confirm_password)

@@ -116,7 +116,7 @@ export const FooterWrap = styled(Box)`
           width: 14px;
         }
       }
-      &:last-child{
+      &:last-child {
         margin: 0;
       }
     }
@@ -151,17 +151,24 @@ export const FooterWrap = styled(Box)`
       justify-content: center;
     }
     @media (max-width: 599px) {
-      
       justify-content: center;
       align-items: center;
     }
     > p {
+      a {
+        margin-left: 5px;
+        color: inherit;
+        text-decoration: underline;
+        &:hover {
+          color: ${primaryColors.primary};
+        }
+      }
       @media (max-width: 899px) {
         margin-bottom: 10px;
         order: 1;
       }
       @media (max-width: 599px) {
-        margin: 10px 0 0 ;
+        margin: 10px 0 0;
       }
     }
   }
@@ -190,8 +197,8 @@ export const FooterWrap = styled(Box)`
         margin-right: 20px;
       }
       @media (max-width: 374px) {
-      margin: 0;
-    }
+        margin: 0;
+      }
     }
     display: flex;
     align-items: center;

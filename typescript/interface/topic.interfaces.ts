@@ -5,4 +5,6 @@ export type topicList = {
 export interface topicProps {
   title: string;
   topicData: topicList[];
+  getCategoriesWiseBlog?: any;
+  selectedCategoriesId?: any;
 }

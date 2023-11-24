@@ -64,8 +64,8 @@ const OnlineToggleTab = ({ dataset, onDataCallback }: toggleProps) => {
         className="main_tabWrapper"
       >
         <Tabs value={value} onChange={handleChange} centered>
-          {dataset.map((value) => (
-            <Tab label={value} />
+          {dataset.map((value: any, index: number) => (
+            <Tab label={value} key={index + 1} />
           ))}
         </Tabs>
       </Box>

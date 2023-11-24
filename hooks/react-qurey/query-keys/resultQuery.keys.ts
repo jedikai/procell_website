@@ -1,0 +1,1 @@
+export const RESULT_LIST = "RESULT_LIST";

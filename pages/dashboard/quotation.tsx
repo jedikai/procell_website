@@ -7,6 +7,7 @@ import CommonTable from "@/components/CommonTable/CommonTable";
 import { useQuotationList } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
 import { quationselectlList } from "@/json/mock/quationselectlList.mock";
 // import { quotationList } from "@/json/mock/quotationlist.mock";
+import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import DashboardWrapper from "@/layout/DashboardWrapper/DashboardWrapper";
 import Wrapper from "@/layout/wrapper/Wrapper";
 import { QuotationWrapper } from "@/styles/StyledComponents/QuotationWrapper";
@@ -24,8 +25,9 @@ import {
   TableRow,
   Typography
 } from "@mui/material";
-import { useInView } from "react-intersection-observer";
 import React, { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
+import { removeDuplicates } from "common/functions/removeDublicate";
 
 function Quotation() {
   const { ref, inView, entry } = useInView({
@@ -37,10 +39,14 @@ function Quotation() {
   const [page, setPage] = React.useState(1);
   const [quotationList, setQuotationList] = React.useState<any>([]);
   const onQuotationListSuccess = (response: any) => {
-    setQuotationList([
-      ...quotationList,
-      ...(response ? response?.quotations_data : [])
-    ]);
+    setQuotationList(
+      removeDuplicates([
+        ...quotationList,
+        ...(response && response?.quotations_data
+          ? response?.quotations_data
+          : [])
+      ])
+    );
   };
   const { data, isLoading } = useQuotationList(
     page,
@@ -81,118 +87,147 @@ function Quotation() {
   return (
     <Wrapper>
       <DashboardWrapper>
-        <Box className="cmn_box">
-          <QuotationWrapper>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              className="quotationHeader"
-            >
-              <Typography variant="h4">Quotation</Typography>
+        <Box className="cmn_box FixedHeightContainer">
+          <div className="Content">
+            <QuotationWrapper>
               <Stack
                 direction="row"
-                justifyContent="center"
+                justifyContent="space-between"
                 alignItems="center"
-                className="quotationshort"
+                className="quotationHeader"
               >
-                <Typography variant="body1">Sort by</Typography>
-                <Box className="orderDataSelect">
-                  <CustomSelect
-                    IconComponent={(props) => {
-                      return (
-                        <IconButton {...props}>
-                          <DropDownIcon />
-                        </IconButton>
-                      );
-                    }}
-                    value={value}
-                    onChange={handleChange}
-                  >
-                    <MenuItem value="" sx={{ display: "none" }}>
-                      {value}
-                    </MenuItem>
-                    orderDataSelect
-                    {quationselectlList.map((item) => (
-                      <MenuItem
-                        key={item?.name}
-                        value={item?.name}
-                        className="menu_item"
-                      >
-                        {item?.name}
+                <Typography variant="h4">Quotation</Typography>
+                <Stack
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="center"
+                  className="quotationshort"
+                >
+                  <Typography variant="body1">Sort by</Typography>
+                  <Box className="orderDataSelect">
+                    <CustomSelect
+                      IconComponent={(props) => {
+                        return (
+                          <IconButton {...props}>
+                            <DropDownIcon />
+                          </IconButton>
+                        );
+                      }}
+                      value={value}
+                      onChange={handleChange}
+                    >
+                      <MenuItem value="" sx={{ display: "none" }}>
+                        {value}
                       </MenuItem>
-                    ))}
-                  </CustomSelect>
-                </Box>
-              </Stack>
-            </Stack>
-            <Box className="tableWrapper">
-              <CommonTable>
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center">
-                      <Typography variant="body1">Quotation</Typography>
-                    </TableCell>
-                    <TableCell align="left">
-                      <Typography variant="body1">Quotation date</Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Typography variant="body1">Valid until</Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Typography variant="body1">Total</Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Typography variant="body1">Status</Typography>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {quotationList?.map((row: any) => (
-                    <TableRow key={row?.id}>
-                      <TableCell align="center" scope="row">
-                        <Typography variant="body1">{row?.name}</Typography>
-                      </TableCell>
-                      <TableCell align="left">
-                        <Typography variant="body1">
-                          {row?.date_order
-                            ?.replaceAll("-", "/")
-                            ?.replaceAll(" ", " - ")}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Typography variant="body1">
-                          {row?.validity_date == false
-                            ? " - "
-                            : row?.validity_date?.replaceAll("-", "/")}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Typography variant="body1">
-                          ${row?.amount_total}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Typography
-                          variant="body1"
-                          className={
-                            row?.state === "Accepted"
-                              ? "accepted"
-                              : row.status === "Expired"
-                              ? "expired"
-                              : ""
-                          }
+                      orderDataSelect
+                      {quationselectlList.map((item) => (
+                        <MenuItem
+                          key={item?.name}
+                          value={item?.name}
+                          className="menu_item"
                         >
-                          {row?.state}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </CommonTable>
-              <>{!isLoading && <div ref={ref}></div>}</>
-            </Box>
-          </QuotationWrapper>
+                          {item?.name}
+                        </MenuItem>
+                      ))}
+                    </CustomSelect>
+                  </Box>
+                </Stack>
+              </Stack>
+              <Box
+                className="tableWrapper"
+                style={!isLoading ? {} : { paddingBottom: "14px" }}
+              >
+                <CommonTable>
+                  {quotationList && quotationList?.length > 0 ? (
+                    <>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell align="center">
+                            <Typography variant="body1">Quotation</Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography variant="body1">
+                              Quotation date
+                            </Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Typography variant="body1">Valid until</Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Typography variant="body1">Total</Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Typography variant="body1">Status</Typography>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {quotationList &&
+                          quotationList?.length > 0 &&
+                          quotationList?.map((row: any) => (
+                            <TableRow key={row?.id}>
+                              <TableCell align="center" scope="row">
+                                <Typography variant="body1">
+                                  {row?.name}
+                                </Typography>
+                              </TableCell>
+                              <TableCell align="left">
+                                <Typography variant="body1">
+                                  {row?.date_order
+                                    ?.replaceAll("-", "/")
+                                    ?.replaceAll(" ", " - ")}
+                                </Typography>
+                              </TableCell>
+                              <TableCell align="center">
+                                <Typography variant="body1">
+                                  {row?.validity_date == false
+                                    ? " - "
+                                    : row?.validity_date?.replaceAll("-", "/")}
+                                </Typography>
+                              </TableCell>
+                              <TableCell align="center">
+                                <Typography variant="body1">
+                                  ${row?.amount_total}
+                                </Typography>
+                              </TableCell>
+                              <TableCell align="center">
+                                <Typography
+                                  variant="body1"
+                                  className={
+                                    row?.state === "Accepted"
+                                      ? "accepted"
+                                      : row.status === "Expired"
+                                      ? "expired"
+                                      : ""
+                                  }
+                                >
+                                  {row?.state}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </>
+                  ) : !isLoading ? (
+                    <Typography variant="body1" style={{ textAlign: "center" }}>
+                      There is no quotation
+                    </Typography>
+                  ) : (
+                    <></>
+                  )}
+                </CommonTable>
+                <>
+                  {!isLoading ? (
+                    <div ref={ref}></div>
+                  ) : (
+                    <div style={{ marginTop: "10px" }}>
+                      <ButtonLoaderSecondary />
+                    </div>
+                  )}
+                </>
+              </Box>
+            </QuotationWrapper>
+          </div>
         </Box>
       </DashboardWrapper>
     </Wrapper>

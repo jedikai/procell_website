@@ -56,7 +56,7 @@ const validationSchema = yup.object().shape({
   password: yup
     .string()
     .required(validationText.error.enter_password)
-    .min(8, validationText.error.min_8_password),
+    .min(2, validationText.error.min_8_password),
   confirmPassword: yup
     .string()
     .required(validationText.error.confirm_password)
@@ -125,8 +125,7 @@ const Registerpage = () => {
 
   return (
     <LoginWrapper
-      title="welcome TO
-  PROCELL"
+      title="welcome TO PROCELL"
     >
       <LoginPageWrapper>
         <Box className="wrapper">
@@ -168,62 +167,73 @@ const Registerpage = () => {
                   <div className="error">{errors.lastName.message}</div>
                 )}
                 <Stack className="phone_num_wrap">
-                  <Autocomplete
-                    id="phonecode-select-demo"
-                    className="autocomplete_div"
-                    sx={{ width: 300 }}
-                    onChange={(event: any, newValue: any | null) => {
-                      console.log("country", newValue);
-                      // setSelectedCountryId(
-                      //   newValue ? newValue?.id : ""
-                      // );
-                      setValue("phnCode", newValue ? newValue?.phone_code : "");
-                    }}
-                    options={countryList ?? []}
-                    disabled={countryLoader}
-                    autoHighlight
-                    // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
-                    getOptionLabel={(option: any) => ` +${option?.phone_code}`}
-                    renderOption={(props, option) => (
-                      <Box
-                        component="li"
-                        sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                        {...props}
-                      >
-                        <img
-                          loading="lazy"
-                          width="20"
-                          src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
-                          alt=""
+                  <div>
+                    <Autocomplete
+                      id="phonecode-select-demo"
+                      className="autocomplete_div"
+                      sx={{ width: 300 }}
+                      onChange={(event: any, newValue: any | null) => {
+                        console.log("country", newValue);
+                        // setSelectedCountryId(
+                        //   newValue ? newValue?.id : ""
+                        // );
+                        setValue(
+                          "phnCode",
+                          newValue ? newValue?.phone_code : ""
+                        );
+                      }}
+                      options={countryList ?? []}
+                      disabled={countryLoader}
+                      autoHighlight
+                      // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
+                      getOptionLabel={(option: any) =>
+                        ` +${option?.phone_code}`
+                      }
+                      renderOption={(props, option) => (
+                        <Box
+                          component="li"
+                          sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                          {...props}
+                        >
+                          <img
+                            loading="lazy"
+                            width="20"
+                            src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
+                            alt=""
+                          />
+                          {" +"}
+                          {option.phone_code}
+                        </Box>
+                      )}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          // {...register("country")}
+                          // label="Choose a country"
+                          placeholder="Phone code"
+                          inputProps={{
+                            ...params.inputProps
+                            // autoComplete: "new-password" // disable autocomplete and autofill
+                          }}
                         />
-                        {" +"}
-                        {option.phone_code}
-                      </Box>
+                      )}
+                    />
+                    {errors.phnCode && (
+                      <div className="phnCode_error">
+                        {errors.phnCode.message}
+                      </div>
                     )}
-                    renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        // {...register("country")}
-                        // label="Choose a country"
-                        placeholder="Phone code"
-                        inputProps={{
-                          ...params.inputProps
-                          // autoComplete: "new-password" // disable autocomplete and autofill
-                        }}
-                      />
+                  </div>
+                  <div>
+                    <InputFieldCommon
+                      placeholder="Phone Number"
+                      style2
+                      {...register("phone")}
+                    />
+                    {errors.phone && (
+                      <div className="error">{errors.phone.message}</div>
                     )}
-                  />
-                  {errors.phnCode && (
-                    <div className="error">{errors.phnCode.message}</div>
-                  )}
-                  <InputFieldCommon
-                    placeholder="Phone Number"
-                    style2
-                    {...register("phone")}
-                  />
-                  {errors.phone && (
-                    <div className="error">{errors.phone.message}</div>
-                  )}
+                  </div>
                 </Stack>
 
                 <InputFieldCommon
@@ -260,14 +270,14 @@ const Registerpage = () => {
                       control={<Radio />}
                       label="Yes, I have"
                       onChange={() => setIsUserHadTherapies(true)}
-                      // {...register("consent")}
+                    // {...register("consent")}
                     />
                     <FormControlLabel
                       value="false"
                       control={<Radio />}
                       label="No, I have not"
                       onChange={() => setIsUserHadTherapies(false)}
-                      // {...register("consent")}
+                    // {...register("consent")}
                     />
                   </RadioGroup>
                 </FormControl>

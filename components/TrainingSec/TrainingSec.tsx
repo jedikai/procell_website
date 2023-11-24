@@ -108,8 +108,8 @@ const AccordionEachRow = (props: AccordionEachRowTypes) => {
     >
       <AccordionDetails className="acr_body">
         <List disablePadding>
-          {data.checkboxList.map((item) => (
-            <ListItem disablePadding>
+          {data.checkboxList.map((item: any, index: number) => (
+            <ListItem key={index + 1} disablePadding>
               <FormControlLabel
                 className="check_box"
                 control={
@@ -140,12 +140,13 @@ export default function TrainingSec() {
     <TrainingSecWrapper>
       <Container fixed>
         <Box className="accordionSecionWrapper">
-          {trainingData?.map((data, index) => (
+          {trainingData?.map((data: any, index: number) => (
             <AccordionEachRow
               expanded={expanded}
               handleChange={handleChanges}
               index={index}
               data={data}
+              key={index + 1}
             />
           ))}
         </Box>

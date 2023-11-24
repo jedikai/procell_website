@@ -28,8 +28,8 @@ export default function ProductLeft({ image }: any) {
       <Box className="pro_lft_wrap">
         <Box className="slider_wrap">
           <Slider {...settings}>
-            {image?.map((_i: string) => (
-              <Box className="top_sllider">
+            {image?.map((_i: string, index: number) => (
+              <Box className="top_sllider" key={index + 1}>
                 <Box className="main_product">
                   <InnerImageZoom
                     src={_i}

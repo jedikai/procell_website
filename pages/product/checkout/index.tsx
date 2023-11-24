@@ -51,7 +51,7 @@ const Checkout = () => {
     //     : 0
     // );
   };
-  const onErrorCartList = () => {};
+  const onErrorCartList = () => { };
   const { data: cardListData, isLoading: cartListloader } = useCartList(
     onSuccessCartList,
     onErrorCartList
@@ -59,17 +59,17 @@ const Checkout = () => {
   const onSuccessDeliveryMedhodsList = (response: any) => {
     const modifiedList = response
       ? response?.map((_item: any) => {
-          return {
-            value: _item?.id,
-            label: "",
-            title: _item?.name,
-            content: `${_item?.website_description}`
-          };
-        })
+        return {
+          value: _item?.id,
+          label: "",
+          title: _item?.name,
+          content: `${_item?.website_description}`
+        };
+      })
       : [];
     setDeliveryMethodList(modifiedList);
   };
-  const onErrorDeliveryMedhodsList = () => {};
+  const onErrorDeliveryMedhodsList = () => { };
   const {
     data: deliveryMedhodsListData,
     isLoading: deliveryMedhodsListloader
@@ -81,6 +81,7 @@ const Checkout = () => {
   const { mutate: updateDeliveryMode, isLoading: updateLoader } =
     useUpdateDeleveryMode();
   const getSelectedDeliveryMedhods = (e: any) => {
+    setShowPaymentSection(true);
     const id = e.target.value;
     const formData: FormData = new FormData();
     formData.append("carrier_id", `${id}`);
@@ -100,7 +101,6 @@ const Checkout = () => {
             deliveryCharge: new_amount_delivery,
             itemsTotal: new_amount_untaxed
           });
-          setShowPaymentSection(true);
         }
 
         console.log("updatedDeliveryMode", response?.data?.data);
@@ -129,6 +129,7 @@ const Checkout = () => {
             <Grid item lg={7.5} xs={12}>
               {/* <---------------------------------------- ADDRESS SECTION ------------------------------------------> */}
               <CheckoutAddress />
+              {/* <---------------------------------------- CHOOSE METHOD SECTION ------------------------------------------> */}
               <Typography variant="h4" className="form_header">
                 Choose a delivery method
               </Typography>
@@ -146,7 +147,7 @@ const Checkout = () => {
               </Box>
             </Grid>
             <Grid item lg={4.5} xs={12}>
-              <ItemsCard itemsList={cartList ?? []} />
+              {!isLoading && cartList && <ItemsCard itemsList={cartList ?? []} />}
               {showPaymentSection && (
                 <PaymentCardDetailsCard
                   subtotal={checkoutDetails?.itemsTotal}

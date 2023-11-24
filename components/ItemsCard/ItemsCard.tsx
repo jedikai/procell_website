@@ -13,27 +13,34 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Box, Stack } from "@mui/system";
 import Image from "next/image";
-import { useState } from "react";
+import { memo, useEffect, useState } from "react";
 
-function ItemsList({
-  id,
-  product_id,
-  product_image_url,
-  name_short,
-  product_uom_qty,
-  price_reduce_taxexcl
-}: cardItemsApiResponse) {
-  const [ItemCount, setitemCount] = useState<number>(product_uom_qty??0);
+// function ItemsList({
+//   id,
+//   product_id,
+//   product_image_url,
+//   name_short,
+//   product_uom_qty,
+//   price_reduce_taxexcl
+// }: cardItemsApiResponse) {
+function ItemsList({ item }: any) {
+  const { id,
+    product_id,
+    product_image_url,
+    name_short,
+    product_uom_qty,
+    price_reduce_taxexcl } = item ?? {}
+  const [ItemCount, setItemCount] = useState(0);
   const { mutate: updateItemQuantity } = useUpdateItemQuantity();
   const handleDecrement = () => {
     if (ItemCount !== 1) {
-      setitemCount((prev:number) => prev - 1);
-      updateItemQuantityHandler(ItemCount-1)
+      setItemCount((prev: number) => prev - 1);
+      updateItemQuantityHandler(ItemCount - 1);
     }
   };
   const handleIncrement = () => {
-    setitemCount(ItemCount + 1);
-    updateItemQuantityHandler(ItemCount+1)
+    setItemCount(ItemCount + 1);
+    updateItemQuantityHandler(ItemCount + 1);
   };
   const updateItemQuantityHandler = (quantity: string | number) => {
     const formData: FormData = new FormData();
@@ -42,6 +49,11 @@ function ItemsList({
     formData.append("set_qty", `${quantity}`);
     updateItemQuantity(formData);
   };
+  useEffect(() => {
+    if (!!product_uom_qty) {
+      setItemCount(product_uom_qty);
+    }
+  }, [product_uom_qty]);
   return (
     <Box className="items_list_item">
       <Box className="img_wrapper">
@@ -77,9 +89,15 @@ const ItemsCard = ({ itemsList }: cardItemsProps) => {
       >
         <Typography variant="body1">Items</Typography>
       </Stack>
-      {itemsList.map((item:any) => ItemsList(item))}
+      {itemsList && itemsList?.length > 0 ? (
+        itemsList?.map((item: any, index) => <ItemsList item={item} key={index + 1}/>)
+      ) : (
+        <Typography variant="body1">
+          There is no item s in your cart.
+        </Typography>
+      )}
     </CartItemsWrapper>
   );
 };
 
-export default ItemsCard;
+export default memo(ItemsCard);

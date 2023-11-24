@@ -31,3 +31,14 @@ export const searchList = [
     name: "Price - High to Low"
   }
 ];
+
+
+export const issueQuestions = [
+
+  {
+    name: "Issue One"
+  },
+  {
+    name: "Issue Two"
+  }
+]

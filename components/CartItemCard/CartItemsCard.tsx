@@ -2,7 +2,7 @@ import {
   useDeleteItem,
   useUpdateItemQuantity
 } from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
-import { CART_LIST } from "@/hooks/react-qurey/query-keys/cartQuery.keys";
+import { CART_LIST, CART_LIST_WITH_AUTHORIZATION } from "@/hooks/react-qurey/query-keys/cartQuery.keys";
 import { CartItemprops } from "@/interface/cartitem.interfaces";
 import { CardItemCardWrapper } from "@/styles/StyledComponents/CartItemCardWrapper";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
@@ -46,6 +46,7 @@ const CartItemsCard = ({
     deleteItemFromCart(formData, {
       onSuccess: () => {
         queryClient.invalidateQueries(CART_LIST);
+        queryClient.invalidateQueries(CART_LIST_WITH_AUTHORIZATION);
       },
       onError: (data: any) => {
         console.log("error", data);
@@ -57,7 +58,15 @@ const CartItemsCard = ({
     formData.append("product_variant_id", `${product_id}`);
     formData.append("line_id", `${line_id}`);
     formData.append("set_qty", `${quantity}`);
-    updateItemQuantity(formData);
+    updateItemQuantity(formData, {
+      onSuccess: () => {
+        queryClient.invalidateQueries(CART_LIST);
+        queryClient.invalidateQueries(CART_LIST_WITH_AUTHORIZATION);
+      },
+      onError: (data: any) => {
+        console.log("error", data);
+      }
+    });
   };
   return (
     <CardItemCardWrapper>

@@ -25,7 +25,7 @@ const Footer = () => {
 
           <List className="ftr-list">
             {foooterItems.map((item: any, index: number) => (
-              <ListItem disablePadding key={index}>
+              <ListItem disablePadding key={index + 1}>
                 <Link
                   href={item?.route}
                   key={item.name}
@@ -38,8 +38,8 @@ const Footer = () => {
           </List>
 
           <List className="social-list">
-            {social_links.map((item,i:number) => (
-              <ListItem key={i}>
+            {social_links.map((item, i: number) => (
+              <ListItem key={i + 1}>
                 <Link href={item.path}>{item.logo}</Link>
               </ListItem>
             ))}
@@ -51,7 +51,8 @@ const Footer = () => {
           <Box className="footer_btm">
             <Typography variant="body1" className="copy">
               {" "}
-              Copyright © 2023 - All Rights Reserved.
+              Copyright © 2023 - All Rights Reserved. |
+              <Link href="/privacy-policy">Privacy Policy</Link>
             </Typography>
             <Stack
               direction="row"

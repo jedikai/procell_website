@@ -24,7 +24,7 @@ export const ContactWrapper = styled(Box)`
     right: 10%;
     top: 100px;
     pointer-events: none;
-    z-index: 4;
+    z-index: 2;
     @media (max-width: 1299px) {
       right: 3%;
       width: 100px;

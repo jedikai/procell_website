@@ -25,13 +25,9 @@ export default memo(function Clinicalsec({
             type="button"
             variant="contained"
             color="primary"
+            onClick={() => window.open(clinical_study_url ?? "", "_blank")}
           >
-            <Typography
-              variant="caption"
-              onClick={() => window.open(clinical_study_url ?? "", "_blank")}
-            >
-              View whitepaper
-            </Typography>
+            <Typography variant="caption">View whitepaper</Typography>
           </CustomButtonPrimary>
         </Box>
       </Container>

@@ -153,6 +153,10 @@ export default function Index() {
       formData.append("zip", zipCode);
       formData.append("phone", `${phnCode} ${phone}`);
       formData.append("message", source);
+      formData.append("country_id", country);
+      if (stateList && stateList.length > 0) {
+        formData.append("state_id", state ?? "");
+      }
     }
     contactUsPost(formData, {
       onSuccess: (data: any) => {
@@ -166,13 +170,13 @@ export default function Index() {
         toastSuccess(data?.data?.message);
       },
       onError: (data: any) => {
-        reset();
-        setSelectedValues({
-          phnCode: null,
-          language: null,
-          country: null,
-          state: null
-        });
+        // reset();
+        // setSelectedValues({
+        //   phnCode: null,
+        //   language: null,
+        //   country: null,
+        //   state: null
+        // });
         toastError(data?.response?.data?.message);
       }
     });
@@ -542,6 +546,116 @@ export default function Index() {
                       </>
                     ) : (
                       <Box className="form_group">
+                        <div
+                          className="space_between"
+                          style={{
+                            alignItems: "flex-start",
+                            marginBottom: "15px"
+                          }}
+                        >
+                          <Box
+                            className={
+                              stateList && stateList.length > 0
+                                ? "form_group_inner"
+                                : "form_group_inner_full form_group_inner"
+                            }
+                          >
+                            <Autocomplete
+                              id="country-select-demo"
+                              className="autocomplete_div"
+                              sx={{ width: 300 }}
+                              value={selectedValues?.country}
+                              onChange={(event: any, newValue: any | null) => {
+                                console.log("country", newValue);
+                                setSelectedCountryId(
+                                  newValue ? newValue?.id : ""
+                                );
+                                setValue(
+                                  "country",
+                                  newValue ? newValue?.id : ""
+                                );
+                                setSelectedValues({
+                                  ...selectedValues,
+                                  country: newValue
+                                });
+                              }}
+                              options={countryList ?? []}
+                              disabled={countryLoader}
+                              autoHighlight
+                              getOptionLabel={(option: any) => option.name}
+                              renderOption={(props, option) => (
+                                <Box
+                                  component="li"
+                                  sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                                  {...props}
+                                >
+                                  <img
+                                    loading="lazy"
+                                    width="20"
+                                    src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
+                                    alt=""
+                                  />
+                                  {option.name}
+                                </Box>
+                              )}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  // {...register("country")}
+                                  // label="Choose a country"
+                                  placeholder="Choose a country"
+                                  inputProps={{
+                                    ...params.inputProps,
+                                    autoComplete: "new-password" // disable autocomplete and autofill
+                                  }}
+                                />
+                              )}
+                            />
+                            {errors.country && (
+                              <div className="profile_error">
+                                {errors.country.message}
+                              </div>
+                            )}
+                          </Box>
+                          {stateList && stateList.length > 0 && (
+                            <Box className="form_group_inner">
+                              <Autocomplete
+                                disablePortal
+                                id="combo-box-demo"
+                                className="autocomplete_div"
+                                // {...register("state")}
+                                options={stateList ?? []}
+                                sx={{ width: 300 }}
+                                disabled={!selectedCountryId && !stateLoder}
+                                getOptionLabel={(option: any) => option.name}
+                                value={selectedValues?.state}
+                                onChange={(
+                                  event: any,
+                                  newValue: any | null
+                                ) => {
+                                  console.log("state", newValue);
+                                  // setSelectedCountryId(newValue ? newValue?.id : "");
+                                  setValue(
+                                    "state",
+                                    newValue ? newValue?.id : ""
+                                  );
+                                  setSelectedValues({
+                                    ...selectedValues,
+                                    state: newValue
+                                  });
+                                }}
+                                renderInput={(params) => (
+                                  <TextField {...params} placeholder="State" />
+                                )}
+                              />
+                              {errors.state && (
+                                <div className="profile_error">
+                                  {errors.state.message}
+                                </div>
+                              )}
+                            </Box>
+                          )}
+                        </div>
                         <InputFieldCommon
                           placeholder="Zip code"
                           {...register("zipCode")}

@@ -13,6 +13,8 @@ import Image from "next/image";
 import ButtonLoader from "../ButtonLoader/ButtonLoader";
 import ButtonLoaderSecondary from "../ButtonLoader/ButtonLoaderSecondary";
 import { memo } from "react";
+import { useProfileDetails } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
+import CustomCardExpDate from "../CustomCardExpDate/CustomCardExpDate";
 
 interface PaymentCardProps {
   subtotal: number | null | string;
@@ -27,6 +29,11 @@ const PaymentCardDetailsCard = ({
   totalAmount,
   loader = false
 }: PaymentCardProps) => {
+  const { data, isLoading, refetch, isFetched } = useProfileDetails(
+    () => { },
+    () => { },
+    true
+  );
   return (
     <>
       {shipping != null && (
@@ -38,9 +45,17 @@ const PaymentCardDetailsCard = ({
             className="card_header"
           >
             <Typography variant="body1">Card details</Typography>
-            <Image src={assest.avatr_img} alt="avatar" width={46} height={46} />
+            {data && data?.length > 0 && data[0]?.image_1920_url && (
+              <img
+                src={data ? data[0]?.image_1920_url : assest?.avatr_img}
+                alt="avatar"
+                width={46}
+                height={46}
+                style={{ border: "0px", borderRadius: "50%" }}
+              />
+            )}
           </Stack>
-          <Box className="cardtype">
+          {/* <Box className="cardtype">
             <Typography variant="body1">Card type</Typography>
             <Grid
               container
@@ -76,10 +91,10 @@ const PaymentCardDetailsCard = ({
                 />
               </Grid>
             </Grid>
-          </Box>
+          </Box> */}
 
           <Box className="inputField_wrapper">
-            <InputFieldCommon placeholder="Card name" />
+            <InputFieldCommon placeholder="Card name"/>
             <InputFieldCommon placeholder="Card number" />
             <Stack
               direction="row"
@@ -87,8 +102,8 @@ const PaymentCardDetailsCard = ({
               spacing={1}
               className="expiry_date"
             >
-              <InputFieldCommon placeholder="Expiry date" />
-              <InputFieldCommon placeholder="CVV" />
+              <CustomCardExpDate />
+              {/* <InputFieldCommon placeholder="CVV" /> */}
             </Stack>
           </Box>
           {!loader ? (
@@ -109,11 +124,7 @@ const PaymentCardDetailsCard = ({
                 <ListItem>
                   <Stack direction="row" justifyContent="space-between">
                     <Typography variant="body1">Total ( tax incl.)</Typography>
-                    {
-                      <Typography variant="caption">
-                        ${totalAmount}
-                      </Typography>
-                    }
+                    {<Typography variant="caption">${totalAmount}</Typography>}
                   </Stack>
                 </ListItem>
               </List>
@@ -123,6 +134,7 @@ const PaymentCardDetailsCard = ({
                 variant="contained"
                 color="primary"
                 className="payment_btn"
+                href="/product/order-confirm"
               >
                 <Typography variant="body1">${totalAmount}</Typography>
                 <Typography variant="body1">

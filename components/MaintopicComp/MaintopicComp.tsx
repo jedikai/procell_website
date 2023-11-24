@@ -6,15 +6,27 @@ import { Box, List, ListItem } from "@mui/material";
 import { topicProps } from "@/interface/topic.interfaces";
 import Link from "next/link";
 
-export default function MaintopicComp({ topicData, title }: topicProps) {
+export default function MaintopicComp({
+  topicData,
+  title,
+  getCategoriesWiseBlog = () => { },
+  selectedCategoriesId
+}: topicProps) {
+  console.log("topicData", topicData);
+
   return (
     <MainTopicWrapper>
       <Box className="topic_wrpp">
         <Typography variant="h3">{title}</Typography>
         <List disablePadding>
-          {topicData.map((data) => (
-            <ListItem disablePadding>
-              <Link href={data.link}>{data.name}</Link>
+          {topicData.map((data: any, index: number) => (
+            <ListItem disablePadding style={{ cursor: "pointer" }} key={index + 1}>
+              <a
+                onClick={() => getCategoriesWiseBlog(data?.id)}
+                className={selectedCategoriesId == data?.id ? "active" : ""}
+              >
+                {data?.name}
+              </a>
             </ListItem>
           ))}
         </List>

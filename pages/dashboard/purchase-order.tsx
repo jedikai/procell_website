@@ -102,6 +102,7 @@ function PurchaseOrder() {
             <Box className="accordionSecionWrapper">
               {purcheseorderList?.map((data, index: number) => (
                 <CommonAccordion
+                  key={index + 1}
                   indexNumber={index}
                   handleClick={handleChanges}
                   expand={expanded}
@@ -129,8 +130,8 @@ function PurchaseOrder() {
                                 data.productStatus === "Delivered"
                                   ? "delivered"
                                   : data.productStatus === "Cancelled"
-                                  ? "cancelled"
-                                  : ""
+                                    ? "cancelled"
+                                    : ""
                               }
                             >
                               {data?.productStatus}

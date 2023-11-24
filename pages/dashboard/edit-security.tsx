@@ -1,4 +1,5 @@
 /* eslint-disable mui-path-imports/mui-path-imports */
+import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
 import { useChangePassword } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
 import useNotiStack from "@/hooks/useNotistack";
 import validationText from "@/json/messages/validationText";
@@ -29,22 +30,29 @@ const validationSchema = yup.object().shape({
   old_password: yup
     .string()
     .required(validationText.error.enter_password)
-    .min(8, validationText.error.min_8_password),
+    .min(2, validationText.error.min_8_password),
   new_password: yup
     .string()
     .required(validationText.error.new_password)
-    .min(8, validationText.error.min_8_password),
-  confirm_password: yup.string().required(validationText.error.confirm_password)
+    .min(2, validationText.error.min_8_password),
+  confirm_password: yup
+    .string()
+    .required(validationText.error.confirm_password)
+    .oneOf(
+      [yup.ref("new_password")],
+      "New password and confirm password do not match"
+    )
 });
 
 export default function Index() {
   const [modalopen, setmodalopen] = useState(false);
   const [passwordValidator, setPasswordValidator] = useState({
+    old: "",
     new: "",
     confirm: ""
   });
   const { toastSuccess, toastError } = useNotiStack();
-  const { mutate: changePassword } = useChangePassword();
+  const { mutate: changePassword,isLoading } = useChangePassword();
   const {
     register,
     handleSubmit,
@@ -64,6 +72,9 @@ export default function Index() {
     if (new_password != confirm_password) {
       return false;
     }
+    if (passwordValidator.new == passwordValidator.old) {
+      return false;
+    }
     const formData: FormData = new FormData();
     formData.append("old", old_password);
     formData.append("new1", new_password);
@@ -73,6 +84,7 @@ export default function Index() {
         toastSuccess(data?.data?.message);
         reset();
         setPasswordValidator({
+          old: "",
           new: "",
           confirm: ""
         });
@@ -92,11 +104,17 @@ export default function Index() {
             <Box className="each_block">
               <Typography variant="h4">Change password</Typography>
               <form onSubmit={handleSubmit(onFormSubmit)} id="change_password">
-                <Box className="form_group">
+                <Box className="form_group bottomless-margin">
                   <InputFieldCommon
                     placeholder="Password"
                     isPassword
                     {...register("old_password")}
+                    onKeyUp={(e: any) =>
+                      setPasswordValidator({
+                        ...passwordValidator,
+                        old: e.target.value
+                      })
+                    }
                   />
                 </Box>
                 <Box className="form_group">
@@ -106,7 +124,7 @@ export default function Index() {
                     </div>
                   )}
                 </Box>
-                <Box className="form_group">
+                <Box className="form_group bottomless-margin">
                   <InputFieldCommon
                     placeholder="New password"
                     isPassword
@@ -125,8 +143,14 @@ export default function Index() {
                       {errors.new_password.message}
                     </div>
                   )}
+                  {passwordValidator.new &&
+                    passwordValidator.new == passwordValidator.old && (
+                      <div className="profile_error">
+                        Old and new Passwords must not match.
+                      </div>
+                    )}
                 </Box>
-                <Box className="form_group">
+                <Box className="form_group bottomless-margin">
                   <InputFieldCommon
                     placeholder="Confirm new password"
                     isPassword
@@ -145,20 +169,26 @@ export default function Index() {
                       {errors.confirm_password.message}
                     </div>
                   )}
-                  {passwordValidator.confirm &&
+                  {/* {passwordValidator.confirm &&
                     passwordValidator.new != passwordValidator.confirm && (
                       <div className="profile_error">Passwords must match.</div>
-                    )}
+                    )} */}
                 </Box>
                 <Box className="form_group">
-                  <CustomButtonPrimary
+                  {!isLoading?<CustomButtonPrimary
                     variant="contained"
                     color="primary"
                     type="submit"
                     form="change_password"
                   >
                     <Typography>Change password</Typography>
-                  </CustomButtonPrimary>
+                  </CustomButtonPrimary>:
+                  <CustomButtonPrimary
+                    variant="contained"
+                    color="primary"
+                  >
+                    <ButtonLoader/>
+                  </CustomButtonPrimary>}
                 </Box>
               </form>
             </Box>

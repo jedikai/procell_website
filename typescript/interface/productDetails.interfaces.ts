@@ -3,4 +3,5 @@ export interface productProps {
   price: string;
   para: string;
   id: string | number;
+  image?: string | any;
 }

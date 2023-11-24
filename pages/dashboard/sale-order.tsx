@@ -2,6 +2,7 @@
 /* eslint-disable import/no-named-as-default-member */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable mui-path-imports/mui-path-imports */
+import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import CommonTable from "@/components/CommonTable/CommonTable";
 import { useSalesList } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
 import { salesSelectlList } from "@/json/mock/quationselectlList.mock";
@@ -23,6 +24,7 @@ import {
   TableRow,
   Typography
 } from "@mui/material";
+import { removeDuplicates } from "common/functions/removeDublicate";
 import React, { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 
@@ -36,7 +38,12 @@ function Index() {
   const [type, setType] = React.useState("date");
   const [page, setPage] = React.useState(1);
   const onSalesListSuccess = (response: any) => {
-    setSalesList([...salesList, ...(response ? response?.orders_data : [])]);
+    setSalesList(
+      removeDuplicates([
+        ...salesList,
+        ...(response && response?.orders_data ? response?.orders_data : [])
+      ])
+    );
   };
   const { data, isLoading } = useSalesList(page, type, onSalesListSuccess);
 
@@ -69,108 +76,136 @@ function Index() {
       fetchList(inView);
     }
   }, [inView]);
-  console.log("salesList", page, salesList?.length, data);
 
   return (
     <Wrapper>
       <DashboardWrapper>
-        <Box className="cmn_box">
-          <QuotationWrapper>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              className="quotationHeader"
-            >
-              <Typography variant="h4">Sales order</Typography>
+        <Box className="cmn_box FixedHeightContainer">
+          <div className="Content">
+            <QuotationWrapper>
               <Stack
                 direction="row"
-                justifyContent="flex-start"
+                justifyContent="space-between"
                 alignItems="center"
-                className="quotationshort"
+                className="quotationHeader"
               >
-                <Typography variant="body1">Sort by</Typography>
-                <CustomSelect
-                  value={value}
-                  onChange={handleChange}
-                  IconComponent={(props) => {
-                    return (
-                      <IconButton {...props}>
-                        <DropDownIcon />
-                      </IconButton>
-                    );
-                  }}
+                <Typography variant="h4">Sales order</Typography>
+                <Stack
+                  direction="row"
+                  justifyContent="flex-start"
+                  alignItems="center"
+                  className="quotationshort"
                 >
-                  <MenuItem value="" sx={{ display: "none" }}>
-                    {value}
-                  </MenuItem>
-                  {salesSelectlList?.map((item) => (
-                    <MenuItem
-                      key={item?.name}
-                      value={item?.name}
-                      className="menu_item"
-                    >
-                      {item?.name}
+                  <Typography variant="body1">Sort by</Typography>
+                  <CustomSelect
+                    value={value}
+                    onChange={handleChange}
+                    IconComponent={(props) => {
+                      return (
+                        <IconButton {...props}>
+                          <DropDownIcon />
+                        </IconButton>
+                      );
+                    }}
+                  >
+                    <MenuItem value="" sx={{ display: "none" }}>
+                      {value}
                     </MenuItem>
-                  ))}
-                </CustomSelect>
+                    {salesSelectlList?.map((item) => (
+                      <MenuItem
+                        key={item?.name}
+                        value={item?.name}
+                        className="menu_item"
+                      >
+                        {item?.name}
+                      </MenuItem>
+                    ))}
+                  </CustomSelect>
+                </Stack>
               </Stack>
-            </Stack>
-            <Box className="tableWrapper">
-              {/* <button onClick={() => setPage(page + 1)}>refetch</button> */}
-              <CommonTable>
-                <TableHead>
-                  <TableRow>
-                    <TableCell align="center">
-                      <Typography variant="body1">Sales order</Typography>
-                    </TableCell>
-                    <TableCell align="left">
-                      <Typography variant="body1">Order date</Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Typography variant="body1">Total</Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Typography variant="body1">Status</Typography>
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {salesList?.map((row: any) => (
-                    <TableRow key={row?.id}>
-                      <TableCell align="center" scope="row">
-                        <Typography variant="body1">{row?.name}</Typography>
-                      </TableCell>
-                      <TableCell align="left">
-                        <Typography variant="body1">
-                          {row?.date_order
-                            ?.replaceAll("-", "/")
-                            ?.replaceAll(" ", " - ")}
-                        </Typography>
-                      </TableCell>
-                      <TableCell align="center">
-                        <Typography variant="body1">
-                          ${row?.amount_total}
-                        </Typography>
-                      </TableCell>
+              <Box
+                className="tableWrapper"
+                style={!isLoading ? {} : { paddingBottom: "14px" }}
+              >
+                {/* <button onClick={() => setPage(page + 1)}>refetch</button> */}
+                <CommonTable>
+                  {salesList && salesList?.length > 0 ? (
+                    <>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell align="center">
+                            <Typography variant="body1">Sales order</Typography>
+                          </TableCell>
+                          <TableCell align="left">
+                            <Typography variant="body1">Order date</Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Typography variant="body1">Total</Typography>
+                          </TableCell>
+                          <TableCell align="center">
+                            <Typography variant="body1">Status</Typography>
+                          </TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {salesList &&
+                          salesList?.length > 0 &&
+                          salesList?.map((row: any) => (
+                            <TableRow key={row?.id}>
+                              <TableCell align="center" scope="row">
+                                <Typography variant="body1">
+                                  {row?.name}
+                                </Typography>
+                              </TableCell>
+                              <TableCell align="left">
+                                <Typography variant="body1">
+                                  {row?.date_order
+                                    ?.replaceAll("-", "/")
+                                    ?.replaceAll(" ", " - ")}
+                                </Typography>
+                              </TableCell>
+                              <TableCell align="center">
+                                <Typography variant="body1">
+                                  ${row?.amount_total}
+                                </Typography>
+                              </TableCell>
 
-                      <TableCell align="center">
-                        <Typography
-                          variant="body1"
-                          className={
-                            row?.order_status === "Delivered" ? "delivered" : ""
-                          }
-                        >
-                          {row?.order_status}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </CommonTable>
-              <>{!isLoading && <div ref={ref}></div>}</>
-            </Box>
-          </QuotationWrapper>
+                              <TableCell align="center">
+                                <Typography
+                                  variant="body1"
+                                  className={
+                                    row?.order_status === "Delivered"
+                                      ? "delivered"
+                                      : ""
+                                  }
+                                >
+                                  {row?.order_status}
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </>
+                  ) : !isLoading ? (
+                    <Typography variant="body1" style={{ textAlign: "center" }}>
+                      There is no sales order
+                    </Typography>
+                  ) : (
+                    <></>
+                  )}
+                </CommonTable>
+                <>
+                  {!isLoading ? (
+                    <div ref={ref}></div>
+                  ) : (
+                    <div style={{ marginTop: "10px" }}>
+                      <ButtonLoaderSecondary />
+                    </div>
+                  )}
+                </>
+              </Box>
+            </QuotationWrapper>
+          </div>
         </Box>
       </DashboardWrapper>
     </Wrapper>

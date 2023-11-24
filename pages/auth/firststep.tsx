@@ -128,8 +128,8 @@ const Firststep = () => {
               height={54}
             />
           </Link>
-          {firstStepOptions.map((item) => (
-            <Box className="step_items">
+          {firstStepOptions.map((item: any, index: number) => (
+            <Box className="step_items" key={index + 1}>
               <Box className="icon_box">{item.icon}</Box>
               <Link href={item.path}>{item.text}</Link>
             </Box>

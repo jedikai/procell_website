@@ -21,14 +21,20 @@ function OurProductSlider({
   return (
     <ProductSliderWrapper>
       <Box className="productSliderbox">
-        <div onClick={() => router.push(`/product/product-details/${link}`)}>
+        <div
+          onClick={() => router.push(`/product/product-details/${link}`)}
+          style={{ cursor: "pointer" }}
+        >
           <figure>
             <img src={OurProductsliderImg} alt="img" width={231} height={305} />
           </figure>
         </div>
 
         <Box className="slidertitletext">
-          <div onClick={() => router.push(`/product/product-details/${link}`)}>
+          <div
+            onClick={() => router.push(`/product/product-details/${link}`)}
+            style={{ cursor: "pointer" }}
+          >
             <Typography variant="h4">{productSlidertext}</Typography>
           </div>
 

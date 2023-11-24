@@ -53,8 +53,8 @@ export default function TreatmentSecUpper() {
               dots={true}
               className="slick_top"
             >
-              {mainProduct.map((data , i:number) => (
-                <Box className="top_sllider" key={i}>
+              {mainProduct.map((data: any, i: number) => (
+                <Box className="top_sllider" key={i + 1}>
                   <Box className="main_product">
                     <Fancybox
                       options={{
@@ -90,8 +90,8 @@ export default function TreatmentSecUpper() {
               // focusOnSelect
               className="slick_btm"
             >
-              {productNav.map((data,index:number) => (
-                <Box className="btm_sllider" key={index}>
+              {productNav.map((data, index: number) => (
+                <Box className="btm_sllider" key={index + 1}>
                   <Box className="each_box">
                     <Image src={data.image} alt="" width={215} height={150} />
                   </Box>

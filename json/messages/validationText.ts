@@ -15,7 +15,7 @@ export default {
     confirm_password: "Confirm password is required",
     match_password: "Passwords must match",
     min_8_password:
-      "Oops! It seems like your password is too short. For your security, we require a minimum of 8 characters in your password.",
+      "Oops! It seems like your password is too short. For your security, we require a minimum of 2 characters in your password.",
     phone: "Enter phone",
     phone_code: "Enter phone code.",
     valid_phone_number: "Enter valid phone number.",

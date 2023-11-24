@@ -36,6 +36,7 @@ function Index() {
             <Box className="accordion_sec">
               {faqList?.map((data: any, index: number) => (
                 <CommonAccordion
+                  key={index + 1}
                   indexNumber={index}
                   handleClick={handleChange}
                   expand={expanded}
