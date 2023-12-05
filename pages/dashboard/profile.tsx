@@ -25,7 +25,7 @@ import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import EditProfileIcon from "@/ui/Icons/EditProfileIcon";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Autocomplete from "@mui/material/Autocomplete";
+import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
@@ -69,8 +69,16 @@ const validationSchema = yup.object().shape({
   phnCode: yup.string().required(validationText.error.phone_code),
   phone: yup
     .string()
-    .matches(phoneRegExp, validationText.error.valid_phone_number)
-    .required(validationText.error.phone),
+    .required(validationText.error.phone)
+    .matches(/^\d+$/, validationText.error.valid_phone_number)
+    .test("isValid", validationText.error.phone_number_range, (value) => {
+      console.log(value);
+      if (value && value?.length >= 8 && value?.length <= 16) {
+        return true;
+      } else {
+        return false;
+      }
+    }),
   address: yup.string().required(validationText.error.address),
   city: yup.string().required(validationText.error.city),
   zipCode: yup.string().required(validationText.error.zipCode),
@@ -87,6 +95,7 @@ export default function Profile(): JSX.Element {
   const [apiGivenrofilePic, setApiGivenrofilePic] = useState<
     string | null | undefined
   >(null);
+  const [userGivenPhoneCode, setUserGivenPhoneCode] = useState("");
   const [profilePic, setProfilePic] = useState<File | null>(null);
   const [changedCountry, setChangedCountry] = useState<string | null>("");
   const [profileDetails, setProfileDetails] = useState<any>({
@@ -129,9 +138,9 @@ export default function Profile(): JSX.Element {
       phnCode: phone?.split(" ")[0],
       contact: phone?.split(" ")[1],
       mail: email,
-      address: street,
-      city,
-      pin: zip,
+      address: (`${street}`?.includes('false') || `${street}`?.includes('N/a')) ? 'N/A' : street,
+      city: (`${city}`?.includes('false') || `${city}`?.includes('N/a')) ? 'N/A' : city,
+      pin: (`${zip}`?.includes('false') || `${zip}`?.includes('N/a')) ? 'N/A' : zip,
       country: country_id,
       state: state_id
     });
@@ -314,9 +323,18 @@ export default function Profile(): JSX.Element {
     return changedCountry != prevSelectedCountry
       ? null
       : profileDetails?.state
-      ? { name: profileDetails?.state[1] }
-      : null;
+        ? { name: profileDetails?.state[1] }
+        : null;
   }, [data, changedCountry]);
+  const filterCountryOptions = createFilterOptions({
+    matchFrom: "start",
+    stringify: (option: any) => option.name
+  });
+  const filterPhoneCodes = useMemo(() => {
+    return userGivenPhoneCode == "" || userGivenPhoneCode == undefined
+      ? countryList
+      : countryList?.filter((_i: any) => _i?.phone_code == userGivenPhoneCode);
+  }, [userGivenPhoneCode, countryList]);
   console.log("show me value", stateDefaultValue);
   return (
     <Wrapper>
@@ -345,7 +363,7 @@ export default function Profile(): JSX.Element {
                           <InputFieldCommon
                             placeholder="First name"
                             fullWidth
-                            value={edit ? "" : profileDetails?.first_name}
+                            value={profileDetails?.first_name}
                             disabled
                           />
                         </Grid>
@@ -353,7 +371,7 @@ export default function Profile(): JSX.Element {
                           <InputFieldCommon
                             placeholder="Last name"
                             fullWidth
-                            value={edit ? "" : profileDetails?.last_name}
+                            value={profileDetails?.last_name}
                             disabled
                           />
                         </Grid>
@@ -369,7 +387,7 @@ export default function Profile(): JSX.Element {
                           <InputFieldCommon
                             placeholder="Phone number"
                             fullWidth
-                            value={edit ? "" : profileDetails?.contact}
+                            value={profileDetails?.contact}
                             disabled
                           />
                         </Grid>
@@ -377,7 +395,7 @@ export default function Profile(): JSX.Element {
                           <InputFieldCommon
                             placeholder="Email address"
                             fullWidth
-                            value={edit ? "" : profileDetails?.mail}
+                            value={profileDetails?.mail}
                             disabled
                           />
                         </Grid>
@@ -385,7 +403,15 @@ export default function Profile(): JSX.Element {
                           <InputFieldCommon
                             placeholder="Address"
                             fullWidth
-                            value={edit ? "" : profileDetails?.address}
+                            value={
+                              // edit
+                              //   ? ""
+                              //   : `${profileDetails?.address}`?.toLowerCase() ==
+                              //     "false"
+                              //   ? "N/A"
+                              //   : profileDetails?.address
+                              profileDetails?.address
+                            }
                             disabled
                           />
                         </Grid>
@@ -393,8 +419,8 @@ export default function Profile(): JSX.Element {
                           item
                           lg={
                             profileDetails &&
-                            profileDetails?.state &&
-                            profileDetails?.state[1]
+                              profileDetails?.state &&
+                              profileDetails?.state[1]
                               ? 6
                               : 12
                           }
@@ -423,7 +449,14 @@ export default function Profile(): JSX.Element {
                           <InputFieldCommon
                             placeholder="City"
                             fullWidth
-                            value={edit ? "" : profileDetails?.city}
+                            value={
+                              // edit
+                              //   ? ""
+                              //   : `${profileDetails?.city}`?.toLowerCase() == "false"
+                              //   ? "N/A"
+                              //   : profileDetails?.city
+                              profileDetails?.city
+                            }
                             disabled
                           />
                         </Grid>
@@ -431,7 +464,14 @@ export default function Profile(): JSX.Element {
                           <InputFieldCommon
                             placeholder="ZIP code"
                             fullWidth
-                            value={edit ? "" : profileDetails?.pin}
+                            value={
+                              // edit
+                              //   ? ""
+                              //   : `${profileDetails?.pin}`?.toLowerCase() == "false"
+                              //   ? "N/A"
+                              //   : profileDetails?.pin
+                              profileDetails?.pin
+                            }
                             disabled
                           />
                         </Grid>
@@ -447,9 +487,9 @@ export default function Profile(): JSX.Element {
                           // src={assest?.noProfile_img}
                           src={URL.createObjectURL(
                             profilePic ||
-                              new Blob([JSON.stringify({}, null, 2)], {
-                                type: "application/json"
-                              })
+                            new Blob([JSON.stringify({}, null, 2)], {
+                              type: "application/json"
+                            })
                           )}
                           alt="image"
                           width={147}
@@ -535,7 +575,7 @@ export default function Profile(): JSX.Element {
                                   newValue ? newValue?.phone_code : ""
                                 );
                               }}
-                              options={countryList ?? []}
+                              options={filterPhoneCodes ?? []}
                               disabled={countryLoader}
                               autoHighlight
                               // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
@@ -551,27 +591,31 @@ export default function Profile(): JSX.Element {
                                   <img
                                     loading="lazy"
                                     width="20"
-                                    src={`${process.env.NEXT_APP_BASE_URL}/${
-                                      option?.image_url ?? ""
-                                    }`}
+                                    src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url ?? ""
+                                      }`}
                                     alt=""
                                   />
                                   {" +"}
                                   {option?.phone_code}
                                 </Box>
                               )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  // {...register("country")}
-                                  // label="Choose a country"
-                                  placeholder="Phone code"
-                                  inputProps={{
-                                    ...params.inputProps
-                                    // autoComplete: "new-password" // disable autocomplete and autofill
-                                  }}
-                                />
-                              )}
+                              renderInput={(params) => {
+                                setUserGivenPhoneCode(
+                                  `${params?.inputProps?.value ?? ""}`
+                                );
+                                return (
+                                  <TextField
+                                    {...params}
+                                    // {...register("country")}
+                                    // label="Choose a country"
+                                    placeholder="Phone code"
+                                    inputProps={{
+                                      ...params.inputProps
+                                      // autoComplete: "new-password" // disable autocomplete and autofill
+                                    }}
+                                  />
+                                );
+                              }}
                             />
                             {errors.phnCode && (
                               <div className="profile_error">
@@ -609,7 +653,13 @@ export default function Profile(): JSX.Element {
                             <InputFieldCommon
                               placeholder="Address"
                               fullWidth
-                              defaultValue={profileDetails?.address}
+                              defaultValue={
+                                // `${profileDetails?.address}`?.toLowerCase() ==
+                                // "false"
+                                //   ? "N/A"
+                                //   : profileDetails?.address
+                                profileDetails?.address
+                              }
                               {...register("address")}
                             />
                             {errors.address && (
@@ -630,6 +680,7 @@ export default function Profile(): JSX.Element {
                               defaultValue={{
                                 name: profileDetails?.country[1]
                               }}
+                              filterOptions={filterCountryOptions}
                               onChange={(event: any, newValue: any | null) => {
                                 console.log("country", newValue);
                                 setSelectedCountryId(
@@ -657,9 +708,8 @@ export default function Profile(): JSX.Element {
                                   <img
                                     loading="lazy"
                                     width="20"
-                                    src={`${process.env.NEXT_APP_BASE_URL}/${
-                                      option?.image_url ?? ""
-                                    }`}
+                                    src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url ?? ""
+                                      }`}
                                     alt=""
                                   />
                                   {option?.name}
@@ -730,7 +780,12 @@ export default function Profile(): JSX.Element {
                             <InputFieldCommon
                               placeholder="City"
                               fullWidth
-                              defaultValue={profileDetails?.city}
+                              defaultValue={
+                                // `${profileDetails?.city}`?.toLowerCase() == "false"
+                                //   ? "N/A"
+                                //   : profileDetails?.city
+                                profileDetails?.city
+                              }
                               {...register("city")}
                             />
                             {errors.city && (
@@ -743,7 +798,12 @@ export default function Profile(): JSX.Element {
                             <InputFieldCommon
                               placeholder="ZIP code"
                               fullWidth
-                              defaultValue={profileDetails?.pin}
+                              defaultValue={
+                                // `${profileDetails?.pin}`?.toLowerCase() == "false"
+                                //   ? "N/A"
+                                //   : profileDetails?.pin
+                                profileDetails?.pin
+                              }
                               {...register("zipCode")}
                             />
                             {errors.zipCode && (
@@ -799,8 +859,8 @@ export default function Profile(): JSX.Element {
                       variant="contained"
                       color="primary"
 
-                      // onClick={handleAction}
-                      // type="submit"
+                    // onClick={handleAction}
+                    // type="submit"
                     >
                       {/* <Typography variant="caption"> */}
                       <ButtonLoader customClass="transparent_button" />

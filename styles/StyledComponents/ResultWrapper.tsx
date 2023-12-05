@@ -13,11 +13,11 @@ export const ResultWrapper = styled(Box)`
     }
     h4 {
       color: ${primaryColors?.black};
-font-family: Roboto;
-font-size: 27px;
-font-weight: 400;
-line-height: 43px;
-text-align: center;
+      font-family: Roboto;
+      font-size: 27px;
+      font-weight: 400;
+      line-height: 43px;
+      text-align: center;
       @media (max-width: 899px) {
         font-size: 24px;
       }
@@ -40,6 +40,7 @@ export const ResultCardWrapper = styled(Box)`
   background: ${primaryColors?.white};
   box-shadow: 0px 4px 37px 0px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  height: 100%;
   .title_content {
     h5 {
       color: ${primaryColors?.black};
@@ -62,11 +63,15 @@ export const ResultCardWrapper = styled(Box)`
   .title_left {
     display: flex;
     align-items: center;
+    word-break: break-all;
     i {
       display: flex;
       align-items: center;
       justify-content: center;
       margin-right: 8px;
+      img {
+        min-width: 24px;
+      }
     }
   }
   .image_block {

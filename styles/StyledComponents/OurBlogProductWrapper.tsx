@@ -9,6 +9,7 @@ export const OurBlogProductWrapper = styled(Box)`
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.2);
   background: ${primaryColors.white};
+  height: 100%;
   /* max-width: 271px; */
   @media (max-width: 1199px) {
     max-width: 100%;

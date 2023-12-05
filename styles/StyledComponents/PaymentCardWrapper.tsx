@@ -122,4 +122,18 @@ export const PaymentCardWrapper = styled(Card)`
     display: flex;
     justify-content: center;
   }
+
+  .cardetails_fieldcmn {
+    > * {
+      margin-bottom: 15px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  .short_head_card {
+    font-size: 18px;
+    font-weight: 700;
+    color: ${primaryColors.black};
+  }
 `;

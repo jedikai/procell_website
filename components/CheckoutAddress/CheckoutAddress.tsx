@@ -1,4 +1,7 @@
-import { useAddressList } from "@/hooks/react-qurey/query-hooks/checkoutQuery.hooks";
+import {
+  useAddressList,
+  useSaveAddresss
+} from "@/hooks/react-qurey/query-hooks/checkoutQuery.hooks";
 import {
   useCountryList,
   useStateList
@@ -20,6 +23,9 @@ import * as yup from "yup";
 import AddressModal from "./AddressModal";
 import SavedAddressList from "./SavedAddressList";
 import { Checkbox, FormControlLabel } from "@mui/material";
+import { useQueryClient } from "react-query";
+import { DELIVERY_ADDRESS_LIST } from "@/hooks/react-qurey/query-keys/checkoutQuery.keys";
+import ButtonLoader from "../ButtonLoader/ButtonLoader";
 
 type Inputs = {
   firstName: string;
@@ -33,28 +39,22 @@ type Inputs = {
   zip: string;
   country: string;
   state: string;
+  firstName_shipping: string;
+  lastName_shipping: string;
+  email_shipping: string;
+  phnCode_shipping: string;
+  phnNumber_shipping: string;
+  address_shipping: string;
+  address2_shipping: string;
+  city_shipping: string;
+  zip_shipping: string;
+  country_shipping: string;
+  state_shipping: string;
 };
 const phoneRegExp = /^[0-9]{10}$/;
-const validationSchema = yup.object().shape({
-  firstName: yup.string().required(validationText.error.first_name),
-  lastName: yup.string().required(validationText.error.last_name),
-  email: yup
-    .string()
-    .email(validationText.error.email_format)
-    .required(validationText.error.enter_email),
-  phnCode: yup.string().required(validationText.error.phone_code),
-  phnNumber: yup
-    .string()
-    .matches(phoneRegExp, validationText.error.valid_phone_number)
-    .required(validationText.error.phone),
-  address: yup.string().required(validationText.error.address),
-  city: yup.string().required(validationText.error.city),
-  zip: yup.string().required(validationText.error.phone),
-  country: yup.string().required(validationText.error.phone),
-  state: yup.string().required(validationText.error.phone)
-});
 
-const CheckoutAddress = () => {
+const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
+  const queryClient = useQueryClient();
   const BillingRef = useRef<any>(null);
   const ShippingRef = useRef<any>(null);
   const [openmod, setopenmod] = useState(false);
@@ -64,6 +64,7 @@ const CheckoutAddress = () => {
     shipping_address: []
   });
   const [adressType, setAddressType] = useState("");
+  const [isButtonStatusChange, setIsButtonStatusChange] = useState(false);
   const [isShippedToShippingAddress, setIsShippedToShippingAddress] =
     useState(true);
   const [selectedCountryId, setSelectedCountryId] = useState("");
@@ -75,11 +76,20 @@ const CheckoutAddress = () => {
   });
   const onSuccesCheckoutAddressList = (response: any) => {
     console.log("CHECKOUT_ADDRESS_LIST", response);
-    const { billing_address, shipping_address }: any = response ?? {};
-    setCheckoutAddress({
-      billing_address: [billing_address],
-      shipping_address
-    });
+    if (Object.keys(response)?.length > 0) {
+      setIsButtonStatusChange(true);
+      setIsUserLoggedIn(true);
+      setIsShippedToShippingAddress(false);
+      const { billing_address, shipping_address }: any = response ?? {};
+      setCheckoutAddress({
+        billing_address: [billing_address],
+        shipping_address
+      });
+    } else {
+      setIsButtonStatusChange(false);
+      setIsUserLoggedIn(false);
+      setIsShippedToShippingAddress(true);
+    }
   };
   const { data, isLoading } = useAddressList(onSuccesCheckoutAddressList);
   const { data: countryList, isLoading: countryLoader } = useCountryList();
@@ -87,6 +97,64 @@ const CheckoutAddress = () => {
     !!selectedCountryId,
     selectedCountryId
   );
+  const { mutate: saveAddress, isLoading: saveAddressLoader } =
+    useSaveAddresss();
+  const validationSchema = yup.object().shape({
+    firstName: yup.string().required(validationText.error.first_name),
+    lastName: yup.string().required(validationText.error.last_name),
+    email: yup
+      .string()
+      .email(validationText.error.email_format)
+      .required(validationText.error.enter_email),
+    phnCode: yup.string().required(validationText.error.phone_code),
+    phnNumber: yup.string().required(validationText.error.phone),
+    // .matches(/^\d+$/, validationText.error.valid_phone_number)
+    // .test("isValid", validationText.error.phone_number_range, (value) => {
+    //   console.log(value);
+    //   if (value && value?.length >= 8 && value?.length <= 16) {
+    //     return true;
+    //   } else {
+    //     return false;
+    //   }
+    // }),
+    address: yup.string().required(validationText.error.address),
+    city: yup.string().required(validationText.error.city),
+    zip: yup.string().required(validationText.error.phone),
+    country: yup.string().required(validationText.error.phone),
+    state: yup.string().required(validationText.error.phone),
+    ...(!isShippedToShippingAddress
+      ? {
+          firstName_shipping: yup
+            .string()
+            .required(validationText.error.first_name),
+          lastName_shipping: yup
+            .string()
+            .required(validationText.error.last_name),
+          email_shipping: yup
+            .string()
+            .email(validationText.error.email_format)
+            .required(validationText.error.enter_email),
+          phnCode_shipping: yup
+            .string()
+            .required(validationText.error.phone_code),
+          phnNumber_shipping: yup.string().required(validationText.error.phone),
+          // .matches(/^\d+$/, validationText.error.valid_phone_number)
+          // .test("isValid", validationText.error.phone_number_range, (value) => {
+          //   console.log(value);
+          //   if (value && value?.length >= 8 && value?.length <= 16) {
+          //     return true;
+          //   } else {
+          //     return false;
+          //   }
+          // }),
+          address_shipping: yup.string().required(validationText.error.address),
+          city_shipping: yup.string().required(validationText.error.city),
+          zip_shipping: yup.string().required(validationText.error.phone),
+          country_shipping: yup.string().required(validationText.error.phone),
+          state_shipping: yup.string().required(validationText.error.phone)
+        }
+      : {})
+  });
   const {
     register,
     handleSubmit,
@@ -109,50 +177,136 @@ const CheckoutAddress = () => {
 
   const onFormSubmitShipping = (data: Inputs): void => {
     // alert("onFormSubmitShipping");
-    console.log("onFormSubmitShipping", data, selectedValues);
+    console.log("onFormSubmitShipping", data);
   };
-  const onFormSubmitBilling = (data: Inputs): void => {
+  const onFormSubmit = (data: Inputs): void => {
     // alert("onFormSubmitBilling");
-    console.log("onFormSubmitBilling", data, selectedValues);
-  };
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const userLoginStatus: boolean =
-        !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
-      console.log("userLoginStatus", userLoginStatus);
-      setIsUserLoggedIn(userLoginStatus);
-      if (userLoginStatus) {
-        setIsShippedToShippingAddress(false);
-      } else {
-        setIsShippedToShippingAddress(true);
+    console.log("onFormSubmitBilling", data);
+    const {
+      state_shipping,
+      country_shipping,
+      zip_shipping,
+      city_shipping,
+      address_shipping,
+      phnNumber_shipping,
+      phnCode_shipping,
+      email_shipping,
+      lastName_shipping,
+      firstName_shipping,
+      state,
+      country,
+      zip,
+      city,
+      address,
+      phnNumber,
+      phnCode,
+      email,
+      lastName,
+      firstName,
+      address2,
+      address2_shipping
+    } = data ?? {};
+    const formData: FormData = new FormData();
+    if (isShippedToShippingAddress) {
+      formData.append("use_same", `${1}`);
+      formData.append("first_name", `${firstName}`);
+      formData.append("last_name", `${lastName}`);
+      formData.append("email", `${email}`);
+      formData.append("phone", `${phnCode} ${phnNumber}`);
+      formData.append("street", `${address}`);
+      if (!!address2) {
+        formData.append("street2", `${address2}`);
       }
+      formData.append("city", `${city}`);
+      formData.append("state_id", `${state}`);
+      formData.append("zip", `${zip}`);
+      formData.append("country_id", `${country}`);
+    } else {
+      formData.append("use_same", `${0}`);
+      formData.append("billing_first_name", `${firstName}`);
+      formData.append("billing_last_name", `${lastName}`);
+      formData.append("billing_email", `${email}`);
+      formData.append("billing_phone", `${phnCode} ${phnNumber}`);
+      formData.append("billing_street", `${address}`);
+      if (!!address2) {
+        formData.append("billing_street2", `${address2}`);
+      }
+      formData.append("billing_city", `${city}`);
+      formData.append("billing_state_id", `${state}`);
+      formData.append("billing_zip", `${zip}`);
+      formData.append("billing_country_id", `${country}`);
+
+      formData.append("shipping_first_name", `${firstName_shipping}`);
+      formData.append("shipping_last_name", `${lastName_shipping}`);
+      formData.append("shipping_email", `${email_shipping}`);
+      formData.append(
+        "shipping_phone",
+        `${phnCode_shipping} ${phnNumber_shipping}`
+      );
+      formData.append("shipping_street", `${address_shipping}`);
+      if (!!address2_shipping) {
+        formData.append("shipping_street2", `${address2_shipping}`);
+      }
+      formData.append("shipping_city", `${city_shipping}`);
+      formData.append("shipping_state_id", `${state_shipping}`);
+      formData.append("shipping_zip", `${zip_shipping}`);
+      formData.append("shipping_country_id", `${country_shipping}`);
     }
-  }, []);
-  console.log("checkoutAddress");
+    saveAddress(formData, {
+      onSuccess: (response: any) => {
+        queryClient.invalidateQueries(DELIVERY_ADDRESS_LIST);
+        console.log("saveAddress response", response?.data?.message);
+      },
+      onError: (error: any) => {
+        console.log("saveAddress error", error?.response?.data?.message);
+      }
+    });
+  };
+  const selectShippingVendorHandler = () => {
+    if (isButtonStatusChange) {
+      vendorSelectionHandler(true);
+    }
+  };
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const userLoginStatus: boolean =
+  //       !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
+  //     console.log("userLoginStatus", userLoginStatus);
+  //     setIsUserLoggedIn(userLoginStatus);
+  //     if (userLoginStatus) {
+  //       setIsShippedToShippingAddress(false);
+  //     } else {
+  //       setIsShippedToShippingAddress(true);
+  //     }
+  //   }
+  // }, []);
+  console.log("checkoutAddress=====p", checkoutAddress);
 
   return (
     <CheckOutAddressWrap>
-      {/* <------------------------------------------------ CHECKOUT ADDRESS ------------------------------------------------> */}
-      <Box className="billing_adress">
-        <Typography variant="h4" className="form_header">
-          Billing address
-        </Typography>
-        {/* <------------------------------------------------ SAVED ADDRESS ------------------------------------------------>  */}
-        {!isLoading && isUserLoggedIn && (
-          <SavedAddressList
-            checkoutAddress={checkoutAddress?.billing_address}
-          />
-        )}
-        {/* <p
+      <form onSubmit={handleSubmit(onFormSubmit)} id="billing_form">
+        {/* <------------------------------------------------ CHECKOUT ADDRESS ------------------------------------------------> */}
+        <Box className="billing_adress">
+          <Typography variant="h4" className="form_header">
+            Billing address
+          </Typography>
+          {/* <------------------------------------------------ SAVED ADDRESS ------------------------------------------------>  */}
+          {!isLoading && isUserLoggedIn && (
+            <SavedAddressList
+              checkoutAddress={checkoutAddress?.billing_address}
+              type={"billing"}
+            />
+          )}
+          {/* <p
           style={{ color: "#16A6DF", cursor: "pointer" }}
           onClick={() => addMoreHandler("billing")}
         >
           Add more
         </p> */}
-        {/* <------------------------------------------------ ADDRESS FORM ------------------------------------------------>  */}
+          {/* <------------------------------------------------ ADDRESS FORM ------------------------------------------------>  */}
 
-        {!isLoading && !isUserLoggedIn && (
-          <form onSubmit={handleSubmit(onFormSubmitBilling)} id="billing_form">
+          {!isLoading && !isUserLoggedIn && (
+            // <form onSubmit={handleSubmit(onFormSubmitBilling)} id="billing_form">
             <Grid container spacing={2} className="billing_adress_grid">
               <Grid item lg={6} md={6} xs={12}>
                 <InputFieldCommon
@@ -435,52 +589,59 @@ const CheckoutAddress = () => {
                 </CustomButtonPrimary>
               </Grid> */}
             </Grid>
-          </form>
-        )}
-        {!isUserLoggedIn && (
-          <FormControlLabel
-            onChange={shippingAddressHandler}
-            control={<Checkbox checked={isShippedToShippingAddress} />}
-            label="Ship to the same address"
-          />
-        )}
-      </Box>
-      {/* <------------------------------------------------ SHIPPING ADDRESS ------------------------------------------------> */}
-      {!isShippedToShippingAddress && (
-        <Box className="billing_adress">
-          <Typography variant="h4" className="form_header">
-            Shipping address
-          </Typography>
-          {!isLoading && isUserLoggedIn && (
-            <SavedAddressList
-              checkoutAddress={checkoutAddress?.shipping_address}
+            // </form>
+          )}
+          {!isUserLoggedIn && (
+            <FormControlLabel
+              onChange={shippingAddressHandler}
+              control={<Checkbox checked={isShippedToShippingAddress} />}
+              label="Ship to the same address"
             />
           )}
-          {!isLoading && isUserLoggedIn && (
-            <p
-              style={{ color: "#16A6DF", cursor: "pointer" }}
-              onClick={() => addMoreHandler("Add shipping address")}
-            >
-              Add more
-            </p>
-          )}
-          {/* <------------------------------------------------ ADDRESS FORM ------------------------------------------------>  */}
+        </Box>
+        {/* <FormControlLabel
+        // onChange={(e) => checkHandler(e, idx)}
+        control={<Checkbox checked={true} />}
+        // control={<Checkbox checked={!!_i?.is_selected} />}
+        label="Ship to the same address"
+      /> */}
+        {/* <------------------------------------------------ SHIPPING ADDRESS ------------------------------------------------> */}
+        {!isShippedToShippingAddress && (
+          <Box className="billing_adress">
+            <Typography variant="h4" className="form_header">
+              Shipping address
+            </Typography>
+            {!isLoading && isUserLoggedIn && (
+              <SavedAddressList
+                checkoutAddress={checkoutAddress?.shipping_address}
+                type={"shipping"}
+              />
+            )}
+            {!isLoading && isUserLoggedIn && (
+              <p
+                style={{ color: "#16A6DF", cursor: "pointer" }}
+                onClick={() => addMoreHandler("Add shipping address")}
+              >
+                Add more
+              </p>
+            )}
+            {/* <------------------------------------------------ ADDRESS FORM ------------------------------------------------>  */}
 
-          {!isLoading && !isUserLoggedIn && (
-            <form
-              onSubmit={handleSubmit(onFormSubmitShipping)}
-              id="shipping_form"
-            >
+            {!isLoading && !isUserLoggedIn && (
+              // <form
+              //   onSubmit={handleSubmit(onFormSubmitShipping)}
+              //   id="shipping_form"
+              // >
               <Grid container spacing={2} className="billing_adress_grid">
                 <Grid item lg={6} md={6} xs={12}>
                   <InputFieldCommon
                     placeholder="First name"
                     style3
-                    {...register("firstName")}
+                    {...register("firstName_shipping")}
                   />
-                  {errors?.firstName && (
+                  {errors?.firstName_shipping && (
                     <div className="profile_error">
-                      {errors?.firstName?.message}
+                      {errors?.firstName_shipping?.message}
                     </div>
                   )}
                 </Grid>
@@ -488,11 +649,11 @@ const CheckoutAddress = () => {
                   <InputFieldCommon
                     placeholder="Last name"
                     style3
-                    {...register("lastName")}
+                    {...register("lastName_shipping")}
                   />
-                  {errors?.lastName && (
+                  {errors?.lastName_shipping && (
                     <div className="profile_error">
-                      {errors?.lastName?.message}
+                      {errors?.lastName_shipping?.message}
                     </div>
                   )}
                 </Grid>
@@ -501,11 +662,11 @@ const CheckoutAddress = () => {
                   <InputFieldCommon
                     placeholder="Email"
                     style3
-                    {...register("email")}
+                    {...register("email_shipping")}
                   />
-                  {errors?.email && (
+                  {errors?.email_shipping && (
                     <div className="profile_error">
-                      {errors?.email?.message}
+                      {errors?.email_shipping?.message}
                     </div>
                   )}
                 </Grid>
@@ -527,7 +688,7 @@ const CheckoutAddress = () => {
                             //   newValue ? newValue?.id : ""
                             // );
                             setValue(
-                              "phnCode",
+                              "phnCode_shipping",
                               newValue ? newValue?.phone_code : ""
                             );
                             //   setSelectedValues({
@@ -571,9 +732,9 @@ const CheckoutAddress = () => {
                             />
                           )}
                         />
-                        {errors.phnCode && (
+                        {errors.phnCode_shipping && (
                           <div className="profile_error">
-                            {errors.phnCode.message}
+                            {errors.phnCode_shipping.message}
                           </div>
                         )}
                       </Box>
@@ -584,11 +745,11 @@ const CheckoutAddress = () => {
                   <InputFieldCommon
                     placeholder="Phone number"
                     style3
-                    {...register("phnNumber")}
+                    {...register("phnNumber_shipping")}
                   />
-                  {errors?.phnNumber && (
+                  {errors?.phnNumber_shipping && (
                     <div className="profile_error">
-                      {errors?.phnNumber?.message}
+                      {errors?.phnNumber_shipping?.message}
                     </div>
                   )}
                 </Grid>
@@ -599,11 +760,11 @@ const CheckoutAddress = () => {
                     multiline
                     rows={4}
                     maxRows={4}
-                    {...register("address")}
+                    {...register("address_shipping")}
                   />
-                  {errors?.address && (
+                  {errors?.address_shipping && (
                     <div className="profile_error">
-                      {errors?.address?.message}
+                      {errors?.address_shipping?.message}
                     </div>
                   )}
                 </Grid>
@@ -614,7 +775,7 @@ const CheckoutAddress = () => {
                     rows={4}
                     maxRows={4}
                     multiline
-                    {...register("address2")}
+                    {...register("address2_shipping")}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -638,7 +799,10 @@ const CheckoutAddress = () => {
                           onChange={(event: any, newValue: any | null) => {
                             console.log("country", newValue);
                             setSelectedCountryId(newValue ? newValue?.id : "");
-                            setValue("country", newValue ? newValue?.id : "");
+                            setValue(
+                              "country_shipping",
+                              newValue ? newValue?.id : ""
+                            );
                             //   setSelectedValues({
                             //     ...selectedValues,
                             //     country: newValue
@@ -676,9 +840,9 @@ const CheckoutAddress = () => {
                             />
                           )}
                         />
-                        {errors?.country && (
+                        {errors?.country_shipping && (
                           <div className="profile_error">
-                            {errors?.country.message}
+                            {errors?.country_shipping?.message}
                           </div>
                         )}
                       </Box>
@@ -697,7 +861,10 @@ const CheckoutAddress = () => {
                             onChange={(event: any, newValue: any | null) => {
                               console.log("state", newValue);
                               // setSelectedCountryId(newValue ? newValue?.id : "");
-                              setValue("state", newValue ? newValue?.id : "");
+                              setValue(
+                                "state_shipping",
+                                newValue ? newValue?.id : ""
+                              );
                               // setSelectedValues({
                               //   ...selectedValues,
                               //   state: newValue
@@ -710,9 +877,9 @@ const CheckoutAddress = () => {
                               />
                             )}
                           />
-                          {errors?.state && (
+                          {errors?.state_shipping && (
                             <div className="profile_error">
-                              {errors?.state.message}
+                              {errors?.state_shipping?.message}
                             </div>
                           )}
                         </Box>
@@ -724,20 +891,24 @@ const CheckoutAddress = () => {
                   <InputFieldCommon
                     placeholder="City"
                     style3
-                    {...register("city")}
+                    {...register("city_shipping")}
                   />
-                  {errors?.city && (
-                    <div className="profile_error">{errors?.city?.message}</div>
+                  {errors?.city_shipping && (
+                    <div className="profile_error">
+                      {errors?.city_shipping?.message}
+                    </div>
                   )}
                 </Grid>
                 <Grid item lg={6} md={6} xs={12}>
                   <InputFieldCommon
                     placeholder="ZIP code"
                     style3
-                    {...register("zip")}
+                    {...register("zip_shipping")}
                   />
-                  {errors?.zip && (
-                    <div className="profile_error">{errors?.zip?.message}</div>
+                  {errors?.zip_shipping && (
+                    <div className="profile_error">
+                      {errors?.zip_shipping?.message}
+                    </div>
                   )}
                 </Grid>
 
@@ -755,23 +926,40 @@ const CheckoutAddress = () => {
                 </CustomButtonPrimary>
               </Grid> */}
               </Grid>
-            </form>
+              // </form>
+            )}
+          </Box>
+        )}
+        <Grid item lg={12} xs={12} style={{ marginBottom: "30px" }}>
+          {!saveAddressLoader ? (
+            <CustomButtonPrimary
+              variant="contained"
+              color="primary"
+              className="payment_bill_btn mx-auto"
+              type="submit"
+              // form="onFormSubmitBilling"
+              id="shippingButton"
+              onClick={selectShippingVendorHandler}
+            >
+              <Typography variant="body1">
+                {isButtonStatusChange ? "Continue" : "Save"}
+              </Typography>
+            </CustomButtonPrimary>
+          ) : (
+            <CustomButtonPrimary
+              variant="contained"
+              color="primary"
+              className="payment_bill_btn mx-auto"
+              // type="submit"
+              // form="onFormSubmitBilling"
+              id="shippingButton"
+              // onClick={handleClose}
+            >
+              <ButtonLoader />
+            </CustomButtonPrimary>
           )}
-        </Box>
-      )}
-      <Grid item lg={12} xs={12} style={{ marginBottom: "30px" }}>
-        <CustomButtonPrimary
-          variant="contained"
-          color="primary"
-          className="payment_bill_btn mx-auto"
-          type="submit"
-          form="onFormSubmitBilling"
-          id="shippingButton"
-          // onClick={handleClose}
-        >
-          <Typography variant="body1">Save</Typography>
-        </CustomButtonPrimary>
-      </Grid>
+        </Grid>
+      </form>
       {/* <-------------------------------------------- modal ---------------------------------------> */}
       <AddressModal
         open={openmod}

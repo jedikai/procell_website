@@ -12,7 +12,10 @@ import { useAppSelector } from "@/hooks/useAppSelector";
 import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
 import { getCookie } from "@/lib/functions/storage.lib";
-import { refreshProfileImg, updatedProfileImg } from "@/reduxtoolkit/slices/userProfle.slice";
+import {
+  refreshProfileImg,
+  updatedProfileImg
+} from "@/reduxtoolkit/slices/userProfle.slice";
 import { SideBarWrapper } from "@/styles/StyledComponents/SideBarWrapper";
 import { primaryColors } from "@/themes/_muiPalette";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
@@ -108,27 +111,19 @@ export default function SideNavbar() {
       router.push("/auth/login");
 
       if (typeof window !== "undefined") {
-        localStorage.removeItem("userDetails");
+        // localStorage.removeItem("userDetails");
         destroyCookie(null, "userDetails", { path: "/" });
         // router.push("/auth/login");
         destroyCookie(null, "userDetails", { path: "/" });
         logout(
-          {
-            // body: {},
-            // options: {
-            //   headers: {
-            //     Authorization: `Bearer ${sessionId}`
-            //     // Cookie: `frontend_lang=en_US; session_id=${sessionId}`
-            //   }
-            // }
-          },
+          {},
           {
             onSuccess: () => {
-              localStorage.removeItem("userDetails");
+              // localStorage.removeItem("userDetails");
               destroyCookie(null, "userDetails", { path: "/" });
               router.push("/auth/login");
             },
-            onError: () => { }
+            onError: () => {}
           }
         );
       }
@@ -383,8 +378,8 @@ export default function SideNavbar() {
           </List>
         </Box>
       </Box>
-      <MuiModalWrapper open={openmod} onClose={close} title="">
-        <Box className="loginModal">
+      <MuiModalWrapper crossDelete open={openmod} onClose={close} title="">
+        <Box className="loginModal new_secmdl">
           <Box className="modalimgWrap">
             <Image
               src={assest.logoutGradient}

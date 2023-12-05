@@ -68,7 +68,7 @@ export function InvoiceCard({ ...props }: any) {
         </figure>
         <Box className="product_details">
           <Typography variant="h5">{props?.name}</Typography>
-          <Typography>${props?.amount_residual}</Typography>
+          <Typography>${props?.amount_paid}</Typography>
         </Box>
       </Box>
       <Box className="rgt_block">

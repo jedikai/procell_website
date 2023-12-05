@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-curly-brace-presence */
 /* eslint-disable mui-path-imports/mui-path-imports */
 /* eslint-disable react/self-closing-comp */
+import { useOrderConfirm } from "@/hooks/react-qurey/query-hooks/paymentQuery.hooks";
 import assest from "@/json/assest";
 import { confirmproductList } from "@/json/mock/orderConfirm.mock";
 import Wrapper from "@/layout/wrapper/Wrapper";
@@ -10,9 +11,14 @@ import { Box, List, ListItem, Typography } from "@mui/material";
 import Container from "@mui/system/Container/Container";
 import Image from "next/image";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-function index() {
+function Index() {
+  const [enable, setEnable] = useState(false)
+  const { data } = useOrderConfirm(() => { setEnable(false) }, () => { }, enable)
+  useEffect(() => { setEnable(true) }, [])
+  console.log('data', data);
+
   return (
     <Wrapper>
       <Container fixed>
@@ -105,4 +111,4 @@ function index() {
   );
 }
 
-export default index;
+export default Index;

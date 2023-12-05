@@ -16,20 +16,22 @@ import { Box, Container, Grid, Typography } from "@mui/material";
 import { useState } from "react";
 import Lottie from "react-lottie-player";
 import { animationURL } from "@/components/AnimationUrl/AnimationUrl";
+import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 
 function index() {
   const [blogList, setBloglist] = useState([]);
   const [selectedCategoriesId, setSelectedCategoriesId] =
     useState<any>(undefined);
+  const [loadMore, setLoadMore] = useState(5);
   const [categoriesList, setCategorieslist] = useState([]);
   const onBlogListSuccess = (response: any) => {
     setBloglist(response);
   };
-  const onBlogListError = () => { };
+  const onBlogListError = () => {};
   const onCategoriesListSuccess = (response: any) => {
     setCategorieslist(response);
   };
-  const onCategoriesListError = () => { };
+  const onCategoriesListError = () => {};
   const { data, isLoading } = useBlogsList(
     selectedCategoriesId,
     onBlogListSuccess,
@@ -40,6 +42,8 @@ function index() {
 
   const getCategoriesWiseBlog = (id: string | number) =>
     setSelectedCategoriesId(id);
+
+  const loadMoreHandler = () => setLoadMore(loadMore + 5);
   console.log("BLOG_LIST", blogList);
 
   return (
@@ -61,17 +65,19 @@ function index() {
               {!isLoading ? (
                 <Grid container spacing={2}>
                   {blogList && blogList.length > 0 ? (
-                    blogList.map((data: any, index: number) => (
-                      <Grid item xs={12} sm={6} md={4} key={index + 1}>
-                        <OurBlogProduct
-                          link={`/our-blog/blog-details/${data.id}`}
-                          Blogesimg={data?.fimg_url}
-                          blogesDate={data?.date}
-                          blogTitletext={data?.title?.rendered}
-                          blogtext={data?.content?.rendered}
-                        />
-                      </Grid>
-                    ))
+                    blogList
+                      ?.slice(0, loadMore)
+                      .map((data: any, index: number) => (
+                        <Grid item xs={12} sm={6} md={4} key={index + 1}>
+                          <OurBlogProduct
+                            link={`/our-blog/blog-details/${data.id}`}
+                            Blogesimg={data?.fimg_url}
+                            blogesDate={data?.date}
+                            blogTitletext={data?.title?.rendered}
+                            blogtext={data?.content?.rendered}
+                          />
+                        </Grid>
+                      ))
                   ) : (
                     <div
                       style={{
@@ -93,13 +99,27 @@ function index() {
                       </Typography>
                     </div>
                   )}
+                  {blogList?.length > loadMore && (
+                    <Grid item xs={12}>
+                      <Box className="text_center" style={{ marginTop: "0px" }}>
+                        <CustomButtonPrimary
+                          type="button"
+                          variant="contained"
+                          color="primary"
+                          onClick={loadMoreHandler}
+                        >
+                          <Typography>Load More</Typography>
+                        </CustomButtonPrimary>
+                      </Box>
+                    </Grid>
+                  )}
                 </Grid>
               ) : (
                 <ButtonLoaderSecondary />
               )}
             </Grid>
 
-            {!categoriesListLoader &&
+            {!categoriesListLoader && (
               <Grid item xs={12} md={3}>
                 <MaintopicComp
                   title="Categories"
@@ -108,7 +128,7 @@ function index() {
                   selectedCategoriesId={selectedCategoriesId}
                 />
               </Grid>
-            }
+            )}
           </Grid>
         </Container>
       </Box>

@@ -15,14 +15,14 @@ import { Box } from "@mui/system";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
 type Inputs = {
   email: string;
   password: string;
-  remember_me: boolean;
+  remember_me?: boolean;
 };
 
 // <------------------ LOGIN FORM VALIDATION SCHEMA ------------------>
@@ -39,8 +39,8 @@ const validationSchema = yup.object().shape({
 
 const Login = () => {
   const router = useRouter();
+  const [checked, setChecked] = useState(false);
   const { toastSuccess, toastError } = useNotiStack();
-  const [userGivenCred, setUserGivenCred] = useState({});
   const onSuccessUserLogin = () => {
     router.push("/dashboard/profile");
   };
@@ -56,6 +56,8 @@ const Login = () => {
   const {
     register,
     handleSubmit,
+    setValue,
+    getValues,
     formState: { errors }
   } = useForm<Inputs>({
     resolver: yupResolver(validationSchema)
@@ -64,14 +66,8 @@ const Login = () => {
   const onFormSubmit = (data: Inputs) => {
     const { email, password, remember_me } = data;
     const formData: FormData = new FormData();
-    const payload = { login: email, password, db: "procell_21_09" };
     formData.append("login", email);
     formData.append("password", password);
-    // formData.append("db", "procell_21_09");
-    // setUserGivenCred(formData);
-    // refetch();
-    // queryClient.fetchQuery(USER_LOG_IN)
-    // isSignInClicked.current = true;
     userLogin(formData, {
       onSuccess: (data: any) => {
         console.log("login user cred", data, remember_me);
@@ -80,10 +76,19 @@ const Login = () => {
           cred: data?.data?.data?.sid
         });
         sessionStorage.setItem("session_id", data?.data?.data?.sid);
-        if (remember_me) {
-          localStorage.setItem("userDetails", userDetails);
+        // if (remember_me) {
+        if (checked) {
+          localStorage.setItem(
+            "userDetails",
+            JSON.stringify({
+              email,
+              cred: data?.data?.data?.sid,
+              remember_me: checked
+            })
+          );
         } else {
           setCookieClient("userDetails", userDetails);
+          localStorage.removeItem("userDetails");
         }
         router.push("/dashboard/profile");
       },
@@ -95,7 +100,28 @@ const Login = () => {
       }
     });
   };
-
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // const isUserLoggedIn = !!localStorage.getItem("userDetails");
+      // if (isUserLoggedIn) {
+      let getUserDetails: any = {};
+      if (!!localStorage.getItem("userDetails")) {
+        getUserDetails = JSON.parse(localStorage.getItem("userDetails") ?? "");
+      }
+      setValue("email", getUserDetails?.email ?? "");
+      setChecked(getUserDetails?.remember_me ?? false);
+      // setValue("remember_me", getUserDetails?.remember_me ?? false);
+      console.log(
+        "getUserDetails",
+        typeof getUserDetails,
+        getUserDetails?.email ?? "nodata"
+      );
+      //  getUserDetails=JSON.parse()
+    }
+    // }
+  }, []);
+  console.log("getValues", checked);
+  const checkHandler = (data: boolean) => setChecked(data);
   return (
     <LoginWrapper title="welcome TO PROCELL">
       <LoginPageWrapper>
@@ -138,7 +164,11 @@ const Login = () => {
               </Box>
               <Box className="forgot_pass">
                 <Box className="rememberMewrap">
-                  <Switch {...register("remember_me")} />
+                  <Switch
+                    checked={checked}
+                    // {...register("remember_me")}
+                    onChange={(e: any) => checkHandler(e.target.checked)}
+                  />
                   <Typography variant="body1">Remember me</Typography>
                 </Box>
 

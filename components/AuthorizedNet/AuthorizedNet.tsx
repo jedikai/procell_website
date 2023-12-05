@@ -37,8 +37,8 @@ const AuthorizedNet = ({
   //   clientKey: AuthorizedNetCred?.client_key ?? '4S5Pw37LKgmHY4WpTs2G3xT2swRN25qMY34cbsfMQZqCg6q822c7GERfn3RaW4Bd'
   // };
   const authData = {
-    apiLoginID: authorizedData?.authorize_login,
-    clientKey: authorizedData?.authorize_client_key
+    apiLoginID: authorizedData?.apiLoginID,
+    clientKey: authorizedData?.clientKey
   };
   const { dispatchData, loading, error } = useAcceptJs({ authData });
   const [cardData, setCardData] = React.useState<BasicCardInfo>({
@@ -64,6 +64,9 @@ const AuthorizedNet = ({
     let fieldName: string = e.target.name ?? "";
     let fieldValue: string = e.target.value ?? "";
     console.log("getUserGivenCarddetails", fieldName, fieldValue);
+    if (fieldName == "cardCode" && fieldValue?.length > 4) {
+      return false;
+    }
     if (!!fieldName) {
       setCardData({ ...cardData, [fieldName]: fieldValue ?? "" });
     }
@@ -81,7 +84,7 @@ const AuthorizedNet = ({
         name: authData?.apiLoginID,
         transactionKey: "635FzCZUhfpS9927"
       });
-      console.log("Received response:", response);
+      console.log("Received response:", cardData);
       setVerificationLoader(false);
       setVerificationError({
         cardNumber: "",
@@ -144,6 +147,7 @@ const AuthorizedNet = ({
       });
     }
   }, [clearInputs]);
+console.log('show me cardData',cardData);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -152,7 +156,7 @@ const AuthorizedNet = ({
         <Grid container columnSpacing={2} rowSpacing={2.2}>
           <Grid item lg={6} xs={12}>
             <InputFieldCommon
-              placeholder="Card holder name"
+              placeholder="Card zipcode"
               name="cardZipCode"
               value={cardData.cardZipCode}
               onChange={getUserGivenCarddetails}

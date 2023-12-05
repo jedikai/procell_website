@@ -14,4 +14,5 @@ export interface cardItemsApiResponse {
 
 export interface cardItemsProps {
   itemsList: cardItems[];
+  updateBilling?: any;
 }

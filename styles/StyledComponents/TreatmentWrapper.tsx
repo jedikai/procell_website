@@ -105,6 +105,7 @@ export const TreatmentWrapper = styled(Box)`
           height: 100%;
           object-fit: cover;
           border-radius: 10px;
+          cursor: pointer;
 
           @media (max-width: 599px) {
             border-radius: 5px;

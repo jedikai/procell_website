@@ -22,9 +22,8 @@ export const StoryWrapper = styled(Box)`
     pointer-events: none;
     z-index: -1;
     @media (max-width: 599px) {
-     display: none;
+      display: none;
     }
-    
   }
   .storys_sec_upper {
     margin-bottom: 55px;
@@ -38,6 +37,7 @@ export const StoryWrapper = styled(Box)`
       position: relative;
       margin-left: auto;
       max-width: 94%;
+      color: ${primaryColors.black};
       @media (max-width: 1199px) {
         font-size: 100px;
       }
@@ -93,9 +93,9 @@ export const StoryWrapper = styled(Box)`
     max-width: 440px;
     margin-left: auto;
     @media (max-width: 899px) {
-      max-width:100%;
+      max-width: 100%;
     }
-  
+
     p {
       @media (max-width: 899px) {
         font-size: 16px;
@@ -104,13 +104,12 @@ export const StoryWrapper = styled(Box)`
   }
   .story_image {
     position: relative;
-    >figure{
+    > figure {
       line-height: 0;
-      @media (max-width:899px) {
-          width: 50vw;
-          margin: 0 auto;
-        }
-      
+      @media (max-width: 899px) {
+        width: 50vw;
+        margin: 0 auto;
+      }
     }
     &::after {
       content: "";

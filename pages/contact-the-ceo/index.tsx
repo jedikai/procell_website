@@ -11,8 +11,96 @@ import Grid from "@mui/material/Grid";
 
 import Typography from "@mui/material/Typography";
 import Image from "next/image";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import validationText from "@/json/messages/validationText";
+import { useForm } from "react-hook-form";
+import useNotiStack from "@/hooks/useNotistack";
+import { useGetHelpCeoSubmit } from "@/hooks/react-qurey/query-hooks/getHelpQuery.hooks";
+import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
+
+type Inputs = {
+  email: string;
+  fullName: string;
+  callBackPhoneNumber: string;
+  salesOrder?: string;
+  issue: string;
+};
+
+const validationSchema = yup.object().shape({
+  email: yup
+    .string()
+    .email(validationText.error.email_format)
+    .required(validationText.error.enter_email),
+  fullName: yup.string().required(validationText.error.fullName),
+  callBackPhoneNumber: yup
+    .string()
+    .required(validationText.error.phone)
+    .matches(/^\d+$/, validationText.error.valid_phone_number)
+    .test("isValid", validationText.error.phone_number_range, (value) => {
+      console.log(value);
+      if (value && value?.length >= 8 && value?.length <= 16) {
+        return true;
+      } else {
+        return false;
+      }
+    }),
+  // salesOrder: yup
+  //   .string()
+  //   .required(validationText.error.phone)
+  //   .matches(/^\d+$/, validationText.error.valid_phone_number)
+  //   .test("isValid", validationText.error.phone_number_range, (value) => {
+  //     console.log(value);
+  //     if (value && value?.length >= 8 && value?.length <= 16) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
+  //   }),
+  issue: yup.string().required(validationText.error.issue)
+});
 
 export default function Index() {
+  const { toastSuccess, toastError } = useNotiStack();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    getValues,
+    reset,
+    formState: { errors }
+  } = useForm<Inputs>({
+    resolver: yupResolver(validationSchema)
+  });
+  const { mutate: getHelpCeoSubmit, isLoading } = useGetHelpCeoSubmit();
+  const onFormSubmit = (data: any) => {
+    const { email, fullName, callBackPhoneNumber, salesOrder, issue } =
+      data ?? {};
+    let nameSplitter = fullName?.split(" ");
+    let firstName = nameSplitter[0];
+    let lastName = nameSplitter[nameSplitter?.length - 1];
+    console.log("onFormSubmit", data);
+    const formData: FormData = new FormData();
+    formData.append("first_name", firstName);
+    formData.append("last_name", lastName);
+    formData.append("phone", callBackPhoneNumber);
+    formData.append("email", email);
+    if (salesOrder) {
+      formData.append("sale_order", salesOrder);
+    }
+    formData.append("issue", issue);
+    getHelpCeoSubmit(formData, {
+      onSuccess: (response: any) => {
+        console.log("response", response?.data?.message);
+        toastSuccess(response?.data?.message ?? "Form submitted successfully.");
+        reset();
+      },
+      onError: (error: any) => {
+        console.log("error", error);
+        toastError(error?.message ?? "Something went wrong.");
+      }
+    });
+  };
   return (
     <Wrapper>
       <InnerHeader
@@ -56,18 +144,51 @@ export default function Index() {
                       be forwarded straight to the CEO's desk
                     </Typography>
                   </Box>
-                  <form>
+                  <form onSubmit={handleSubmit(onFormSubmit)}>
                     <Box className="form_group">
-                      <InputFieldCommon placeholder="Full name" />
+                      <InputFieldCommon
+                        placeholder="Full name"
+                        {...register("fullName")}
+                      />
                     </Box>
                     <Box className="form_group">
-                      <InputFieldCommon placeholder="Call back number" />
+                      {errors.fullName && (
+                        <div className="profile_error">
+                          {errors.fullName.message}
+                        </div>
+                      )}
                     </Box>
                     <Box className="form_group">
-                      <InputFieldCommon placeholder="Do you have any older number?" />
+                      <InputFieldCommon
+                        placeholder="Call back number"
+                        {...register("callBackPhoneNumber")}
+                      />
                     </Box>
                     <Box className="form_group">
-                      <InputFieldCommon placeholder="Email" />
+                      {errors.callBackPhoneNumber && (
+                        <div className="profile_error">
+                          {errors.callBackPhoneNumber.message}
+                        </div>
+                      )}
+                    </Box>
+                    <Box className="form_group">
+                      <InputFieldCommon
+                        placeholder="Do you have any older number?"
+                        {...register("salesOrder")}
+                      />
+                    </Box>
+                    <Box className="form_group">
+                      <InputFieldCommon
+                        placeholder="Email"
+                        {...register("email")}
+                      />
+                    </Box>
+                    <Box className="form_group">
+                      {errors.email && (
+                        <div className="profile_error">
+                          {errors.email.message}
+                        </div>
+                      )}
                     </Box>
                     <Box className="form_group_textarea">
                       <InputFieldCommon
@@ -76,21 +197,40 @@ export default function Index() {
                         rows={4}
                         maxRows={4}
                         style3
+                        {...register("issue")}
                       />
+                    </Box>
+                    <Box className="form_group">
+                      {errors.issue && (
+                        <div className="profile_error">
+                          {errors.issue.message}
+                        </div>
+                      )}
                     </Box>
                     <Typography variant="body1" className="special_text">
                       *Your issue will go straight to the CEO's desk.
                     </Typography>
 
                     <Box className="submit_btn_holder">
-                      <CustomButtonPrimary
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        form="contact_form"
-                      >
-                        <Typography>Submit</Typography>
-                      </CustomButtonPrimary>
+                      {!isLoading ? (
+                        <CustomButtonPrimary
+                          variant="contained"
+                          color="primary"
+                          type="submit"
+                          // form="contact_form"
+                        >
+                          <Typography>Submit</Typography>
+                        </CustomButtonPrimary>
+                      ) : (
+                        <CustomButtonPrimary
+                          variant="contained"
+                          color="primary"
+                          // type="submit"
+                          // form="contact_form"
+                        >
+                          <ButtonLoader />
+                        </CustomButtonPrimary>
+                      )}
                     </Box>
                   </form>
                 </Box>

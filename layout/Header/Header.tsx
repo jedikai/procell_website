@@ -38,7 +38,10 @@ import { getCookie } from "@/lib/functions/storage.lib";
 import { destroyCookie } from "nookies";
 import { useProfileDetails } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
 import { useAppSelector } from "@/hooks/useAppSelector";
-import { useCartList, useCartListWithAuthCred } from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
+import {
+  useCartList,
+  useCartListWithAuthCred
+} from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getAuthorizationNetCred } from "@/reduxtoolkit/slices/userProfle.slice";
 
@@ -86,8 +89,8 @@ export default React.memo(function Header(props: Props) {
   const { refresh, image } = useAppSelector((s) => s.userProfileImgSlice);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const { data, isLoading, refetch, isFetched } = useProfileDetails(
-    () => { },
-    () => { },
+    () => {},
+    () => {},
     true
   );
   // const { data: cardListData, isLoading: cartListloader } = useCartList(
@@ -95,17 +98,18 @@ export default React.memo(function Header(props: Props) {
   //   () => { }
   // );
   const onAuthorizationCredSuccess = (response: any) => {
-    const { data, providers_data }: any = response ?? {}
+    const { data, providers_data }: any = response ?? {};
     // console.log('onAuthorizationCredSuccess', data, providers_data);
 
-    setCardListData(data)
-    const authorizationCred: { login_id: string, client_key: string } = { login_id: providers_data ? providers_data[0]?.login_id : '', client_key: providers_data ? providers_data[0]?.client_key : '' }
-    dispatch(getAuthorizationNetCred(authorizationCred))
-  }
-  const { data: authorizationData, isLoading: authorizationloader } = useCartListWithAuthCred(
-    onAuthorizationCredSuccess,
-    () => { }
-  );
+    setCardListData(data);
+    const authorizationCred: { login_id: string; client_key: string } = {
+      login_id: providers_data ? providers_data[0]?.login_id : "",
+      client_key: providers_data ? providers_data[0]?.client_key : ""
+    };
+    dispatch(getAuthorizationNetCred(authorizationCred));
+  };
+  const { data: authorizationData, isLoading: authorizationloader } =
+    useCartListWithAuthCred(onAuthorizationCredSuccess, () => {});
   const { mutate: logout } = useLogout();
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -133,7 +137,7 @@ export default React.memo(function Header(props: Props) {
   const handleLogin = () => {
     if (typeof window !== "undefined") {
       setAuthenticUser(false);
-      localStorage.removeItem("userDetails");
+      // localStorage.removeItem("userDetails");
       destroyCookie(null, "userDetails", { path: "/" });
       // router.push("/auth/login");
       destroyCookie(null, "userDetails", { path: "/" });
@@ -150,11 +154,11 @@ export default React.memo(function Header(props: Props) {
         {
           onSuccess: () => {
             setAuthenticUser(false);
-            localStorage.removeItem("userDetails");
+            // localStorage.removeItem("userDetails");
             destroyCookie(null, "userDetails", { path: "/" });
             router.push("/auth/login");
           },
-          onError: () => { }
+          onError: () => {}
         }
       );
     }
@@ -189,7 +193,7 @@ export default React.memo(function Header(props: Props) {
         } else {
           if (getCookie("userDetails")) {
             try {
-              getUserDetails = JSON.parse(getCookie("userDetails") ?? '');
+              getUserDetails = JSON.parse(getCookie("userDetails") ?? "");
             } catch (error) {
               console.error("Error parsing user details:", error);
             }
@@ -332,7 +336,7 @@ export default React.memo(function Header(props: Props) {
                     color="primary"
                     // variant="dot"
                     badgeContent={cartItemsNumber}
-                  // invisible={!!cartItemsNumber}
+                    // invisible={!!cartItemsNumber}
                   >
                     <CartIcon IconHeight="24" IconWidth="24" />
                   </Badge>

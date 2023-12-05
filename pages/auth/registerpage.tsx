@@ -22,7 +22,7 @@ import { Box } from "@mui/system";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import validationText from "../../json/messages/validationText";
@@ -51,8 +51,16 @@ const validationSchema = yup.object().shape({
   phnCode: yup.string().required(validationText.error.phone_code),
   phone: yup
     .string()
-    .matches(phoneRegExp, validationText.error.valid_phone_number)
-    .required(validationText.error.phone),
+    .required(validationText.error.phone)
+    .matches(/^\d+$/, validationText.error.valid_phone_number)
+    .test("isValid", validationText.error.phone_number_range, (value) => {
+      console.log(value);
+      if (value && value?.length >= 8 && value?.length <= 16) {
+        return true;
+      } else {
+        return false;
+      }
+    }),
   password: yup
     .string()
     .required(validationText.error.enter_password)
@@ -67,6 +75,7 @@ const Registerpage = () => {
   const router = useRouter();
   const { toastSuccess, toastError } = useNotiStack();
   const [isUserHadTherapies, setIsUserHadTherapies] = useState<boolean>(true);
+  const [userGivenPhoneCode, setUserGivenPhoneCode] = useState("");
   const {
     register,
     handleSubmit,
@@ -123,10 +132,16 @@ const Registerpage = () => {
     });
   };
 
+  const filterPhoneCodes = useMemo(() => {
+    return userGivenPhoneCode == "" || userGivenPhoneCode == undefined
+      ? countryList
+      : countryList?.filter((_i: any) => _i?.phone_code == userGivenPhoneCode);
+  }, [userGivenPhoneCode, countryList]);
+
+  console.log("filterPhoneCodes", filterPhoneCodes);
+
   return (
-    <LoginWrapper
-      title="welcome TO PROCELL"
-    >
+    <LoginWrapper title="welcome TO PROCELL">
       <LoginPageWrapper>
         <Box className="wrapper">
           <Link href="/">
@@ -172,6 +187,7 @@ const Registerpage = () => {
                       id="phonecode-select-demo"
                       className="autocomplete_div"
                       sx={{ width: 300 }}
+                      // filterOptions={filterOptions}
                       onChange={(event: any, newValue: any | null) => {
                         console.log("country", newValue);
                         // setSelectedCountryId(
@@ -182,7 +198,7 @@ const Registerpage = () => {
                           newValue ? newValue?.phone_code : ""
                         );
                       }}
-                      options={countryList ?? []}
+                      options={filterPhoneCodes ?? []}
                       disabled={countryLoader}
                       autoHighlight
                       // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
@@ -205,26 +221,37 @@ const Registerpage = () => {
                           {option.phone_code}
                         </Box>
                       )}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          // {...register("country")}
-                          // label="Choose a country"
-                          placeholder="Phone code"
-                          inputProps={{
-                            ...params.inputProps
-                            // autoComplete: "new-password" // disable autocomplete and autofill
-                          }}
-                        />
-                      )}
+                      renderInput={(params) => {
+                        setUserGivenPhoneCode(
+                          `${params?.inputProps?.value ?? ""}`
+                        );
+                        return (
+                          <TextField
+                            {...params}
+                            // onChange={(e) =>
+                            //   setUserGivenPhoneCode(e.target.value)
+                            // }
+                            // {...register("country")}
+                            // label="Choose a country"
+                            placeholder="Phone code"
+                            inputProps={{
+                              ...params.inputProps
+                              // autoComplete: "new-password" // disable autocomplete and autofill
+                            }}
+                          />
+                        );
+                      }}
                     />
                     {errors.phnCode && (
-                      <div className="phnCode_error">
+                      <div
+                        className="phnCode_error"
+                        style={{ marginLeft: "10px" }}
+                      >
                         {errors.phnCode.message}
                       </div>
                     )}
                   </div>
-                  <div>
+                  <div style={{ width: '100%' }}>
                     <InputFieldCommon
                       placeholder="Phone Number"
                       style2

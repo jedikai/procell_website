@@ -15,6 +15,7 @@ interface MuiModalWrapperProps {
   scroll?: "paper" | "body";
   children: JSX.Element | JSX.Element[];
   title: string;
+  crossDelete?: boolean;
 }
 
 export default function MuiModalWrapper({
@@ -22,7 +23,8 @@ export default function MuiModalWrapper({
   onClose,
   scroll,
   children,
-  title
+  title,
+  crossDelete
 }: MuiModalWrapperProps) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -48,9 +50,11 @@ export default function MuiModalWrapper({
           spacing={2}
         >
           <Typography>{title}</Typography>
-          <IconButton onClick={onClose} autoFocus>
-            <CloseIcon />
-          </IconButton>
+          {!crossDelete && (
+            <IconButton onClick={onClose} autoFocus>
+              <CloseIcon />
+            </IconButton>
+          )}
         </Stack>
       </Box>
 

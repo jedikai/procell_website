@@ -23,22 +23,30 @@ import { memo, useEffect, useState } from "react";
 //   product_uom_qty,
 //   price_reduce_taxexcl
 // }: cardItemsApiResponse) {
-function ItemsList({ item }: any) {
-  const { id,
+function ItemsList({ item, updateBilling }: any) {
+  const {
+    id,
     product_id,
     product_image_url,
     name_short,
     product_uom_qty,
-    price_reduce_taxexcl } = item ?? {}
+    price_reduce_taxexcl
+  } = item ?? {};
   const [ItemCount, setItemCount] = useState(0);
-  const { mutate: updateItemQuantity } = useUpdateItemQuantity();
+  const { mutate: updateItemQuantity, isLoading } = useUpdateItemQuantity();
   const handleDecrement = () => {
+    if (isLoading) {
+      return false;
+    }
     if (ItemCount !== 1) {
       setItemCount((prev: number) => prev - 1);
       updateItemQuantityHandler(ItemCount - 1);
     }
   };
   const handleIncrement = () => {
+    if (isLoading) {
+      return false;
+    }
     setItemCount(ItemCount + 1);
     updateItemQuantityHandler(ItemCount + 1);
   };
@@ -47,7 +55,7 @@ function ItemsList({ item }: any) {
     formData.append("product_variant_id", `${product_id[0]}`);
     formData.append("line_id", `${id}`);
     formData.append("set_qty", `${quantity}`);
-    updateItemQuantity(formData);
+    updateItemQuantity(formData, { onSuccess: () => updateBilling() });
   };
   useEffect(() => {
     if (!!product_uom_qty) {
@@ -78,7 +86,7 @@ function ItemsList({ item }: any) {
     </Box>
   );
 }
-const ItemsCard = ({ itemsList }: cardItemsProps) => {
+const ItemsCard = ({ itemsList, updateBilling }: cardItemsProps) => {
   return (
     <CartItemsWrapper>
       <Stack
@@ -90,7 +98,13 @@ const ItemsCard = ({ itemsList }: cardItemsProps) => {
         <Typography variant="body1">Items</Typography>
       </Stack>
       {itemsList && itemsList?.length > 0 ? (
-        itemsList?.map((item: any, index) => <ItemsList item={item} key={index + 1}/>)
+        itemsList?.map((item: any, index) => (
+          <ItemsList
+            item={item}
+            key={index + 1}
+            updateBilling={updateBilling}
+          />
+        ))
       ) : (
         <Typography variant="body1">
           There is no item s in your cart.

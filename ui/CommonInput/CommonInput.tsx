@@ -5,15 +5,12 @@ import { primaryColors } from "@/themes/_muiPalette";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 
-
 import TextField, { StandardTextFieldProps } from "@mui/material/TextField";
 import { styled } from "@mui/system";
 
 import React, { forwardRef } from "react";
 import PasswordHideicon from "../Icons/PasswordHideIcon";
 import ShowPasswordIcon from "../Icons/ShowPasswordIcon";
-
-
 
 const InputWrap = styled(TextField as any)`
   &.border_none {
@@ -152,12 +149,24 @@ type InputFieldCommonProps = StandardTextFieldProps & {
   style2?: boolean;
   style3?: boolean;
   disabled?: boolean;
-  defaultValues?:string;
+  defaultValues?: string;
   pattern?: string;
 };
 
 const InputFieldCommon = forwardRef<HTMLInputElement, InputFieldCommonProps>(
-  ({ isPassword = false, adorMentIcon, style2, style3,disabled,defaultValues, ...others }, ref) => {
+  (
+    {
+      isPassword = false,
+      adorMentIcon,
+      style2,
+      style3,
+      disabled,
+      defaultValues,
+      ...others
+    },
+    ref
+  ) => {
+    console.log('value', others?.placeholder ?? 'no placeholder', others?.value ?? 'no value')
     const [showPassword, setShowPassword] = React.useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -179,10 +188,10 @@ const InputFieldCommon = forwardRef<HTMLInputElement, InputFieldCommonProps>(
           style2
             ? "border_none"
             : style3
-            ? "border_round"
-            : isPassword
-            ? "has_password"
-            : ""
+              ? "border_round"
+              : isPassword
+                ? "has_password"
+                : ""
         }
         InputProps={{
           inputRef: ref,
@@ -194,7 +203,7 @@ const InputFieldCommon = forwardRef<HTMLInputElement, InputFieldCommonProps>(
                 onMouseDown={handleMouseDownPassword}
                 disableRipple
               >
-                {showPassword ? <ShowPasswordIcon/> : <PasswordHideicon />}
+                {showPassword ? <ShowPasswordIcon /> : <PasswordHideicon />}
               </IconButton>
             </InputAdornment>
           ) : (

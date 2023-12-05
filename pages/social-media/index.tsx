@@ -25,7 +25,7 @@ import Typography from "@mui/material/Typography";
 import { Box, Container } from "@mui/system";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { StringLocale } from "yup/lib/locale";
@@ -44,6 +44,7 @@ type Inputs = {
   source: string;
   refference: string;
   type: boolean;
+  proof_of_conversation: any;
 };
 
 const phoneRegExp = /^[0-9]{10}$/;
@@ -67,6 +68,20 @@ export default function Index() {
       .string()
       .email(validationText.error.email_format)
       .required(validationText.error.enter_email),
+    proof_of_conversation: yup
+      .mixed()
+      .required("File is required")
+      .test("fileSize", "File size must be less than 10MB", (value) => {
+        if (!value) {
+          // File is not required, so it's considered valid if not present
+          return true;
+        }
+
+        // 10MB in bytes
+        const maxSizeInBytes = 10 * 1024 * 1024;
+
+        return value && value.size <= maxSizeInBytes;
+      }),
     firstName: yup.string().required(validationText.error.first_name),
     lastName: yup.string().required(validationText.error.last_name),
     phnCode: yup.string().required(validationText.error.phone_code),
@@ -142,6 +157,7 @@ export default function Index() {
       zipCode,
       source,
       refference,
+      proof_of_conversation,
       type
     } = data;
     const formData: any = new FormData();
@@ -149,6 +165,7 @@ export default function Index() {
       formData.append("first_name", firstName);
       formData.append("last_name", lastName);
       formData.append("email_from", email);
+      formData.append("proof_of_conversation", proof_of_conversation);
       formData.append("phone", `${phnCode} ${phone}`);
       formData.append("message", source);
       formData.append("have_been_in_contact", refference);
@@ -216,9 +233,9 @@ export default function Index() {
       : countryList?.filter((_i: any) => _i?.phone_code == userGivenPhoneCode);
   }, [userGivenPhoneCode, countryList]);
 
-  console.log("countryList===========>", userGivenPhoneCode, filterPhoneCodes);
+  const getProofFile = useCallback((data: any) => setValue('proof_of_conversation', data), [])
 
-
+  console.log("countryList===========>", errors);
 
   return (
     <Wrapper>
@@ -402,6 +419,14 @@ export default function Index() {
                       {errors.email && (
                         <div className="profile_error">
                           {errors.email.message}
+                        </div>
+                      )}
+                    </Box>
+                    <Box className="form_group">
+                      <CustomFileInput getProofFile={getProofFile} />
+                      {errors.proof_of_conversation && (
+                        <div className="profile_error">
+                          {`${errors.proof_of_conversation.message}`}
                         </div>
                       )}
                     </Box>

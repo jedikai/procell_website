@@ -7,7 +7,7 @@ export const TreatMentSecWrapper = styled(Box)`
   background-image: url(${assest.blur_img}), url(${assest.blurPngFull});
   position: relative;
   background-repeat: no-repeat;
-  background-position:-100% 80%,110% 100%;
+  background-position: -100% 80%, 110% 100%;
   @media (max-width: 899px) {
     background-position: 100% 8%, 0% 0;
     z-index: -1;
@@ -40,7 +40,7 @@ export const TreatMentSecWrapper = styled(Box)`
     top: 50px;
     right: 200px;
     opacity: 0.5;
- 
+
     filter: blur(1px);
     @media (max-width: 899px) {
       display: none;
@@ -68,6 +68,7 @@ export const TreatMentSecWrapper = styled(Box)`
     }
     h3 {
       font-size: 83px;
+      color: ${primaryColors.black};
       @media (max-width: 1199px) {
         font-size: 80px;
       }
@@ -94,14 +95,13 @@ export const TreatMentSecWrapper = styled(Box)`
       background-size: 100% 100%;
       width: 100%;
       height: 110%;
-      @media (max-width:899px) {
+      @media (max-width: 899px) {
         background-size: cover;
-        bottom:69%;
+        bottom: 69%;
         height: 50%;
       }
-      @media (max-width:499px) {
-        bottom:70%;
-        
+      @media (max-width: 499px) {
+        bottom: 70%;
       }
     }
   }

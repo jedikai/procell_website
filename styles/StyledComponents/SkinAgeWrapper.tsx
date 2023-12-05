@@ -39,6 +39,7 @@ export const SkinAgeWrapper = styled(Box)`
     }
 
     h2 {
+      color: ${primaryColors.black};
       span {
         color: inherit;
         font-weight: inherit;

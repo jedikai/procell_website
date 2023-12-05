@@ -20,10 +20,12 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { Box, Container } from "@mui/system";
-import React, { useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 
 const Checkout = () => {
+  const getIdRef = useRef(null);
   const [cartList, setCartList] = useState([]);
+  const [isSelectVendorEnable, setIsSelectVendorEnable] = useState(false);
   const [checkoutDetails, setCheckoutDetails] = useState({
     totalAmount: 0,
     deliveryCharge: 0,
@@ -51,7 +53,7 @@ const Checkout = () => {
     //     : 0
     // );
   };
-  const onErrorCartList = () => { };
+  const onErrorCartList = () => {};
   const { data: cardListData, isLoading: cartListloader } = useCartList(
     onSuccessCartList,
     onErrorCartList
@@ -59,17 +61,17 @@ const Checkout = () => {
   const onSuccessDeliveryMedhodsList = (response: any) => {
     const modifiedList = response
       ? response?.map((_item: any) => {
-        return {
-          value: _item?.id,
-          label: "",
-          title: _item?.name,
-          content: `${_item?.website_description}`
-        };
-      })
+          return {
+            value: _item?.id,
+            label: "",
+            title: _item?.name,
+            content: `${_item?.website_description}`
+          };
+        })
       : [];
     setDeliveryMethodList(modifiedList);
   };
-  const onErrorDeliveryMedhodsList = () => { };
+  const onErrorDeliveryMedhodsList = () => {};
   const {
     data: deliveryMedhodsListData,
     isLoading: deliveryMedhodsListloader
@@ -83,6 +85,7 @@ const Checkout = () => {
   const getSelectedDeliveryMedhods = (e: any) => {
     setShowPaymentSection(true);
     const id = e.target.value;
+    getIdRef.current = id;
     const formData: FormData = new FormData();
     formData.append("carrier_id", `${id}`);
     // shipmentRate(formData, {
@@ -107,7 +110,29 @@ const Checkout = () => {
       }
     });
   };
+  const updateBilling = useCallback(() => {
+    const formData: FormData = new FormData();
+    formData.append("carrier_id", `${getIdRef.current}`);
+    updateDeliveryMode(formData, {
+      onSuccess: (response: any) => {
+        if (response) {
+          const { new_amount_total, new_amount_delivery, new_amount_untaxed } =
+            response?.data?.data ?? {};
+          setCheckoutDetails({
+            totalAmount: new_amount_total,
+            deliveryCharge: new_amount_delivery,
+            itemsTotal: new_amount_untaxed
+          });
+        }
 
+        console.log("updatedDeliveryMode", response?.data?.data);
+      }
+    });
+  }, [checkoutDetails]);
+  const vendorSelectionHandler = useCallback(
+    (data: boolean) => setIsSelectVendorEnable(data),
+    [isSelectVendorEnable]
+  );
   // const getSelectedDeliveryMedhods = (id: number | string) => {
   //   const formData: FormData = new FormData();
   //   formData.append("product_variant_id", `${id}`);
@@ -128,26 +153,37 @@ const Checkout = () => {
           <Grid container spacing={3}>
             <Grid item lg={7.5} xs={12}>
               {/* <---------------------------------------- ADDRESS SECTION ------------------------------------------> */}
-              <CheckoutAddress />
+              <CheckoutAddress
+                vendorSelectionHandler={vendorSelectionHandler}
+              />
               {/* <---------------------------------------- CHOOSE METHOD SECTION ------------------------------------------> */}
-              <Typography variant="h4" className="form_header">
-                Choose a delivery method
-              </Typography>
-              <Box className="delivery_options_wrap">
-                {/* <DeliveryMethodList
+              {isSelectVendorEnable && (
+                <>
+                  <Typography variant="h4" className="form_header">
+                    Choose a delivery method
+                  </Typography>
+                  <Box className="delivery_options_wrap">
+                    {/* <DeliveryMethodList
                   radioList={deliveryMethodList}
                   customlabel
                   onChange={getSelectedDeliveryMedhods}
                 /> */}
-                <CustomRadio
-                  radioList={deliveryMethodList}
-                  customlabel
-                  onChange={getSelectedDeliveryMedhods}
-                />
-              </Box>
+                    <CustomRadio
+                      radioList={deliveryMethodList}
+                      customlabel
+                      onChange={getSelectedDeliveryMedhods}
+                    />
+                  </Box>
+                </>
+              )}
             </Grid>
             <Grid item lg={4.5} xs={12}>
-              {!isLoading && cartList && <ItemsCard itemsList={cartList ?? []} />}
+              {!isLoading && cartList && (
+                <ItemsCard
+                  itemsList={cartList ?? []}
+                  updateBilling={updateBilling}
+                />
+              )}
               {showPaymentSection && (
                 <PaymentCardDetailsCard
                   subtotal={checkoutDetails?.itemsTotal}

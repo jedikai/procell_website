@@ -90,7 +90,7 @@ export const CardItemCardWrapper = styled(Box)`
       }
 
       .input_wrap {
-        width: 32px;
+        width: 52px;
         margin: 0 14px;
 
         .MuiInputAdornment-root {

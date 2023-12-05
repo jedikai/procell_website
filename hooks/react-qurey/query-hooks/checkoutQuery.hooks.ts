@@ -50,9 +50,16 @@ export const useAddressList = (
   useQuery([DELIVERY_ADDRESS_LIST], getAddressList, {
     onSuccess,
     onError,
-    select: (data) => data?.data?.data ?? []
+    select: (data) => data?.data?.data ?? {}
   });
+// <------------------------------ ADDRESS SAVE APIS ------------------------------>
 
+  const saveAddress = async (body: object) => {
+    const res = await axiosInstance.post(endpoints.app.address_save, body);
+    return res;
+  };
+  
+  export const useSaveAddresss = () => useMutation(saveAddress);
 
   // <------------------------------ EDIT ADDRESS APIS ------------------------------>
 

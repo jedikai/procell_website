@@ -25,6 +25,8 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQueryClient } from "react-query";
 import * as yup from "yup";
+import DeleteIcon from "@/ui/Icons/DeleteIcon";
+import { decryptData } from "common/functions/decryptCryptoToken";
 
 type Inputs = {
   cardName: string;
@@ -70,9 +72,10 @@ const cardsArray = [
 ];
 function PaymentMethods() {
   const queryClient = useQueryClient();
-  const clearInputs = useRef(false);
+  // const clearInputs = useRef(false);
   const { toastSuccess, toastError } = useNotiStack();
   const [cardList, setCardList] = useState(cardsArray);
+  const [clearInputs, setClearInputs] = useState(false);
   const [paymentTransactionInfo, setPaymentTransactionInfo] = useState<any>({});
   const [authorizedData, setAuthorizedData] = useState<any>({});
   const [cardSaveLoader, setCardSaveLoader] = useState(false);
@@ -98,7 +101,24 @@ function PaymentMethods() {
       transaction_route,
       landing_route
     } = response ?? {};
-    setAuthorizedData(providers && providers?.length > 0 ? providers[0] : {});
+    const {
+      encrypted_authorize_login,
+      encrypted_authorize_client_key,
+      id
+    }: any = providers && providers?.length > 0 ? providers[0] : {};
+    setAuthorizedData({
+      apiLoginID:
+        decryptData(
+          encrypted_authorize_login,
+          process.env.NEXT_AUTHORIZATION_CRYPTO_SECRET_KEY ?? ""
+        ) ?? "",
+      clientKey:
+        decryptData(
+          encrypted_authorize_client_key,
+          process.env.NEXT_AUTHORIZATION_CRYPTO_SECRET_KEY ?? ""
+        ) ?? "",
+      id: id
+    });
     setSavedCards(tokens && tokens?.length > 0 ? tokens : []);
     setPaymentTransactionInfo({
       reference_prefix,
@@ -208,35 +228,6 @@ function PaymentMethods() {
     }
 
     if (!!token?.dataValue) {
-      // createCustomerProfile(
-      //   {
-      //     cardNumber,
-      //     expirationDate: `${year}-${month}`,
-      //     email: savedEmail,
-      //     description,
-      //     merchantCustomerId,
-      //     name,
-      //     transactionKey
-      //   },
-      //   {
-      //     onSuccess: (response: any) => {
-      //       const {
-      //         customerProfileId,
-      //         customerPaymentProfileIdList,
-      //         customerShippingAddressIdList,
-      //         messages
-      //       } = response ?? {};
-      //       if (messages?.resultCode == "Ok") {
-      //         console.log(
-      //           "createCustomerProfile",
-      //           customerProfileId,
-      //           customerPaymentProfileIdList,
-      //           customerShippingAddressIdList
-      //         );
-      //       }
-      //     }
-      //   }
-      // );
       const formData: FormData = new FormData();
       formData.append("partner_id", `${paymentTransactionInfo?.partner_id}`);
       formData.append(
@@ -274,7 +265,7 @@ function PaymentMethods() {
           formData.append("reference", `${reference}`);
           formData.append("partner_id", `${partner_id}`);
           formData.append("access_token", `${access_token}`);
-          formData.append("opaque_data", token);
+          formData.append("opaque_data", JSON.stringify(token));
           // formData.append("opaque_data", JSON.stringify(token));
 
           const payload = {
@@ -289,7 +280,8 @@ function PaymentMethods() {
               queryClient.invalidateQueries(GET_CARD_LIST);
               toastSuccess(response?.data?.message ?? "Card saved.");
               setCardSaveLoader(false);
-              clearInputs.current = true;
+              // clearInputs.current = true;
+              setClearInputs(true)
             },
             onError: (error: any) => {
               console.log("authorizePayment onError", error);
@@ -297,7 +289,7 @@ function PaymentMethods() {
                 error?.response?.data?.message ?? "Something went wrong."
               );
               setCardSaveLoader(false);
-              clearInputs.current = true;
+              // clearInputs.current = true;
             }
           });
           // Payment provider deleted successfully.
@@ -328,49 +320,30 @@ function PaymentMethods() {
             <PaymentMethodsWrapper>
               <div className="card_area">
                 <h2>Your saved cards</h2>
-                <div className="grid-container">
+                <div className="grid-container-card">
                   {savedCards.map((_card: any, index: number) => (
-                    <div className="saved_cards_outer" key={index + 1}>
-                      <div className="saved_cards">
-                        {/* <Image
-                          className="cardtypeimg"
-                          src={_card?.cardImg}
-                          alt={"cardtype"}
-                          width={_card?.cardImgWidth}
-                          height={_card?.cardImgHeight}
-                        /> */}
-                        <div className="card_details">
-                          <p>{_card?.display_name ?? ""}</p>
-                          {/* <span>
-                            {_card?.cardNumber ?? "4242 4242 4242 4242"}
-                          </span> */}
+                    <div className="saved_cards_newout">
+                      <div className="saved_cards_outer" key={index + 1}>
+                        <div className="saved_cards">
+                          {/* <Image
+                            className="cardtypeimg"
+                            src={_card?.cardImg}
+                            alt={"cardtype"}
+                            width={_card?.cardImgWidth}
+                            height={_card?.cardImgHeight}
+                          /> */}
+                          <div className="card_details">
+                            <p>{_card?.display_name ?? ""}</p>
+                            {/* <span>
+                              {_card?.cardNumber ?? "4242 4242 4242 4242"}
+                            </span> */}
+                          </div>
                         </div>
-                      </div>
-                      <div className="tooltip">
-                        <svg
-                          id="Layer_1"
-                          data-name="Layer 1"
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 29.96 122.88"
-                          fill="black"
-                          height="20px"
-                          width="20px"
-                          // {...props}
+                        <div
+                          className="saved_card_delete_icon"
+                          onClick={() => deleteCard(_card?.id)}
                         >
-                          <defs>
-                            <style>{".cls-1{fill-rule:evenodd;}"}</style>
-                          </defs>
-                          <title>{"3-vertical-dots"}</title>
-                          <path
-                            className="cls-1"
-                            d="M15,0A15,15,0,1,1,0,15,15,15,0,0,1,15,0Zm0,92.93a15,15,0,1,1-15,15,15,15,0,0,1,15-15Zm0-46.47a15,15,0,1,1-15,15,15,15,0,0,1,15-15Z"
-                          />
-                        </svg>
-                        <div className="tooltiptext">
-                          {/* <span onClick={() => editCard(_card)}>Edit</span> */}
-                          <span onClick={() => deleteCard(_card?.id)}>
-                            Delete
-                          </span>
+                          <DeleteIcon />
                         </div>
                       </div>
                     </div>
@@ -381,7 +354,7 @@ function PaymentMethods() {
                 getToken={getToken}
                 authorizedData={authorizedData}
                 buttonloading={cardSaveLoader}
-                clearInputs={clearInputs.current}
+                clearInputs={clearInputs}
               />
             </PaymentMethodsWrapper>
           </Box>
