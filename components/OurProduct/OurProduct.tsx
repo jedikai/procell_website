@@ -19,13 +19,13 @@ function OurProduct({
   ourProductimg
 }: ourProductsection) {
   const settings = {
-    dots: true,
+    dots: false,
     infinite: true,
     autoplay: false,
-    arrows: false,
+    arrows: true,
     speed: 500,
-    slidesToShow: 2,
-    slidesToScroll: 1,
+    slidesToShow: 3,
+    slidesToScroll: 3,
     responsive: [
       {
         breakpoint: 600,

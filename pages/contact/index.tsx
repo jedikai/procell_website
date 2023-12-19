@@ -1,5 +1,4 @@
 import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
-import CustomFileInput from "@/components/CustomFileInput/CustomFileInput";
 import InnerHeader from "@/components/InnerHeader/InnerHeader";
 import {
   useContactUs,
@@ -15,7 +14,6 @@ import { ContactWrapper } from "@/styles/StyledComponents/ContactWrapper";
 import { primaryColors } from "@/themes/_muiPalette";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
-import CustomRadio from "@/ui/CustomRadio/CustomRadio";
 import DeliveryVendorRaioHandler from "@/ui/CustomRadio/DeliveryVendorRaioHandler";
 import CallIcon from "@/ui/Icons/CallIcon";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -221,8 +219,8 @@ export default function Index() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      let isUserConsumer = localStorage.getItem("isConsumer");
-      if (!!isUserConsumer) {
+      const isUserConsumer = localStorage.getItem("isConsumer");
+      if (isUserConsumer) {
         setConsent('consumer')
       }
     }
@@ -269,7 +267,7 @@ export default function Index() {
             <Grid
               container
               spacing={{ xl: 4, lg: 2, md: 2, xs: 4 }}
-              alignItems="flex-end"
+              alignItems=""
             >
               <Grid item xl={5} lg={6} md={6} xs={12}>
                 <figure>

@@ -36,6 +36,7 @@ export const endpoints = {
     faq_list: "web/faqs",
     story_section_data: "web/homepage_details",
     treatment_video_data: "web/video_urls",
+    image_comparision_data: "web/image_comparison",
     get_help_reason: "web/get_help_reason",
     get_help_submit: "web/get_help_submit",
     get_help_ceo_submit: "web/get_help_ceo_submit",

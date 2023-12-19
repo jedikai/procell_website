@@ -46,6 +46,7 @@ type Inputs = {
 export default function Index() {
   const { toastSuccess, toastError } = useNotiStack();
   const [selectedCountryId, setSelectedCountryId] = useState("");
+  const [hasUserConcent, setHasUserConcent] = useState(false);
   const [userGivenPhoneCode, setUserGivenPhoneCode] = useState("");
   const [selectedValues, setSelectedValues] = useState({
     phnCode: null,
@@ -111,7 +112,7 @@ export default function Index() {
       zipCode
     } = data ?? {};
     const formData: any = new FormData();
-    formData.append("type", "professional");
+    formData.append("type", "consumer");
     formData.append("first_name", firstName);
     formData.append("email_from", email);
     formData.append("zip", zipCode);
@@ -130,6 +131,7 @@ export default function Index() {
           country: null,
           state: null
         });
+        setHasUserConcent(false)
         toastSuccess(data?.data?.message);
       },
       onError: (data: any) => {
@@ -154,7 +156,7 @@ export default function Index() {
       ? countryList
       : countryList?.filter((_i: any) => _i?.phone_code == userGivenPhoneCode);
   }, [userGivenPhoneCode, countryList]);
-  console.log("selectedValues", selectedValues);
+  console.log("hasUserConcent", hasUserConcent);
   return (
     <Wrapper>
       <InnerHeader
@@ -318,9 +320,9 @@ export default function Index() {
                             placeholder="Phone number"
                             // type="number"
                             {...register("phone")}
-                            // {...register("phone", {
-                            //   max: 3
-                            // })}
+                          // {...register("phone", {
+                          //   max: 3
+                          // })}
                           />
                           {errors.phone && (
                             <div className="profile_error">
@@ -376,8 +378,8 @@ export default function Index() {
                             options={
                               countryList && countryList?.length > 0
                                 ? countryList?.filter(
-                                    (_i: any) => _i?.phone_code == 1
-                                  )
+                                  (_i: any) => _i?.phone_code == 1
+                                )
                                 : []
                             }
                             disabled={countryLoader}
@@ -465,7 +467,7 @@ export default function Index() {
                   <Box className="form_btm_sec">
                     <Box className="option_sec">
                       <FormControlLabel
-                        // onChange={shippingAddressHandler}
+                        onChange={(e: any) => setHasUserConcent(e.target.checked)}
                         control={<Checkbox />}
                         label="I give Procell Therapies permission to share information with local practitioners offering treatments."
                       />
@@ -476,6 +478,7 @@ export default function Index() {
                         color="primary"
                         type="submit"
                         form="contact_form"
+                        disabled={!hasUserConcent}
                       >
                         <Typography>Submit</Typography>
                       </CustomButtonPrimary>

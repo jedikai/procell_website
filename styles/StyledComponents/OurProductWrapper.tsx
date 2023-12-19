@@ -55,6 +55,7 @@ export const OurProductWrapper = styled(Box)`
     position: absolute;
     bottom: 0;
     right: 0;
+    max-width: 640px;
 
     img {
       width: 100%;
@@ -154,6 +155,24 @@ export const OurProductWrapper = styled(Box)`
         padding: 0 16px;
         @media (max-width: 599px) {
           padding: 0;
+        }
+      }
+
+      .slick-arrow{
+        width: 40px;
+        height: 40px;
+        &:before{
+          display: none;
+        }
+        &.slick-prev{
+          background: url("/assets/images/ArrowLeft.svg") no-repeat center center;
+          background-size: 100%;
+          left: -30px;
+        }
+        &.slick-next{
+          background: url("/assets/images/ArrowRight.svg") no-repeat center center;
+          background-size: 100%;
+          right: -30px;
         }
       }
 

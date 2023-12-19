@@ -99,6 +99,26 @@ export const TreatMentSecWrapper = styled(Box)`
       }
     }
   }
+
+  .compare_slider{
+    .slick-arrow{
+        width: 40px;
+        height: 40px;
+        &:before{
+          display: none;
+        }
+        &.slick-prev{
+          background: url("/assets/images/ArrowLeft.svg") no-repeat center center;
+          background-size: 100%;
+          left: -30px;
+        }
+        &.slick-next{
+          background: url("/assets/images/ArrowRight.svg") no-repeat center center;
+          background-size: 100%;
+          right: -30px;
+        }
+      }
+  }
   .compare_sec {
     position: relative;
     img {

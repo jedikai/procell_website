@@ -94,5 +94,7 @@ export default {
   moreBlogTwo: "/assets/images/moreblog2.png",
   moreBlogThree: "/assets/images/moreblog3.png",
   getHelpImage: "/assets/images/get-help.png",
-  contactCeoImage: "/assets/images/contact-ceo.png"
+  contactCeoImage: "/assets/images/contact-ceo.png",
+  arrowRightIco: "/assets/images/ArrowRight.svg",
+  arrowLeftIco: "/assets/images/ArrowLeft"
 };

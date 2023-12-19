@@ -1,7 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
 import { endpoints } from "@/api/endpoints";
 import { useQuery } from "react-query";
-import { GET_STORY_SECTION_DATA, GET_TREATMENT_VIDEO_DATA } from "../query-keys/storySecQuery.keys";
+import { GET_IMAGE_COMPRESSION_DATA, GET_STORY_SECTION_DATA, GET_TREATMENT_VIDEO_DATA } from "../query-keys/storySecQuery.keys";
 
 const getStorySecData = async () => {
   const res = await axiosInstance.get(`${endpoints.app.story_section_data}`);
@@ -30,4 +30,18 @@ export const useTreatmentVideoData = (
     onSuccess,
     onError,
     select: (data) => data?.data?.data ?? []
+  });
+const getImageCompressionData = async () => {
+  const res = await axiosInstance.get(endpoints.app.image_comparision_data);
+  return res;
+};
+
+export const useImageCompressionData = (
+  onSuccess: any = () => {},
+  onError: any = () => {}
+) =>
+  useQuery([GET_IMAGE_COMPRESSION_DATA], getImageCompressionData, {
+    onSuccess,
+    onError,
+    // select: (data) => data?.data?.data ?? []
   });

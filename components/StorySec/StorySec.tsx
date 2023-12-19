@@ -32,10 +32,11 @@ export default function StorySec({
   title,
   children
 }: // cardList
-  StorySecProps) {
+StorySecProps) {
   const [cardList, setCardList] = useState<any>([]);
   const onSuceessStorySecDataFetch = (response: any) => {
-    const { direct_representation_countries, worlwide_treatment_count } = response ?? {};
+    const { direct_representation_countries, worlwide_treatment_count } =
+      response ?? {};
     setCardList([
       {
         number: "2013",
@@ -44,16 +45,18 @@ export default function StorySec({
           "With over 30 years in dermatology, Dr. Mitchell Schwartz established Procell Therapies to create safer, non-invasive anti-aging solutions through innovative engineering."
       },
       {
-        number: formatNumber(parseInt(worlwide_treatment_count??'-')),
-        title: "Treatment Worldwide",
+        number: formatNumber(parseInt(worlwide_treatment_count ?? "-")),
+        title: "Procell Treatments",
         content:
-          "Thanks to consistently positive real world results, people around the world are discovering the power of Procell Therapies."
+          "Procell Therapies has established a legacy of excellence in skincare. Each treatment reflects our commitment to innovation and quality, profoundly impacting individuals' lives across the globe. We're proud to be at the forefront of advanced skincare, continually advancing the field and setting new standards for effective, client-focused care."
       },
       {
-        number: `${formatNumber(parseInt(direct_representation_countries??'-'))}+`,
+        number: `${formatNumber(
+          parseInt(direct_representation_countries ?? "-")
+        )}`,
         title: "Countries of Direct Representation",
         content:
-          "We're excited to share Procell Therapies' global expansion, now serving countries worldwide. Our commitment to innovative skincare solutions emphasizes our dedication to enhancing skin health and beauty on an international scale."
+          "With its proven real-world results and innovative treatment techniques, Procell Therapies is capturing attention globally, as individuals around the world discover its transformative impact in advanced skincare."
       }
     ]);
   };
@@ -84,7 +87,7 @@ export default function StorySec({
                 <Typography variant="h2">{title}</Typography>
                 {/* <Box className="story_content">{children}</Box> */}
                 <Box className="story_content">
-                  <iframe
+                  {/* <iframe
                     width="660"
                     height="378"
                     src="https://www.youtube.com/embed/492HPE-UL-I?si=4BRJ1nnBU4XVMktA"
@@ -93,6 +96,16 @@ export default function StorySec({
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     allowFullScreen={true}
                     style={{ borderRadius: "20px" }} // You can adjust the value as per your preference
+                  ></iframe> */}
+                  <iframe
+                    width="560"
+                    height="315"
+                    src="https://www.youtube.com/embed/k3DYWkUxbVg?si=62hTEPo2eJCwQw6P&rel=0"
+                    title="YouTube video player"
+                    frameBorder={0}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen={true}
+                    style={{ borderRadius: "20px" }}
                   ></iframe>
                 </Box>
               </Box>
@@ -101,7 +114,7 @@ export default function StorySec({
         </Box>
         <Box className="storys_sec_lwr">
           <Grid container spacing={{ md: 4, xs: 2 }} justifyContent="center">
-            {cardList?.map((item:any) => (
+            {cardList?.map((item: any) => (
               <Grid item lg={4} md={6} xs={12} key={item?.title}>
                 <StoryCard {...item} />
               </Grid>
