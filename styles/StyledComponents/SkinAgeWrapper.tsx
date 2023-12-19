@@ -67,6 +67,23 @@ export const SkinAgeWrapper = styled(Box)`
       }
     }
   }
+
+  .skinage_content{
+   display: flex;
+   justify-content: center;
+   .skinage_content_inner{
+    background-color: ${primaryColors.white};
+    padding: 40px;
+    border-radius: 10px;
+    @media(max-width: 599px){
+      padding: 15px;
+    }
+   }
+    
+    iframe{
+      max-width: 100%;
+    }
+  }
 `;
 
 export const SkinAgeCardWrapper = styled(Box)`

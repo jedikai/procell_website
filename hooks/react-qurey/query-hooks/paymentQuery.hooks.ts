@@ -88,5 +88,15 @@ export const useOrderConfirm = (
     onSuccess,
     onError,
     enabled,
-    // select: (data) => data?.data?.data ?? []
+    select: (data) => data?.data?.data ?? []
   });
+
+const updateShipping = async (body: object) => {
+  const res = await axiosInstance.post(
+    `${endpoints.app.update_shipping}`,
+    body
+  );
+  return res;
+};
+
+export const useUpdateShipping = () => useMutation(updateShipping);

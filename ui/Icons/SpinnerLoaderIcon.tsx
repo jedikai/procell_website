@@ -1,6 +1,6 @@
 import React from "react";
 
-const SpinnerLoaderIcon = ({ width = 150, height = 150 }) => {
+const SpinnerLoaderIcon = ({ width = 150, height = 150 ,fill='#16A6DF'}) => {
     return (
         <>
             <svg
@@ -13,7 +13,7 @@ const SpinnerLoaderIcon = ({ width = 150, height = 150 }) => {
                 viewBox="0 0 100 100"
             >
                 <g transform="translate(80 50)">
-                    <circle r="6" fill="#16A6DF">
+                    <circle r="6" fill={fill}>
                         <animateTransform
                             attributeName="transform"
                             begin="-0.875s"
@@ -34,7 +34,7 @@ const SpinnerLoaderIcon = ({ width = 150, height = 150 }) => {
                     </circle>
                 </g>
                 <g transform="translate(71.213 71.213) rotate(45)">
-                    <circle r="6" fill="#16A6DF" fillOpacity="0.875">
+                    <circle r="6" fill={fill} fillOpacity="0.875">
                         <animateTransform
                             attributeName="transform"
                             begin="-0.75s"
@@ -55,7 +55,7 @@ const SpinnerLoaderIcon = ({ width = 150, height = 150 }) => {
                     </circle>
                 </g>
                 <g transform="translate(50 80) rotate(90)">
-                    <circle r="6" fill="#16A6DF" fillOpacity="0.75">
+                    <circle r="6" fill={fill} fillOpacity="0.75">
                         <animateTransform
                             attributeName="transform"
                             begin="-0.625s"
@@ -76,7 +76,7 @@ const SpinnerLoaderIcon = ({ width = 150, height = 150 }) => {
                     </circle>
                 </g>
                 <g transform="translate(28.787 71.213) rotate(135)">
-                    <circle r="6" fill="#16A6DF" fillOpacity="0.625">
+                    <circle r="6" fill={fill} fillOpacity="0.625">
                         <animateTransform
                             attributeName="transform"
                             begin="-0.5s"
@@ -97,7 +97,7 @@ const SpinnerLoaderIcon = ({ width = 150, height = 150 }) => {
                     </circle>
                 </g>
                 <g transform="translate(20 50) rotate(180)">
-                    <circle r="6" fill="#16A6DF" fillOpacity="0.5">
+                    <circle r="6" fill={fill} fillOpacity="0.5">
                         <animateTransform
                             attributeName="transform"
                             begin="-0.375s"
@@ -118,7 +118,7 @@ const SpinnerLoaderIcon = ({ width = 150, height = 150 }) => {
                     </circle>
                 </g>
                 <g transform="translate(28.787 28.787) rotate(225)">
-                    <circle r="6" fill="#16A6DF" fillOpacity="0.375">
+                    <circle r="6" fill={fill} fillOpacity="0.375">
                         <animateTransform
                             attributeName="transform"
                             begin="-0.25s"
@@ -139,7 +139,7 @@ const SpinnerLoaderIcon = ({ width = 150, height = 150 }) => {
                     </circle>
                 </g>
                 <g transform="translate(50 20) rotate(270)">
-                    <circle r="6" fill="#16A6DF" fillOpacity="0.25">
+                    <circle r="6" fill={fill} fillOpacity="0.25">
                         <animateTransform
                             attributeName="transform"
                             begin="-0.125s"
@@ -160,7 +160,7 @@ const SpinnerLoaderIcon = ({ width = 150, height = 150 }) => {
                     </circle>
                 </g>
                 <g transform="translate(71.213 28.787) rotate(315)">
-                    <circle r="6" fill="#16A6DF" fillOpacity="0.125">
+                    <circle r="6" fill={fill} fillOpacity="0.125">
                         <animateTransform
                             attributeName="transform"
                             begin="0s"

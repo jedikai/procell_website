@@ -27,7 +27,7 @@ export default function Index() {
     setBlogDetailsData(response[0] ?? {});
     setBlogCountEnable(true);
   };
-  const onErrorBlogDetails = (response: any) => {};
+  const onErrorBlogDetails = (response: any) => { };
   const { data, isLoading } = useScienceBlogDetails(
     id,
     !!id,
@@ -42,7 +42,7 @@ export default function Index() {
     // console.log("useBlogDetails", response);
     setRelatedBlogListData(response ?? []);
   };
-  const onErrorRelatedBlogList = (response: any) => {};
+  const onErrorRelatedBlogList = (response: any) => { };
   const { data: related_blog_list, isLoading: related_blog_loader } =
     useRelatedBlogList(
       id,
@@ -59,15 +59,15 @@ export default function Index() {
         bannerImage={assest.innerHeaderbackground}
         innerHeaderMainPage="Home"
       />
-      <BlogDeailsMain
+      {!isLoading ? <BlogDeailsMain
         blogDetailsData={blogDetailsData}
         topDetails={topDetailsData}
         blogContents={blogContetentsData}
-      />
-      <MoreBlogs
+      /> : <></>}
+      {!related_blog_loader ? <MoreBlogs
         moreBlogsData={moreblogList}
         relatedBlogListData={relatedBlogListData}
-      />
+      /> : <></>}
     </Wrapper>
   );
 }

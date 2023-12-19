@@ -1,3 +1,4 @@
+import axiosInstance from "@/api/axiosInstance";
 import { endpoints } from "@/api/endpoints";
 import EventListeners from "@/components/EventListener/EventListener";
 import { checkWindow } from "@/lib/functions/_helpers.lib";
@@ -57,7 +58,7 @@ export default function CustomApp({
     if (!isUserLoggedIn) {
       let isSessionIdAvailable = !!sessionStorage.getItem("session_id");
       if (!isSessionIdAvailable) {
-        axios.get(endpoints.app.create_session_id).then((response) => {
+        axiosInstance.get(endpoints.app.create_session_id).then((response) => {
           const { session_id }: any = response ? response?.data?.data : {};
           console.log("onSuccessGetSessionId", session_id);
           sessionStorage.setItem("session_id", session_id);

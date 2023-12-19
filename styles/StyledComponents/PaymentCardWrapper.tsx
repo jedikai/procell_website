@@ -135,5 +135,12 @@ export const PaymentCardWrapper = styled(Card)`
     font-size: 18px;
     font-weight: 700;
     color: ${primaryColors.black};
+    font-family: "Roboto";
+  }
+  .chk_box {
+    css-uu7pab-MuiTypography-root {
+      font-weight: 500!important;
+      color: ${primaryColors.black}!important;
+    }
   }
 `;

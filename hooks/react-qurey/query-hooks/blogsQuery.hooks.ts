@@ -109,7 +109,7 @@ export const useBlogCount = (
   });
 //   <------------------ CREATE SESSION ID ------------------->
 const getSessionId = async () => {
-  const res = await axios.get(endpoints.app.create_session_id);
+  const res = await axiosInstance.get(endpoints.app.create_session_id);
   return res;
 };
 

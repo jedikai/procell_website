@@ -1,5 +1,5 @@
 export interface StoryCardList {
-  number: string;
+  number: string | number;
   title: string;
   content: string;
 }

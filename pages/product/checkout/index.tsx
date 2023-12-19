@@ -1,3 +1,4 @@
+import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import CheckoutAddress from "@/components/CheckoutAddress/CheckoutAddress";
 import DeliveryMethodList from "@/components/DeliveryMethod/DeliveryMethodList";
 import InnerHeader from "@/components/InnerHeader/InnerHeader";
@@ -12,18 +13,23 @@ import {
 import assest from "@/json/assest";
 import Wrapper from "@/layout/wrapper/Wrapper";
 import { CheckoutWrapper } from "@/styles/StyledComponents/CheckoutWrapper";
+import { CheckOutAddressWrap } from "@/styles/StyledComponents/ChekOutAddressWrapper";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
+import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import CustomRadio from "@/ui/CustomRadio/CustomRadio";
+import DeliveryVendorRaioHandler from "@/ui/CustomRadio/DeliveryVendorRaioHandler";
 import MuiModalWrapper from "@/ui/Modal/MuiModalWrapper";
+import { Button } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { Box, Container } from "@mui/system";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 const Checkout = () => {
   const getIdRef = useRef(null);
+  const targetRef = useRef<HTMLDivElement | null>(null);
   const [cartList, setCartList] = useState([]);
   const [isSelectVendorEnable, setIsSelectVendorEnable] = useState(false);
   const [checkoutDetails, setCheckoutDetails] = useState({
@@ -31,7 +37,10 @@ const Checkout = () => {
     deliveryCharge: 0,
     itemsTotal: 0
   });
+  const [scrollCount, setScrollCount] = useState<number>(0);
   const [amount, setAmount] = useState(0);
+  const [selectedVendor, setSelectedVendor] = useState(0);
+  const [selectedShippingId, setSelectedShippingId] = useState<any>(null);
   const [showPaymentSection, setShowPaymentSection] = useState(false);
   const [deliveryMethodList, setDeliveryMethodList] = useState([]);
   const [deliveryShipmentRate, setDeliveryShipmentRate] = useState<
@@ -83,8 +92,8 @@ const Checkout = () => {
   const { mutate: updateDeliveryMode, isLoading: updateLoader } =
     useUpdateDeleveryMode();
   const getSelectedDeliveryMedhods = (e: any) => {
-    setShowPaymentSection(true);
     const id = e.target.value;
+    setSelectedVendor(id);
     getIdRef.current = id;
     const formData: FormData = new FormData();
     formData.append("carrier_id", `${id}`);
@@ -96,6 +105,7 @@ const Checkout = () => {
     // });
     updateDeliveryMode(formData, {
       onSuccess: (response: any) => {
+        setShowPaymentSection(true);
         if (response) {
           const { new_amount_total, new_amount_delivery, new_amount_untaxed } =
             response?.data?.data ?? {};
@@ -104,6 +114,13 @@ const Checkout = () => {
             deliveryCharge: new_amount_delivery,
             itemsTotal: new_amount_untaxed
           });
+          if (targetRef.current) {
+            targetRef.current.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+              inline: "center"
+            });
+          }
         }
 
         console.log("updatedDeliveryMode", response?.data?.data);
@@ -130,14 +147,40 @@ const Checkout = () => {
     });
   }, [checkoutDetails]);
   const vendorSelectionHandler = useCallback(
-    (data: boolean) => setIsSelectVendorEnable(data),
+    (data: any) => {
+      const { status, id } = data ?? {};
+      setIsSelectVendorEnable(status);
+      setSelectedShippingId(id);
+    },
     [isSelectVendorEnable]
   );
+  useEffect(() => {
+    setSelectedVendor(0);
+  }, [selectedShippingId]);
   // const getSelectedDeliveryMedhods = (id: number | string) => {
   //   const formData: FormData = new FormData();
   //   formData.append("product_variant_id", `${id}`);
   // };
-  // console.log("response", amount, cartList);
+  console.log("selectedVendor", selectedVendor);
+
+  const handleScroll = () => {
+    setScrollCount(window.scrollY);
+  };
+  const handleScrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.addEventListener("scroll", handleScroll);
+    }
+
+    // Cleanup the event listener on component unmount
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [scrollCount]);
+
   return (
     <Wrapper>
       <InnerHeader
@@ -150,6 +193,20 @@ const Checkout = () => {
 
       <CheckoutWrapper className="cmn_gap">
         <Container fixed>
+          <CheckOutAddressWrap>
+            <Box
+              className="billing_adress"
+              style={{
+                paddingBottom: "0px",
+                borderBottom: "0px",
+                marginBottom: "0px"
+              }}
+            >
+              <Typography variant="h4" className="form_header">
+                Billing address
+              </Typography>
+            </Box>
+          </CheckOutAddressWrap>
           <Grid container spacing={3}>
             <Grid item lg={7.5} xs={12}>
               {/* <---------------------------------------- ADDRESS SECTION ------------------------------------------> */}
@@ -168,11 +225,16 @@ const Checkout = () => {
                   customlabel
                   onChange={getSelectedDeliveryMedhods}
                 /> */}
-                    <CustomRadio
-                      radioList={deliveryMethodList}
-                      customlabel
-                      onChange={getSelectedDeliveryMedhods}
-                    />
+                    {!deliveryMedhodsListloader ? (
+                      <DeliveryVendorRaioHandler
+                        radioList={deliveryMethodList}
+                        customlabel
+                        onChange={getSelectedDeliveryMedhods}
+                        RadioGroupValue={selectedVendor}
+                      />
+                    ) : (
+                      <ButtonLoaderSecondary />
+                    )}
                   </Box>
                 </>
               )}
@@ -184,16 +246,34 @@ const Checkout = () => {
                   updateBilling={updateBilling}
                 />
               )}
+              <div ref={targetRef}></div>
               {showPaymentSection && (
                 <PaymentCardDetailsCard
                   subtotal={checkoutDetails?.itemsTotal}
                   shipping={checkoutDetails?.deliveryCharge}
                   totalAmount={checkoutDetails?.totalAmount}
                   loader={updateLoader}
+                  showPaymentSection={showPaymentSection}
                 />
               )}
             </Grid>
           </Grid>
+          {scrollCount >= 480 && (
+            <button
+              className="scroll_back_to_top_btn"
+              onClick={handleScrollToTop}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                height={30}
+                width={30}
+                fill="white"
+              >
+                <path d="M34.9 289.5l-22.2-22.2c-9.4-9.4-9.4-24.6 0-33.9L207 39c9.4-9.4 24.6-9.4 33.9 0l194.3 194.3c9.4 9.4 9.4 24.6 0 33.9L413 289.4c-9.5 9.5-25 9.3-34.3-.4L264 168.6V456c0 13.3-10.7 24-24 24h-32c-13.3 0-24-10.7-24-24V168.6L69.2 289.1c-9.3 9.8-24.8 10-34.3.4z"></path>
+              </svg>
+            </button>
+          )}
         </Container>
       </CheckoutWrapper>
       {/* <-------------------------------- modal ---------------------------------> */}

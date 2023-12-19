@@ -27,7 +27,7 @@ export const OurProductWrapper = styled(Box)`
     z-index: -2;
     pointer-events: none;
   }
-  &::before {
+  /* &::before {
     content: "";
     width: 100%;
     height: 50%;
@@ -47,7 +47,7 @@ export const OurProductWrapper = styled(Box)`
     @media (max-width:599px) {
       display: none;
     }
-  }
+  } */
   .ourProductLadyimg {
     line-height: 1;
     box-sizing: border-box;

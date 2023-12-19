@@ -11,6 +11,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import OurProductSlider from "../OurProductSlider/OurProductSlider";
+import { useFeaturedProductList } from "@/hooks/react-qurey/query-hooks/productQuery.hooks";
 
 function OurProduct({
   producttitle,
@@ -35,6 +36,7 @@ function OurProduct({
       }
     ]
   };
+  const { data: featuredProductData, isLoading } = useFeaturedProductList();
 
   return (
     <OurProductWrapper>
@@ -67,15 +69,21 @@ function OurProduct({
         </Box>
         <Box className="ourProductSliderwrapperSection">
           <Slider {...settings}>
-            {ourproductList.map((item: any, index: number) => (
-              <OurProductSlider
-                key={index + 1}
-                OurProductsliderImg={item.productImg}
-                productSlidertext={item.productTitle}
-                productSliderPrice={item.productprice}
-                link={item.link}
-              />
-            ))}
+            {!isLoading &&
+              featuredProductData &&
+              featuredProductData?.length > 0 &&
+              featuredProductData.map((item: any, index: number) => {
+                const { id, name, image_1920_url, list_price } = item ?? {};
+                return (
+                  <OurProductSlider
+                    key={index + 1}
+                    OurProductsliderImg={image_1920_url ?? ""}
+                    productSlidertext={name ?? ""}
+                    productSliderPrice={list_price ?? ""}
+                    link={id ?? ""}
+                  />
+                );
+              })}
           </Slider>
         </Box>
       </Container>

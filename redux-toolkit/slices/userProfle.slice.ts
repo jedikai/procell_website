@@ -4,7 +4,8 @@ import { userProfileImageInterface } from "../interfaces/interfaces";
 const initialState: userProfileImageInterface = {
   refresh: false,
   image: "",
-  AuthorizedNetCred: { login_id: "", client_key: "" }
+  AuthorizedNetCred: { login_id: "", client_key: "" },
+  userName: ""
 };
 
 const userProfileImgSlice = createSlice({
@@ -22,12 +23,19 @@ const userProfileImgSlice = createSlice({
       action: PayloadAction<{ login_id: string; client_key: string }>
     ) => {
       state.AuthorizedNetCred = action.payload;
+    },
+    getUserName: (state, action: PayloadAction<string>) => {
+      state.userName = action.payload;
     }
   },
   extraReducers: {}
 });
 
-export const { refreshProfileImg, updatedProfileImg, getAuthorizationNetCred } =
-  userProfileImgSlice.actions;
+export const {
+  refreshProfileImg,
+  updatedProfileImg,
+  getAuthorizationNetCred,
+  getUserName
+} = userProfileImgSlice.actions;
 
 export default userProfileImgSlice.reducer;

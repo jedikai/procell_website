@@ -12,20 +12,32 @@ import { CheckOutAddressWrap } from "@/styles/StyledComponents/ChekOutAddressWra
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Autocomplete from "@mui/material/Autocomplete";
+import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { Box } from "@mui/system";
-import { SyntheticEvent, useEffect, useRef, useState } from "react";
+import {
+  SyntheticEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState
+} from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import AddressModal from "./AddressModal";
 import SavedAddressList from "./SavedAddressList";
 import { Checkbox, FormControlLabel } from "@mui/material";
 import { useQueryClient } from "react-query";
-import { DELIVERY_ADDRESS_LIST } from "@/hooks/react-qurey/query-keys/checkoutQuery.keys";
+import {
+  DELIVERY_ADDRESS_LIST,
+  DELIVERY_METHODS_LIST
+} from "@/hooks/react-qurey/query-keys/checkoutQuery.keys";
 import ButtonLoader from "../ButtonLoader/ButtonLoader";
+import { useUpdateShipping } from "@/hooks/react-qurey/query-hooks/paymentQuery.hooks";
+import useNotiStack from "@/hooks/useNotistack";
 
 type Inputs = {
   firstName: string;
@@ -53,10 +65,12 @@ type Inputs = {
 };
 const phoneRegExp = /^[0-9]{10}$/;
 
-const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
+const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
   const queryClient = useQueryClient();
+  const { toastSuccess, toastError } = useNotiStack();
   const BillingRef = useRef<any>(null);
   const ShippingRef = useRef<any>(null);
+  const [userGivenPhoneCode, setUserGivenPhoneCode] = useState("");
   const [openmod, setopenmod] = useState(false);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [checkoutAddress, setCheckoutAddress] = useState<any>({
@@ -78,20 +92,26 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
     console.log("CHECKOUT_ADDRESS_LIST", response);
     if (Object.keys(response)?.length > 0) {
       setIsButtonStatusChange(true);
-      setIsUserLoggedIn(true);
       setIsShippedToShippingAddress(false);
-      const { billing_address, shipping_address }: any = response ?? {};
+      const { billing_address, shipping_address, is_data_completed }: any =
+        response ?? {};
+      setIsUserLoggedIn(!!is_data_completed);
       setCheckoutAddress({
         billing_address: [billing_address],
         shipping_address
       });
+
+      // setSelectedShippingaddressId(getselectedShippingAddressId);
     } else {
       setIsButtonStatusChange(false);
       setIsUserLoggedIn(false);
       setIsShippedToShippingAddress(true);
     }
   };
-  const { data, isLoading } = useAddressList(onSuccesCheckoutAddressList);
+  const { data, isLoading } = useAddressList(
+    onSuccesCheckoutAddressList,
+    () => { }
+  );
   const { data: countryList, isLoading: countryLoader } = useCountryList();
   const { data: stateList, isLoading: stateLoder } = useStateList(
     !!selectedCountryId,
@@ -99,6 +119,8 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
   );
   const { mutate: saveAddress, isLoading: saveAddressLoader } =
     useSaveAddresss();
+  const { mutate: updateShipping, isLoading: updateShippingLoader } =
+    useUpdateShipping();
   const validationSchema = yup.object().shape({
     firstName: yup.string().required(validationText.error.first_name),
     lastName: yup.string().required(validationText.error.last_name),
@@ -124,35 +146,35 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
     state: yup.string().required(validationText.error.phone),
     ...(!isShippedToShippingAddress
       ? {
-          firstName_shipping: yup
-            .string()
-            .required(validationText.error.first_name),
-          lastName_shipping: yup
-            .string()
-            .required(validationText.error.last_name),
-          email_shipping: yup
-            .string()
-            .email(validationText.error.email_format)
-            .required(validationText.error.enter_email),
-          phnCode_shipping: yup
-            .string()
-            .required(validationText.error.phone_code),
-          phnNumber_shipping: yup.string().required(validationText.error.phone),
-          // .matches(/^\d+$/, validationText.error.valid_phone_number)
-          // .test("isValid", validationText.error.phone_number_range, (value) => {
-          //   console.log(value);
-          //   if (value && value?.length >= 8 && value?.length <= 16) {
-          //     return true;
-          //   } else {
-          //     return false;
-          //   }
-          // }),
-          address_shipping: yup.string().required(validationText.error.address),
-          city_shipping: yup.string().required(validationText.error.city),
-          zip_shipping: yup.string().required(validationText.error.phone),
-          country_shipping: yup.string().required(validationText.error.phone),
-          state_shipping: yup.string().required(validationText.error.phone)
-        }
+        firstName_shipping: yup
+          .string()
+          .required(validationText.error.first_name),
+        lastName_shipping: yup
+          .string()
+          .required(validationText.error.last_name),
+        email_shipping: yup
+          .string()
+          .email(validationText.error.email_format)
+          .required(validationText.error.enter_email),
+        phnCode_shipping: yup
+          .string()
+          .required(validationText.error.phone_code),
+        phnNumber_shipping: yup.string().required(validationText.error.phone),
+        // .matches(/^\d+$/, validationText.error.valid_phone_number)
+        // .test("isValid", validationText.error.phone_number_range, (value) => {
+        //   console.log(value);
+        //   if (value && value?.length >= 8 && value?.length <= 16) {
+        //     return true;
+        //   } else {
+        //     return false;
+        //   }
+        // }),
+        address_shipping: yup.string().required(validationText.error.address),
+        city_shipping: yup.string().required(validationText.error.city),
+        zip_shipping: yup.string().required(validationText.error.phone),
+        country_shipping: yup.string().required(validationText.error.phone),
+        state_shipping: yup.string().required(validationText.error.phone)
+      }
       : {})
   });
   const {
@@ -259,14 +281,55 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
       },
       onError: (error: any) => {
         console.log("saveAddress error", error?.response?.data?.message);
+        toastError(error?.response?.data?.message ?? "Something went wrong.");
       }
     });
   };
   const selectShippingVendorHandler = () => {
-    if (isButtonStatusChange) {
-      vendorSelectionHandler(true);
-    }
+    // if (isButtonStatusChange && !!selectedShippingaddressId) {
+    //   const formData: FormData = new FormData();
+    //   formData.append("partner_id", `${selectedShippingaddressId}`);
+    //   updateShipping(formData, {
+    //     onSuccess: () => {
+    //       vendorSelectionHandler(true);
+    //     },
+    //     onError: () => { }
+    //   });
+    //   // vendorSelectionHandler(true);
+    // }
   };
+  const getSelectedAddressId = useCallback((id: number | string) => {
+    // setSelectedShippingaddressId(id);
+    const formData: FormData = new FormData();
+    formData.append("partner_id", `${id}`);
+    updateShipping(formData, {
+      onSuccess: () => {
+        vendorSelectionHandler({ status: true, id: id });
+        queryClient.invalidateQueries(DELIVERY_METHODS_LIST);
+      },
+      onError: () => { }
+    });
+  }, []);
+  useEffect(() => {
+    let getselectedShippingAddressId =
+      data && data?.shipping_address && data?.shipping_address?.length > 0
+        ? data?.shipping_address?.filter((_i: any) => !!_i?.is_selected)[0]?.id
+        : null;
+    if (getselectedShippingAddressId) {
+      const formData: FormData = new FormData();
+      formData.append("partner_id", `${getselectedShippingAddressId}`);
+      updateShipping(formData, {
+        onSuccess: () => {
+          vendorSelectionHandler({
+            status: true,
+            id: getselectedShippingAddressId
+          });
+          queryClient.invalidateQueries(DELIVERY_METHODS_LIST);
+        },
+        onError: () => { }
+      });
+    }
+  }, [data]);
   // useEffect(() => {
   //   if (typeof window !== "undefined") {
   //     const userLoginStatus: boolean =
@@ -280,6 +343,18 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
   //     }
   //   }
   // }, []);
+
+  const filterCountryOptions = createFilterOptions({
+    matchFrom: "start",
+    stringify: (option: any) => option.name
+  });
+
+  const filterPhoneCodes = useMemo(() => {
+    return userGivenPhoneCode == "" || userGivenPhoneCode == undefined
+      ? countryList
+      : countryList?.filter((_i: any) => _i?.phone_code == userGivenPhoneCode);
+  }, [userGivenPhoneCode, countryList]);
+
   console.log("checkoutAddress=====p", checkoutAddress);
 
   return (
@@ -287,9 +362,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
       <form onSubmit={handleSubmit(onFormSubmit)} id="billing_form">
         {/* <------------------------------------------------ CHECKOUT ADDRESS ------------------------------------------------> */}
         <Box className="billing_adress">
-          <Typography variant="h4" className="form_header">
+          {/* <Typography variant="h4" className="form_header">
             Billing address
-          </Typography>
+          </Typography> */}
           {/* <------------------------------------------------ SAVED ADDRESS ------------------------------------------------>  */}
           {!isLoading && isUserLoggedIn && (
             <SavedAddressList
@@ -369,7 +444,8 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
                           //     phnCode: newValue
                           //   });
                         }}
-                        options={countryList ?? []}
+                        options={filterPhoneCodes ?? []}
+                        // options={countryList ?? []}
                         disabled={countryLoader}
                         autoHighlight
                         // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
@@ -392,18 +468,23 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
                             {option.phone_code}
                           </Box>
                         )}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            // {...register("country")}
-                            // label="Choose a country"
-                            placeholder="Phone code"
-                            inputProps={{
-                              ...params.inputProps
-                              // autoComplete: "new-password" // disable autocomplete and autofill
-                            }}
-                          />
-                        )}
+                        renderInput={(params) => {
+                          setUserGivenPhoneCode(
+                            `${params?.inputProps?.value ?? ""}`
+                          );
+                          return (
+                            <TextField
+                              {...params}
+                              // {...register("country")}
+                              // label="Choose a country"
+                              placeholder="Phone code"
+                              inputProps={{
+                                ...params.inputProps
+                                // autoComplete: "new-password" // disable autocomplete and autofill
+                              }}
+                            />
+                          );
+                        }}
                       />
                       {errors.phnCode && (
                         <div className="profile_error">
@@ -469,6 +550,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
                         className="autocomplete_div"
                         // sx={{ width: 300 }}
                         // value={selectedValues?.country}
+                        filterOptions={filterCountryOptions}
                         onChange={(event: any, newValue: any | null) => {
                           console.log("country", newValue);
                           setSelectedCountryId(newValue ? newValue?.id : "");
@@ -591,7 +673,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
             </Grid>
             // </form>
           )}
-          {!isUserLoggedIn && (
+          {!isLoading && !isUserLoggedIn && (
             <FormControlLabel
               onChange={shippingAddressHandler}
               control={<Checkbox checked={isShippedToShippingAddress} />}
@@ -614,6 +696,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
             {!isLoading && isUserLoggedIn && (
               <SavedAddressList
                 checkoutAddress={checkoutAddress?.shipping_address}
+                getSelectedAddressId={getSelectedAddressId}
                 type={"shipping"}
               />
             )}
@@ -696,7 +779,8 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
                             //     phnCode: newValue
                             //   });
                           }}
-                          options={countryList ?? []}
+                          options={filterPhoneCodes ?? []}
+                          // options={countryList ?? []}
                           disabled={countryLoader}
                           autoHighlight
                           // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
@@ -719,18 +803,23 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
                               {option.phone_code}
                             </Box>
                           )}
-                          renderInput={(params) => (
-                            <TextField
-                              {...params}
-                              // {...register("country")}
-                              // label="Choose a country"
-                              placeholder="Phone code"
-                              inputProps={{
-                                ...params.inputProps
-                                // autoComplete: "new-password" // disable autocomplete and autofill
-                              }}
-                            />
-                          )}
+                          renderInput={(params) => {
+                            setUserGivenPhoneCode(
+                              `${params?.inputProps?.value ?? ""}`
+                            );
+                            return (
+                              <TextField
+                                {...params}
+                                // {...register("country")}
+                                // label="Choose a country"
+                                placeholder="Phone code"
+                                inputProps={{
+                                  ...params.inputProps
+                                  // autoComplete: "new-password" // disable autocomplete and autofill
+                                }}
+                              />
+                            )
+                          }}
                         />
                         {errors.phnCode_shipping && (
                           <div className="profile_error">
@@ -796,6 +885,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
                           className="autocomplete_div"
                           // sx={{ width: 300 }}
                           // value={selectedValues?.country}
+                          filterOptions={filterCountryOptions}
                           onChange={(event: any, newValue: any | null) => {
                             console.log("country", newValue);
                             setSelectedCountryId(newValue ? newValue?.id : "");
@@ -931,7 +1021,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
           </Box>
         )}
         <Grid item lg={12} xs={12} style={{ marginBottom: "30px" }}>
-          {!saveAddressLoader ? (
+          {isButtonStatusChange ? (
+            <></>
+          ) : !saveAddressLoader ? (
             <CustomButtonPrimary
               variant="contained"
               color="primary"
@@ -942,7 +1034,8 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
               onClick={selectShippingVendorHandler}
             >
               <Typography variant="body1">
-                {isButtonStatusChange ? "Continue" : "Save"}
+                {/* {isButtonStatusChange ? "Continue" : "Save"} */}
+                Save
               </Typography>
             </CustomButtonPrimary>
           ) : (
@@ -953,7 +1046,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => {} }: any) => {
               // type="submit"
               // form="onFormSubmitBilling"
               id="shippingButton"
-              // onClick={handleClose}
+            // onClick={handleClose}
             >
               <ButtonLoader />
             </CustomButtonPrimary>

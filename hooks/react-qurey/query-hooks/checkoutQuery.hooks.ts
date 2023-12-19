@@ -1,7 +1,10 @@
 import axiosInstance from "@/api/axiosInstance";
 import { endpoints } from "@/api/endpoints";
 import { useMutation, useQuery } from "react-query";
-import { DELIVERY_ADDRESS_LIST, DELIVERY_METHODS_LIST } from "../query-keys/checkoutQuery.keys";
+import {
+  DELIVERY_ADDRESS_LIST,
+  DELIVERY_METHODS_LIST
+} from "../query-keys/checkoutQuery.keys";
 
 // <------------------------------ GET DELIVERY METHODS APIS ------------------------------>
 const getDeliveryMethodsList = async () => {
@@ -11,7 +14,7 @@ const getDeliveryMethodsList = async () => {
 
 export const useDeliveryMethodsList = (
   onSuccess: any = () => {},
-  onError: any = () => {}
+  onError: any = () => {},
 ) =>
   useQuery([DELIVERY_METHODS_LIST], getDeliveryMethodsList, {
     onSuccess,
@@ -31,7 +34,10 @@ export const useShipmentRate = () => useMutation(shipmentRate);
 // <------------------------------ CHECKOUT AMOUNT APIS ------------------------------>
 
 const updateDeleveryMode = async (body: object) => {
-  const res = await axiosInstance.post(endpoints.app.update_shipping_mode, body);
+  const res = await axiosInstance.post(
+    endpoints.app.update_shipping_mode,
+    body
+  );
   return res;
 };
 
@@ -45,7 +51,7 @@ const getAddressList = async () => {
 
 export const useAddressList = (
   onSuccess: any = () => {},
-  onError: any = () => {}
+  onError: any = () => {},
 ) =>
   useQuery([DELIVERY_ADDRESS_LIST], getAddressList, {
     onSuccess,
@@ -54,14 +60,14 @@ export const useAddressList = (
   });
 // <------------------------------ ADDRESS SAVE APIS ------------------------------>
 
-  const saveAddress = async (body: object) => {
-    const res = await axiosInstance.post(endpoints.app.address_save, body);
-    return res;
-  };
-  
-  export const useSaveAddresss = () => useMutation(saveAddress);
+const saveAddress = async (body: object) => {
+  const res = await axiosInstance.post(endpoints.app.address_save, body);
+  return res;
+};
 
-  // <------------------------------ EDIT ADDRESS APIS ------------------------------>
+export const useSaveAddresss = () => useMutation(saveAddress);
+
+// <------------------------------ EDIT ADDRESS APIS ------------------------------>
 
 const editAddress = async (body: object) => {
   const res = await axiosInstance.post(endpoints.app.edit_address, body);
@@ -69,7 +75,7 @@ const editAddress = async (body: object) => {
 };
 
 export const useEditAddress = () => useMutation(editAddress);
-  // <------------------------------ CREATE ADDRESS APIS ------------------------------>
+// <------------------------------ CREATE ADDRESS APIS ------------------------------>
 
 const createAddress = async (body: object) => {
   const res = await axiosInstance.post(endpoints.app.create_address, body);

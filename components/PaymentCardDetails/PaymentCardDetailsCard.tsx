@@ -16,25 +16,27 @@ import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import ArrowRightIcon from "@/ui/Icons/ArrowRightIcon";
 import DeleteIcon from "@/ui/Icons/DeleteIcon";
-import { Checkbox } from "@mui/material";
+import { Checkbox, FormControlLabel } from "@mui/material";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Typography from "@mui/material/Typography";
 import { Box, Stack } from "@mui/system";
 import { decryptData } from "common/functions/decryptCryptoToken";
-import React, { memo, useEffect, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import { useAcceptJs } from "react-acceptjs";
 import ButtonLoader from "../ButtonLoader/ButtonLoader";
 import ButtonLoaderSecondary from "../ButtonLoader/ButtonLoaderSecondary";
 import CustomCardExpDate from "../CustomCardExpDate/CustomCardExpDate";
 import { useRouter } from "next/router";
 import PaymentProcessingModal from "./PaymentProcessingModal";
+import { getCookie } from "@/lib/functions/storage.lib";
 
 interface PaymentCardProps {
   subtotal: number | null | string;
   shipping: number | null | string;
   totalAmount?: number | null | string;
   loader?: boolean;
+  showPaymentSection?: boolean;
 }
 type BasicCardInfo = {
   cardZipCode: string;
@@ -49,13 +51,16 @@ const PaymentCardDetailsCard = ({
   subtotal,
   shipping,
   totalAmount,
-  loader = false
+  loader = false,
+  showPaymentSection
 }: PaymentCardProps) => {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
   // const queryClient = useQueryClient();
   const router = useRouter();
   const { toastSuccess, toastError } = useNotiStack();
   const [isNewCardAdded, setIsNewCardAdded] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState("");
+  const [saveCard, setSaveCard] = useState(false);
   const [pollingEnable, setPollingEnable] = useState(false);
   const [refetchInterval, setRefetchInterval] = useState(3000);
   const [pollingApiCalledCount, setPollingApiCalledCount] = useState(0);
@@ -70,7 +75,8 @@ const PaymentCardDetailsCard = ({
   });
   const [authorizationCred, setAuthorizationCred] = useState<any>({
     apiLoginID: "",
-    clientKey: ""
+    clientKey: "",
+    id: ""
   });
   const [paymentTransactionInfo, setPaymentTransactionInfo] = useState<any>({});
   const [cardListData, setCardListData] = useState<any>([]);
@@ -86,8 +92,8 @@ const PaymentCardDetailsCard = ({
   };
   const { dispatchData, loading, error } = useAcceptJs({ authData });
   const { data } = useProfileDetails(
-    () => {},
-    () => {},
+    () => { },
+    () => { },
     true
   );
 
@@ -136,6 +142,11 @@ const PaymentCardDetailsCard = ({
           checked: index == 0 ? true : false
         }))
       );
+      setSelectedCardId(tokens[0]?.id)
+    } else {
+      setIsNewCardAdded(true);
+      setCardListData([]);
+      setSelectedCardId('')
     }
     setPaymentTransactionInfo({
       reference_prefix,
@@ -150,7 +161,7 @@ const PaymentCardDetailsCard = ({
     data: getPaymentCredAndData,
     isLoading,
     refetch
-  } = usePaymentCredAndData(onSuccessCardList, () => {}, false);
+  } = usePaymentCredAndData(onSuccessCardList, () => { }, false);
 
   const onSuccessPolingData = (response: any) => {
     const { message, data }: any = response ?? {};
@@ -192,7 +203,7 @@ const PaymentCardDetailsCard = ({
   };
   const { data: pollingData } = usePollingCard(
     onSuccessPolingData,
-    () => {},
+    () => { },
     pollingEnable,
     refetchInterval
   );
@@ -250,15 +261,23 @@ const PaymentCardDetailsCard = ({
     setIsNewCardAdded(!isNewCardAdded);
   };
   const proceedPaymentHandler = () => {
-    setVerificationLoader(true);
-    let userSelectedCardInfo = cardListData?.filter(
-      (_i: any) => _i?.checked == true
-    );
-    if (userSelectedCardInfo?.length > 0) {
-      let payment_option_id = userSelectedCardInfo[0]?.id;
-      proceedPaymentForSavedCard(payment_option_id);
-    } else {
-      proceedPayment();
+    if (typeof window !== "undefined") {
+      const isUserLoggedIn =
+        !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
+      if (isUserLoggedIn) {
+        setVerificationLoader(true);
+        let userSelectedCardInfo = cardListData?.filter(
+          (_i: any) => _i?.checked == true
+        );
+        if (userSelectedCardInfo?.length > 0) {
+          let payment_option_id = userSelectedCardInfo[0]?.id;
+          proceedPaymentForSavedCard(payment_option_id);
+        } else {
+          proceedPayment();
+        }
+      } else {
+        router.push("/auth/login");
+      }
     }
   };
   const proceedPayment = async () => {
@@ -270,12 +289,6 @@ const PaymentCardDetailsCard = ({
       let userSelectedCardInfo = cardListData?.filter(
         (_i: any) => _i?.checked == true
       );
-      let getZipcode =
-        userSelectedCardInfo && userSelectedCardInfo?.length > 0
-          ? userSelectedCardInfo[0]?.zip_code
-            ? userSelectedCardInfo[0]?.zip_code
-            : ""
-          : cardData?.cardZipCode;
       if (!!dataValue) {
         // console.log("getZipcode", getZipcode, userSelectedCardInfo);
 
@@ -297,7 +310,7 @@ const PaymentCardDetailsCard = ({
         //   }`
         // );
 
-        formData.append("tokenization_requested", `False`);
+        formData.append("tokenization_requested", `${saveCard}`);
         formData.append("card_zip", `${cardData?.cardZipCode}`);
         formData.append("landing_route", `/web/payment/validate`);
         getCheckoutPaymentTransaction(
@@ -427,6 +440,14 @@ const PaymentCardDetailsCard = ({
     });
     setCardListData(fiteredData);
     setIsNewCardAdded(!checked);
+    if (checked) {
+      let userSelectedCardInfo = cardListData?.filter(
+        (_i: any) => _i?.checked == true
+      );
+      setSelectedCardId(userSelectedCardInfo[0]?.id);
+    } else {
+      setSelectedCardId('')
+    }
   };
   const deleteCard = (cardNumber: string | number) => {
     console.log("savedCards", cardNumber);
@@ -452,60 +473,67 @@ const PaymentCardDetailsCard = ({
     // );
   };
   useEffect(() => {
-    if (!!shipping) {
+    if (!!showPaymentSection) {
       refetch();
     }
-  }, [shipping]);
+  }, [showPaymentSection]);
 
-  console.log("cardData", pollingApiCalledCount, refetchInterval);
-
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const isButtonDisable = useMemo(() => {
+    let { cardZipCode, cardNumber, month, year, cardCode, date }: any =
+      cardData;
+    if (
+      (!!cardZipCode && !!cardNumber && !!month && !!year && !!cardCode) ||
+      !!selectedCardId
+    ) {
+      return false;
+    } else {
+      return true;
+    }
+  }, [cardData, selectedCardId]);
+  console.log("cardData", isButtonDisable);
   return (
     <>
       {shipping != null && (
         <PaymentCardWrapper>
-          {!isLoading && cardListData && cardListData?.length > 0 ? (
-            <Box className="card_area">
-              <Typography variant="h3" className="short_head_card">
-                Your saved cards
-              </Typography>
-              <Box className="grid-container-card">
-                {cardListData?.map((_card: any, index: number) => (
-                  <Box className="saved_cards_newout">
-                    <Box className="saved_cards_outer new" key={index + 1}>
-                      <Checkbox
-                        {...label}
-                        checked={_card?.checked}
-                        onChange={(e: any) =>
-                          selectSaveCardHandler(_card?.id, e.target.checked)
-                        }
-                        style={{ padding: "0px" }}
-                      />
-                      <Box className="saved_cards">
-                        <Box className="card_details">
-                          <Typography variant="body1">
-                            {_card?.display_name ?? ""}
-                          </Typography>
+          {!isLoading ? (
+            cardListData && cardListData?.length > 0 ? (
+              <Box className="card_area">
+                <Typography variant="h3" className="short_head_card">
+                  Your saved cards
+                </Typography>
+                <Box className="grid-container-card">
+                  {cardListData?.map((_card: any, index: number) => (
+                    <Box className="saved_cards_newout">
+                      <Box className="saved_cards_outer new" key={index + 1}>
+                        <Checkbox
+                          {...label}
+                          checked={_card?.checked}
+                          onChange={(e: any) =>
+                            selectSaveCardHandler(_card?.id, e.target.checked)
+                          }
+                          style={{ padding: "0px" }}
+                        />
+                        <Box className="saved_cards">
+                          <Box className="card_details">
+                            <Typography variant="body1">
+                              {_card?.display_name ?? ""}
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Box
+                          className="saved_card_delete_icon"
+                          onClick={() => deleteCard(_card?.id)}
+                        >
+                          <DeleteIcon />
                         </Box>
                       </Box>
-                      <Box
-                        className="saved_card_delete_icon"
-                        onClick={() => deleteCard(_card?.id)}
-                      >
-                        <DeleteIcon />
-                      </Box>
                     </Box>
-                  </Box>
-                ))}
+                  ))}
+                </Box>
               </Box>
-            </Box>
+            ) : (
+              <></>
+            )
           ) : (
             <ButtonLoaderSecondary />
           )}
@@ -570,6 +598,12 @@ const PaymentCardDetailsCard = ({
                   </div>
                 )}
               </Box>
+              <FormControlLabel
+                className="chk_box"
+                onChange={(e: any) => setSaveCard(e.target.checked)}
+                control={<Checkbox checked={saveCard} />}
+                label="Save my payment details"
+              />
             </>
           ) : !isLoading ? (
             <Typography
@@ -622,6 +656,7 @@ const PaymentCardDetailsCard = ({
                   // href="/product/order-confirm"
                   // onClick={proceedPayment}
                   onClick={proceedPaymentHandler}
+                  disabled={isButtonDisable}
                 >
                   <Typography variant="body1">${totalAmount}</Typography>
                   <Typography variant="body1">

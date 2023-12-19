@@ -34,6 +34,8 @@ export const endpoints = {
     workshop_list: "web/workshop",
     clinical_study: "web/clinical_study",
     faq_list: "web/faqs",
+    story_section_data: "web/homepage_details",
+    treatment_video_data: "web/video_urls",
     get_help_reason: "web/get_help_reason",
     get_help_submit: "web/get_help_submit",
     get_help_ceo_submit: "web/get_help_ceo_submit",
@@ -61,13 +63,14 @@ export const endpoints = {
     get_card_list: "web/payment_method",
     get_payment_cred_and_data: "web/payment",
     card_polling: "web/payment/status/poll",
+    update_shipping: "web/update/shipping",
     order_confirm: "web/confirmation",
     pament_validate: "/web/payment/validate",
     payment_transaction: "web/payment/transaction",
     card_delete: "web/payment/archive_token",
     authorize_payment: "web/payment/authorize/payment",
     create_session_id:
-      "https://procelltherapies-staging-v16-9943247.dev.odoo.com/web/session/create",
+      "web/session/create",
     blog_list:
       "https://dev.wordpress-developer.us/procell-ui/wp-json/wp/v2/posts/",
     categories_list:

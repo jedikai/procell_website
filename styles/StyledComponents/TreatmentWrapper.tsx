@@ -5,15 +5,39 @@ import styled from "@emotion/styled";
 import { Box } from "@mui/material";
 
 export const TreatmentWrapper = styled(Box)`
-  padding-top: 100px;
+  /* padding-top: 100px; */
+  padding-bottom: 100px;
   @media (max-width: 1199px) {
-    padding-top: 80px;
+    /* padding-top: 80px; */
+    padding-bottom: 80px;
   }
   @media (max-width: 899px) {
-    padding-top: 70px;
+    /* padding-top: 70px; */
+    padding-bottom: 70px;
   }
   @media (max-width: 599px) {
-    padding-top: 50px;
+    /* padding-top: 50px; */
+    padding-bottom: 50px;
+  }
+  .sec_title {
+    h3 {
+      span {
+        font-size: 66px;
+        display: block;
+        line-height: inherit;
+        color: inherit;
+        font-family: inherit;
+        @media (max-width: 1199px) {
+          font-size: 60px;
+        }
+        @media (max-width: 899px) {
+          font-size: 50px;
+        }
+        @media (max-width: 599px) {
+          font-size: 30px;
+        }
+      }
+    }
   }
   .slider_wrap {
     .slick_btm {
@@ -48,7 +72,7 @@ export const TreatmentWrapper = styled(Box)`
         height: 2px;
         margin: 0 auto;
         left: 10px;
-        @media (max-width:599px) {
+        @media (max-width: 599px) {
           display: block !important;
         }
         li {
@@ -58,9 +82,9 @@ export const TreatmentWrapper = styled(Box)`
           bottom: 16px;
 
           margin: 0;
-          @media (max-width:599px) {
+          @media (max-width: 599px) {
             width: calc(100% / 4) !important;
-          height: 2px !important;
+            height: 2px !important;
           }
 
           button {
@@ -115,43 +139,43 @@ export const TreatmentWrapper = styled(Box)`
       }
     }
     .slick-dots {
-        text-align: start;
-        bottom: 90px;
-        text-align: center;
+      text-align: start;
+      bottom: 90px;
+      text-align: center;
 
-        @media (max-width: 599px) {
-          display: none !important;
-        }
-        li {
+      @media (max-width: 599px) {
+        display: none !important;
+      }
+      li {
+        width: 10px;
+        height: 10px;
+        margin: 0 2px;
+        button {
           width: 10px;
           height: 10px;
-          margin: 0 2px;
-          button {
-            width: 10px;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.5);
-            line-height: 10px;
-            border-radius: 100%;
-            margin: auto;
+          background: rgba(255, 255, 255, 0.5);
+          line-height: 10px;
+          border-radius: 100%;
+          margin: auto;
 
+          &::before {
+            display: none;
+          }
+        }
+        &.slick-active {
+          width: 24px;
+          button {
+            opacity: 1;
+            background: rgba(255, 255, 255, 1);
+            width: 24px;
+            border-radius: 8px;
             &::before {
               display: none;
             }
           }
-          &.slick-active {
-            width: 24px;
-            button {
-              opacity: 1;
-              background: rgba(255, 255, 255, 1);
-              width: 24px;
-              border-radius: 8px;
-              &::before {
-                display: none;
-              }
-            }
-          }
         }
       }
+    }
 
     .main_product {
       height: 620px;
@@ -174,10 +198,20 @@ export const TreatmentWrapper = styled(Box)`
           min-height: 385px;
         }
       }
+      .overlay {
+        position: absolute;
+        bottom: 0;
+        background: rgb(0, 0, 0);
+        background: rgba(0, 0, 0, 0.2);
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 10px;
+      }
       .play_btn {
         position: absolute;
         left: 50%;
-        top: 40%;
+        top: 50%;
         min-width: auto;
         transform: translate(-50%, -50%);
         &:hover {

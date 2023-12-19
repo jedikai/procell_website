@@ -2,22 +2,22 @@ import assest from "../assest";
 
 export const cardList = [
   {
-    number: "1976",
+    number: "2013",
     title: "Founded",
     content:
-      "DermapenWorld’s parent company EquipmedTM was established in Australia to assist our customers in building a profitable business with innovative medical equipment."
+      "With over 30 years in dermatology, Dr. Mitchell Schwartz established Procell Therapies to create safer, non-invasive anti-aging solutions through innovative engineering."
   },
   {
     number: "4M+",
     title: "Treatment Worldwide",
     content:
-      "Thanks to consistently positive real-world results, more and more people around the world are discovering and loving Dermapen Treatment."
+      "Thanks to consistently positive real world results, people around the world are discovering the power of Procell Therapies."
   },
   {
     number: "60+",
     title: "Countries of Direct Representation",
     content:
-      "DermapenWorld’s major distribution centres include Australia, Netherlands and the USA. We ship to almost 70 countries around the globe with Authorised DermapenWorld Distributors in over 60 countries."
+      "We're excited to share Procell Therapies' global expansion, now serving countries worldwide. Our commitment to innovative skincare solutions emphasizes our dedication to enhancing skin health and beauty on an international scale."
   }
 ];
 

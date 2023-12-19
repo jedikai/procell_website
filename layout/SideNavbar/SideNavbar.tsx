@@ -1,6 +1,7 @@
 /* eslint-disable react/jsx-curly-brace-presence */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
+import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import {
   useProfileDetails,
   useUpdateProfile
@@ -337,10 +338,14 @@ export default function SideNavbar() {
           )}
 
           <Box className="upload_linkWrap">
-            <Button type="button" className="upload_link">
-              <UpdateProfileIcon />
-              Upload Profile Picture
-            </Button>
+            {!updateLoader ? (
+              <Button type="button" className="upload_link">
+                <UpdateProfileIcon />
+                Upload Profile Picture
+              </Button>
+            ) : (
+              <ButtonLoaderSecondary />
+            )}
             <input
               type="file"
               accept="image/*"

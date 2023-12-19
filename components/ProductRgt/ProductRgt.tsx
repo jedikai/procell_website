@@ -8,7 +8,10 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 
 import { useAddItem } from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
-import { CART_LIST, CART_LIST_WITH_AUTHORIZATION } from "@/hooks/react-qurey/query-keys/cartQuery.keys";
+import {
+  CART_LIST,
+  CART_LIST_WITH_AUTHORIZATION
+} from "@/hooks/react-qurey/query-keys/cartQuery.keys";
 import useNotiStack from "@/hooks/useNotistack";
 import { productProps } from "@/interface/productDetails.interfaces";
 import { ProductRgtWrap } from "@/styles/StyledComponents/ProductRgtWrap";
@@ -30,6 +33,7 @@ import {
   PinterestShareButton,
   TwitterShareButton
 } from "react-share";
+import ButtonLoader from "../ButtonLoader/ButtonLoader";
 
 export default function ProductRgt(props: productProps) {
   const queryClient = useQueryClient();
@@ -38,7 +42,7 @@ export default function ProductRgt(props: productProps) {
   const [num, setNum] = useState(1);
   const [pageUrl, setPageUrl] = useState("");
   const [cartList, setCartList] = useState<any>([]);
-  const { mutate: addItemCart } = useAddItem();
+  const { mutate: addItemCart, isLoading } = useAddItem();
   const incr = () => {
     setNum(num + 1);
   };
@@ -171,15 +175,26 @@ export default function ProductRgt(props: productProps) {
                 />
               </Button>
             </Box>
-            <CustomButtonPrimary
-              type="button"
-              variant="contained"
-              color="primary"
-              className="cart_btn"
-              onClick={addToCart}
-            >
-              <Typography>Add to cart</Typography>
-            </CustomButtonPrimary>
+            {!isLoading ? (
+              <CustomButtonPrimary
+                type="button"
+                variant="contained"
+                color="primary"
+                className="cart_btn"
+                onClick={addToCart}
+              >
+                <Typography>Add to cart</Typography>
+              </CustomButtonPrimary>
+            ) : (
+              <CustomButtonPrimary
+                type="button"
+                variant="contained"
+                color="primary"
+                className="cart_btn"
+              >
+                <ButtonLoader />
+              </CustomButtonPrimary>
+            )}
           </Box>
         </Box>
       </Box>

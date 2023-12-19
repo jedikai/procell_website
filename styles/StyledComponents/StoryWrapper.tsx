@@ -32,14 +32,14 @@ export const StoryWrapper = styled(Box)`
     h2 {
       /* max-width: 462px; */
       margin-bottom: 40px;
-      padding-right: 272px;
+      /* padding-right: 272px; */
       line-height: 1;
       position: relative;
       margin-left: auto;
       max-width: 94%;
       color: ${primaryColors.black};
       @media (max-width: 1199px) {
-        font-size: 100px;
+        font-size: 80px;
       }
       @media (max-width: 899px) {
         font-size: 90px;
@@ -51,7 +51,7 @@ export const StoryWrapper = styled(Box)`
         margin-left: 0;
       }
 
-      ::after {
+      /* ::after {
         content: "";
         position: absolute;
         right: 0;
@@ -73,9 +73,12 @@ export const StoryWrapper = styled(Box)`
           bottom: 50%;
           transform: translateY(-50%);
         }
-      }
+      } */
     }
     .story_content {
+      iframe{
+        width: 100%;
+      }
       p {
         line-height: 1.4;
         span {
@@ -90,8 +93,8 @@ export const StoryWrapper = styled(Box)`
     }
   }
   .story_content {
-    max-width: 440px;
-    margin-left: auto;
+    max-width: 100%;
+    
     @media (max-width: 899px) {
       max-width: 100%;
     }

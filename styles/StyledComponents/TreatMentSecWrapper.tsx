@@ -78,6 +78,25 @@ export const TreatMentSecWrapper = styled(Box)`
       @media (max-width: 599px) {
         font-size: 30px;
       }
+      span {
+        font-size: 66px;
+        display: block;
+        line-height: inherit;
+        color: inherit;
+        font-family: inherit;
+        @media (max-width: 1199px) {
+          font-size: 50px;
+        }
+        @media (max-width: 899px) {
+          font-size: 30px;
+        }
+        @media (max-width: 599px) {
+          font-size: 20px;
+        }
+        @media (max-width: 489px) {
+          font-size: 16px;
+        }
+      }
     }
   }
   .compare_sec {

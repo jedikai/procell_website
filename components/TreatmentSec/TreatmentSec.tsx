@@ -15,6 +15,7 @@ import {
   ReactCompareSlider,
   ReactCompareSliderImage
 } from "react-compare-slider";
+import TreatmentSecUpper from "../TreatmentSecUpper/TreatmentSecUpper";
 
 export default function TreatmentSec() {
   return (
@@ -43,9 +44,10 @@ export default function TreatmentSec() {
       <Container fixed>
         <Box className="sec_title">
           <Typography variant="h3">
-            Procell Micro-channeling Treatment
+            <Typography variant="caption">procell microchanneling</Typography> treatment
           </Typography>
         </Box>
+        <TreatmentSecUpper />
         <Box className="compare_sec">
           <ReactCompareSlider
             itemOne={

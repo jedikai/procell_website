@@ -16,6 +16,7 @@ import { primaryColors } from "@/themes/_muiPalette";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import CustomRadio from "@/ui/CustomRadio/CustomRadio";
+import DeliveryVendorRaioHandler from "@/ui/CustomRadio/DeliveryVendorRaioHandler";
 import CallIcon from "@/ui/Icons/CallIcon";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
@@ -25,7 +26,7 @@ import Typography from "@mui/material/Typography";
 import { Box, Container } from "@mui/system";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { StringLocale } from "yup/lib/locale";
@@ -108,7 +109,7 @@ export default function Index() {
     },
     {
       value: "consumer",
-      label: "I am a consumer looking to get a treatment."
+      label: "I am looking to get a treatment."
     }
   ];
   const { mutate: contactUsPost, isLoading } = useContactUs();
@@ -169,7 +170,7 @@ export default function Index() {
       formData.append("email_from", email);
       formData.append("zip", zipCode);
       formData.append("phone", `${phnCode} ${phone}`);
-      formData.append("message", source);
+      // formData.append("message", source);
       formData.append("country_id", country);
       if (stateList && stateList.length > 0) {
         formData.append("state_id", state ?? "");
@@ -218,7 +219,18 @@ export default function Index() {
 
   console.log("countryList===========>", userGivenPhoneCode, filterPhoneCodes);
 
-
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      let isUserConsumer = localStorage.getItem("isConsumer");
+      if (!!isUserConsumer) {
+        setConsent('consumer')
+      }
+    }
+    return () => {
+      localStorage.removeItem('isConsumer')
+    }
+  }, [])
+  console.log('consent', consent);
 
   return (
     <Wrapper>
@@ -280,6 +292,14 @@ export default function Index() {
                       Give us a call at:
                       <Link href="tel:855.577.6235">855.577.6235</Link>
                     </Typography>
+                  </Box>
+                  <Box className="option_sec">
+                    <DeliveryVendorRaioHandler
+                      defaultValue={consent}
+                      RadioGroupValue={consent}
+                      radioList={radioChekcList}
+                      onChange={(e) => consentHandler(e.target.value)}
+                    />
                   </Box>
                   <form onSubmit={handleSubmit(onFormSubmit)} id="contact_form">
                     <Box className="form_group">
@@ -445,7 +465,7 @@ export default function Index() {
                                 {...params}
                                 // {...register("country")}
                                 // label="Choose a country"
-                                placeholder="Preffered Language"
+                                placeholder="Preferred Language"
                                 inputProps={{
                                   ...params.inputProps,
                                   autoComplete: "new-password" // disable autocomplete and autofill
@@ -622,6 +642,7 @@ export default function Index() {
                                   country: newValue
                                 });
                               }}
+                              filterOptions={filterCountryOptions}
                               options={countryList ?? []}
                               disabled={countryLoader}
                               autoHighlight
@@ -710,35 +731,36 @@ export default function Index() {
                         )}
                       </Box>
                     )}
-                    <Box className="form_group_textarea">
-                      <InputFieldCommon
-                        placeholder="Message (How did you hear about Procell Therapies?)"
-                        multiline
-                        rows={3}
-                        maxRows={4}
-                        style3
-                        {...register("source")}
-                      />
-                    </Box>
-                    <Box className="form_group_textarea">
-                      <InputFieldCommon
-                        placeholder="Optional (In contact or referred by a specific Procell rep?)"
-                        multiline
-                        rows={3}
-                        maxRows={4}
-                        style3
-                        {...register("refference")}
-                      />
-                    </Box>
+                    {consent == "professional" && <>
+                      <Box className="form_group_textarea">
+                        <InputFieldCommon
+                          placeholder="Message (How did you hear about Procell Therapies?)"
+                          multiline
+                          rows={3}
+                          maxRows={4}
+                          style3
+                          {...register("source")}
+                        />
+                      </Box>
+                      <Box className="form_group_textarea">
+                        <InputFieldCommon
+                          placeholder="Optional (In contact or referred by a specific Procell rep?)"
+                          multiline
+                          rows={3}
+                          maxRows={4}
+                          style3
+                          {...register("refference")}
+                        />
+                      </Box></>}
                   </form>
 
                   <Box className="form_btm_sec">
                     <Box className="option_sec">
-                      <CustomRadio
+                      {/* <CustomRadio
                         defaultValue="professional"
                         radioList={radioChekcList}
                         onChange={(e) => consentHandler(e.target.value)}
-                      />
+                      /> */}
                     </Box>
                     {!isLoading ? (
                       <CustomButtonPrimary

@@ -192,6 +192,7 @@ const Login = () => {
 
               <Typography variant="body1" className="form_bottom">
                 Don’t have an account?{" "}
+                {/* <Link href="/auth/registerpage">Register Now</Link> */}
                 <Link href="/auth/firststep">Register Now</Link>
               </Typography>
             </Box>

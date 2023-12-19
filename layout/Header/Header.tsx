@@ -43,7 +43,10 @@ import {
   useCartListWithAuthCred
 } from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getAuthorizationNetCred } from "@/reduxtoolkit/slices/userProfle.slice";
+import {
+  getAuthorizationNetCred,
+  getUserName
+} from "@/reduxtoolkit/slices/userProfle.slice";
 
 // const CustomButton = dynamic(() => import("@/ui/Buttons/CustomButton"));
 
@@ -74,7 +77,23 @@ export default React.memo(function Header(props: Props) {
     {
       name: "Contact us",
       route: "/contact"
-    }
+    },
+    {
+      name: "Workshops",
+      route: "/workshop"
+    },
+    {
+      name: "FAQ",
+      route: "/faq"
+    },
+    {
+      name: "Results",
+      route: "/results"
+    },
+    // {
+    //   name: "Get Treated",
+    //   route: "/get-treated"
+    // },
   ];
 
   const dispatch = useAppDispatch();
@@ -88,8 +107,13 @@ export default React.memo(function Header(props: Props) {
   const router = useRouter();
   const { refresh, image } = useAppSelector((s) => s.userProfileImgSlice);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const onSuccessProfileDetails = (response: any) => {
+    const { first_name, last_name }: { first_name: string; last_name: string } =
+      response && response?.length > 0 ? response[0] : {};
+    dispatch(getUserName(`${first_name??''} ${last_name??''}`));
+  };
   const { data, isLoading, refetch, isFetched } = useProfileDetails(
-    () => {},
+    onSuccessProfileDetails,
     () => {},
     true
   );

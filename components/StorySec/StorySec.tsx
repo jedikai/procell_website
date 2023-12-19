@@ -1,3 +1,4 @@
+import { useStorySecData } from "@/hooks/react-qurey/query-hooks/storySecQuery.hooks";
 import { StoryCardList, StorySecProps } from "@/interface/stoysec.interface";
 import assest from "@/json/assest";
 import {
@@ -8,7 +9,9 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { Container } from "@mui/system";
+import { formatNumber } from "common/functions/formatNumbers";
 import Image from "next/image";
+import { useState } from "react";
 
 export function StoryCard({ content, number, title }: StoryCardList) {
   return (
@@ -27,9 +30,36 @@ export function StoryCard({ content, number, title }: StoryCardList) {
 export default function StorySec({
   image,
   title,
-  children,
-  cardList
-}: StorySecProps) {
+  children
+}: // cardList
+  StorySecProps) {
+  const [cardList, setCardList] = useState<any>([]);
+  const onSuceessStorySecDataFetch = (response: any) => {
+    const { direct_representation_countries, worlwide_treatment_count } = response ?? {};
+    setCardList([
+      {
+        number: "2013",
+        title: "Founded",
+        content:
+          "With over 30 years in dermatology, Dr. Mitchell Schwartz established Procell Therapies to create safer, non-invasive anti-aging solutions through innovative engineering."
+      },
+      {
+        number: formatNumber(parseInt(worlwide_treatment_count??'-')),
+        title: "Treatment Worldwide",
+        content:
+          "Thanks to consistently positive real world results, people around the world are discovering the power of Procell Therapies."
+      },
+      {
+        number: `${formatNumber(parseInt(direct_representation_countries??'-'))}+`,
+        title: "Countries of Direct Representation",
+        content:
+          "We're excited to share Procell Therapies' global expansion, now serving countries worldwide. Our commitment to innovative skincare solutions emphasizes our dedication to enhancing skin health and beauty on an international scale."
+      }
+    ]);
+  };
+  const { data } = useStorySecData(onSuceessStorySecDataFetch);
+  console.log("data", data);
+
   return (
     <StoryWrapper className="cmn_gap">
       <Image
@@ -52,14 +82,26 @@ export default function StorySec({
             <Grid item md={7} xs={12}>
               <Box className="story_text">
                 <Typography variant="h2">{title}</Typography>
-                <Box className="story_content">{children}</Box>
+                {/* <Box className="story_content">{children}</Box> */}
+                <Box className="story_content">
+                  <iframe
+                    width="660"
+                    height="378"
+                    src="https://www.youtube.com/embed/492HPE-UL-I?si=4BRJ1nnBU4XVMktA"
+                    title="YouTube video player"
+                    frameBorder={0}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen={true}
+                    style={{ borderRadius: "20px" }} // You can adjust the value as per your preference
+                  ></iframe>
+                </Box>
               </Box>
             </Grid>
           </Grid>
         </Box>
         <Box className="storys_sec_lwr">
           <Grid container spacing={{ md: 4, xs: 2 }} justifyContent="center">
-            {cardList?.map((item) => (
+            {cardList?.map((item:any) => (
               <Grid item lg={4} md={6} xs={12} key={item?.title}>
                 <StoryCard {...item} />
               </Grid>

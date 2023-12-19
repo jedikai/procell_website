@@ -33,19 +33,8 @@ const Cart = () => {
         ? response[0].order_line
         : []
     );
-    // setAmount(
-    //   response && response?.length > 0 && response[0]
-    //     ? response[0].order_line?.reduce(
-    //       (accumulator: any, currentValue: any) =>
-    //         accumulator +
-    //         currentValue?.price_reduce_taxexcl *
-    //         currentValue?.product_uom_qty,
-    //       0
-    //     )
-    //     : 0
-    // );
   };
-  const onErrorCartList = () => { };
+  const onErrorCartList = () => {};
   const { data: cardListData, isLoading: cartListloader } = useCartList(
     onSuccessCartList,
     onErrorCartList
@@ -54,12 +43,6 @@ const Cart = () => {
   const handleChange = (event: SelectChangeEvent | any) => {
     setValue(event.target.value);
   };
-  console.log("cartList", cartList);
-  // const [url,setUrl] = useState("")
-  // const animationURL =
-  //   "https://lottie.host/df01b107-9ab3-44c4-b5e1-863aa2981e99/ePRGrl6wcx.json";
-
-  console.log("cardListData", cardListData);
   return (
     <Wrapper>
       <InnerHeader
@@ -71,14 +54,21 @@ const Cart = () => {
       />
       <CartWrapper className="cmn_gap">
         <Container fixed>
+          <Box className="cart_left">
+            <Box className="cart_filter">
+              <Link href="/product/shop">
+                <ArrowLeftIcon /> Continue shopping
+              </Link>
+            </Box>
+          </Box>
           <Grid container spacing={3}>
             <Grid item lg={cartList && cartList?.length > 0 ? 7.5 : 12} xs={12}>
               <Box className="cart_left">
-                <Box className="cart_filter">
+                {/* <Box className="cart_filter">
                   <Link href="/product/shop">
                     <ArrowLeftIcon /> Continue shopping
                   </Link>
-                </Box>
+                </Box> */}
                 {cartList && cartList?.length > 0 && (
                   <Box className="cart_banner">
                     <Typography variant="body1">
@@ -87,51 +77,61 @@ const Cart = () => {
                   </Box>
                 )}
 
-                {!cartListloader && <Stack className="cart_items">
-                  {cartList && cartList?.length > 0 ? (
-                    cartList.map((item: any, index: number) => (
-                      <CartItemsCard
-                        key={index + 1}
-                        image={item?.product_image_url ?? ""}
-                        name={item?.name_short ?? ""}
-                        price={item?.price_reduce_taxexcl ?? ""}
-                        quantity={item?.product_uom_qty ?? ""}
-                        line_id={item?.id ?? ""}
-                        product_id={item?.product_id ? item?.product_id[0] : ""}
-                      />
-                    ))
-                  ) : (
-                    <Box className="cart_banner">
-                      <Box className="animation">
-                        {/* <MyLottieAnimation play /> */}
-                        <Lottie
-                          loop
-                          animationData={animationURL}
-                          play
-                          style={{ width: "50%", height: "100%" }}
+                {!cartListloader && (
+                  <Stack className="cart_items">
+                    {cartList && cartList?.length > 0 ? (
+                      cartList.map((item: any, index: number) => (
+                        <CartItemsCard
+                          key={index + 1}
+                          image={item?.product_image_url ?? ""}
+                          name={item?.name_short ?? ""}
+                          price={item?.price_reduce_taxexcl ?? ""}
+                          quantity={item?.product_uom_qty ?? ""}
+                          line_id={item?.id ?? ""}
+                          product_id={
+                            item?.product_id ? item?.product_id[0] : ""
+                          }
                         />
+                      ))
+                    ) : (
+                      <Box className="cart_banner">
+                        <Box className="animation">
+                          {/* <MyLottieAnimation play /> */}
+                          <Lottie
+                            loop
+                            animationData={animationURL}
+                            play
+                            style={{ width: "50%", height: "100%" }}
+                          />
+                        </Box>
+                        <Typography variant="body1" className="no_found">
+                          You have no items in cart.
+                        </Typography>
                       </Box>
-                      <Typography variant="body1" className="no_found">
-                        You have no items in cart.
-                      </Typography>
-                    </Box>
-                  )}
-                </Stack>}
+                    )}
+                  </Stack>
+                )}
               </Box>
             </Grid>
-            {!cartListloader && cartList && cartList?.length > 0 && <Grid item lg={4.5} xs={12}>
-              <Box className="cart_right">
-                {/* <PaymentCardDetailsCard subtotal={3000.0} shipping={20.0} /> */}
-                <PaymentBillDetails
-                  subtotal={cardListData ? cardListData[0]?.amount_untaxed : 0}
-                  shipping={0}
-                  totalAmount={cardListData ? cardListData[0]?.amount_untaxed : 0}
-                  isRedirectionEnable={
-                    !cartListloader && cartList && cartList?.length > 0
-                  }
-                />
-              </Box>
-            </Grid>}
+            {!cartListloader && cartList && cartList?.length > 0 && (
+              <Grid item lg={4.5} xs={12}>
+                <Box className="cart_right">
+                  {/* <PaymentCardDetailsCard subtotal={3000.0} shipping={20.0} /> */}
+                  <PaymentBillDetails
+                    subtotal={
+                      cardListData ? cardListData[0]?.amount_untaxed : 0
+                    }
+                    shipping={0}
+                    totalAmount={
+                      cardListData ? cardListData[0]?.amount_untaxed : 0
+                    }
+                    isRedirectionEnable={
+                      !cartListloader && cartList && cartList?.length > 0
+                    }
+                  />
+                </Box>
+              </Grid>
+            )}
           </Grid>
         </Container>
       </CartWrapper>

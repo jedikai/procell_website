@@ -39,13 +39,17 @@ const foooterItems = [
     route: "/contact"
   },
   {
-    name: "Contact with CEO",
+    name: "Contact the CEO",
     route: "/contact-the-ceo"
   },
   {
     name: "Get help",
-    route: "/get-help"
-  }
+    route: "/help"
+  },
+  {
+    name: "Get Treated",
+    route: "/get-treated"
+  },
 ];
 
 const social_links = [

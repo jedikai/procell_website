@@ -1,3 +1,5 @@
+import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
+import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import InnerHeader from "@/components/InnerHeader/InnerHeader";
 import { useResultList } from "@/hooks/react-qurey/query-hooks/resultQuery.hooks";
 import { ResultProps2 } from "@/interface/result.interface";
@@ -7,6 +9,7 @@ import {
   ResultCardWrapper,
   ResultWrapper
 } from "@/styles/StyledComponents/ResultWrapper";
+import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import InstagramColorIcon from "@/ui/Icons/InstagramColorIcon";
 import LikeIcon from "@/ui/Icons/LikeIcon";
 import MesaageIcon from "@/ui/Icons/MesaageIcon";
@@ -20,7 +23,7 @@ import Typography from "@mui/material/Typography";
 import { Box, Container } from "@mui/system";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 // export function ResultCard({ date, image, name }: ResultProps) {
 export function ResultCard({
@@ -68,7 +71,7 @@ export function ResultCard({
         </Box>
       </Box>
       <Box className="image_block">
-        <Link href={permalink}>
+        <Link href={permalink} target="_blank">
           {/* {media_type == 'IMAGE' ?
             <img src={thumbnail_url} alt="image" width={500} height={500} /> :
             <video><source src={thumbnail_url} /></video>} */}
@@ -107,10 +110,45 @@ export function ResultCard({
     </ResultCardWrapper>
   );
 }
-
+const instagramPostsApiUrl = `https://graph.instagram.com/v12.0/me/media?fields=id,username,caption,media_type,media_url,thumbnail_url,permalink,timestamp&access_token=${process.env.NEXT_AUTHORIZATION_INSTAGRAM_ACCESS_TOKEN}`;
 export default function Index() {
-  const { data: resultData, isLoading } = useResultList();
-  console.log("data", resultData);
+  const [apiUrl, setApiUrl] = useState(instagramPostsApiUrl);
+  const [postList, setPostList] = useState<any>([]);
+  const [isApiFetchAgain, setIsApiFetchAgain] = useState<boolean>(false);
+  const onSuccessInstaPostsFetch = (response: any) => {
+    const { data, paging } = response ?? {};
+    setApiUrl(paging?.next ?? "");
+
+    const getOnlyMentionHastaggedPosts =
+      data && data?.length > 0
+        ? data?.filter(
+            (_i: any) => _i?.caption?.includes("#result")
+            // _i?.caption?.includes("#") || _i?.caption?.includes("@")
+          )
+        : [];
+    if (getOnlyMentionHastaggedPosts?.length > 5) {
+      setPostList([...postList, ...getOnlyMentionHastaggedPosts]);
+      setIsApiFetchAgain(false);
+    } else {
+      if (paging?.next) {
+        refetch();
+      }
+    }
+  };
+  const {
+    data: resultData,
+    isLoading,
+    refetch
+  } = useResultList(apiUrl, onSuccessInstaPostsFetch);
+  const fetchPostHandler = () => {
+    refetch();
+    setIsApiFetchAgain(true);
+  };
+  useEffect(() => {
+    refetch();
+  }, []);
+  console.log("show me url result", postList);
+
   return (
     <Wrapper>
       <InnerHeader
@@ -122,14 +160,21 @@ export default function Index() {
       <ResultWrapper className="cmn_gap">
         <Container fixed>
           <Box className="result_body">
-            {resultData && resultData?.length > 0 && (
+            {postList && postList?.length > 0 && (
               <Box className="sec_title">
                 <Typography variant="h4">
-                  Follow us on Instagram{" "}
-                  <Link href="/">
+                  Follow for more results{" "}
+                  <Link
+                    href={`https://www.instagram.com/${
+                      postList && postList?.length > 0
+                        ? postList[0]?.username
+                        : ""
+                    }`}
+                    target="_blank"
+                  >
                     @
-                    {resultData && resultData?.length > 0
-                      ? resultData[0]?.username
+                    {postList && postList?.length > 0
+                      ? postList[0]?.username
                       : ""}
                   </Link>
                 </Typography>
@@ -138,9 +183,9 @@ export default function Index() {
             <Box className="result_content">
               <Grid container spacing={3}>
                 {!isLoading &&
-                  resultData &&
-                  resultData?.length > 0 &&
-                  resultData?.map((item: any, index: number) => (
+                  postList &&
+                  postList?.length > 0 &&
+                  postList?.map((item: any, index: number) => (
                     <Grid item lg={3} md={4} sm={6} xs={12} key={index + 1}>
                       <ResultCard {...item} />
                     </Grid>
@@ -148,6 +193,36 @@ export default function Index() {
               </Grid>
             </Box>
           </Box>
+          <Grid item xs={12}>
+            <Box className="text_center" style={{ marginTop: "35px" }}>
+              {!isLoading && postList?.length > 0 && !!apiUrl ? (
+                <CustomButtonPrimary
+                  type="button"
+                  variant="contained"
+                  color="primary"
+                  onClick={fetchPostHandler}
+                >
+                  {isApiFetchAgain ? (
+                    <ButtonLoader />
+                  ) : (
+                    <Typography>Load More</Typography>
+                  )}
+                </CustomButtonPrimary>
+              ) : !!apiUrl ? (
+                <ButtonLoaderSecondary />
+              ) : (
+                <>
+                  {postList?.length == 0 && !apiUrl ? (
+                    <Typography variant="h4">
+                      There is no Instagram posts
+                    </Typography>
+                  ) : (
+                    <></>
+                  )}
+                </>
+              )}
+            </Box>
+          </Grid>
         </Container>
       </ResultWrapper>
     </Wrapper>

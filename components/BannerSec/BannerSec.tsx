@@ -10,11 +10,18 @@ import MuteIcon from "@/ui/Icons/MuteIcon";
 import UnMuteIcon from "@/ui/Icons/UnMuteIcon";
 import WhiteArrowIcon from "@/ui/Icons/WhiteArrowIcon";
 import { Box, Button, Container, Typography } from "@mui/material";
+import { Stack } from "@mui/system";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 export default function BannerSec() {
+  const router = useRouter();
   const [muted, setMuted] = useState(true);
   const handleToggleMute = () => setMuted((current) => !current);
+  const getTreatedHandler = () => {
+    localStorage.setItem("isConsumer", 'true');
+    router.push("/contact/");
+  };
   return (
     <BannerWrapper>
       <Box className="banner_sec">
@@ -42,13 +49,31 @@ export default function BannerSec() {
                   Unlock your body’s natural ability to produce healthy new
                   skin.
                 </Typography>
-                <CustomButtonPrimary
-                  endIcon={<WhiteArrowIcon />}
-                  variant="contained"
-                  color="secondary"
+                <Stack
+                  direction="row"
+                  justifyContent="start"
+                  alignItems="center"
+                  spacing={5}
                 >
-                  <Typography variant="body1">Get started</Typography>
-                </CustomButtonPrimary>
+                  <CustomButtonPrimary
+                    endIcon={<WhiteArrowIcon />}
+                    variant="contained"
+                    color="primary"
+                    onClick={getTreatedHandler}
+                  // href="/auth/registerpage/"
+                  >
+                    <Typography variant="body1">Get Treated</Typography>
+                  </CustomButtonPrimary>
+                  <CustomButtonPrimary
+                    endIcon={<WhiteArrowIcon />}
+                    variant="contained"
+                    color="primary"
+                    onClick={() => router.push("/contact/")}
+                  // href="/auth/register/"
+                  >
+                    <Typography variant="body1">Practioner</Typography>
+                  </CustomButtonPrimary>
+                </Stack>
               </Box>
             </Box>
           </Container>

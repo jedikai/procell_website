@@ -23,6 +23,23 @@ export const useProductList = (
     keepPreviousData: true
   });
 
+const getFeaturedProductList = async () => {
+  const res = await axiosInstance.get(
+    `${endpoints.app.product_list}/page/1`
+  );
+  return res;
+};
+
+export const useFeaturedProductList = (
+  onSuccess: any = () => {},
+  onError: any = () => {}
+) =>
+  useQuery([PRODUCT_LIST], getFeaturedProductList, {
+    onSuccess,
+    onError,
+    select: (data) => data?.data?.data?.products_info ?? [],
+  });
+
 const getProductDetails = async (pageId: string | number) => {
   const res = await axiosInstance.get(
     `${endpoints.app.product_details}/?product_tmpl_id=${pageId}`

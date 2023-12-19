@@ -70,10 +70,10 @@ export default function index() {
     onErrorProductList
   );
   const fetchList = (isInview: boolean) => {
-    console.log("isInview", isInview);
+    console.log("isInview", isInview,data?.page_count,page);
 
     if (isInview && !isLoading) {
-      if (data?.pager?.page_count >= page) {
+      if (data?.page_count == page) {
         setPage(page + 1);
       }
     }

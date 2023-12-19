@@ -34,17 +34,8 @@ export default function BlogDeailsMain({
     post_description,
     post_image,
     post_practioner,
-    post_title
+    post_title,
   } = blogDetailsData ?? {};
-  // console.log(
-  //   "post_practioner",blogDetailsData,
-  //   post_author,
-  //   post_date,
-  //   post_description,
-  //   post_image,
-  //   post_practioner,
-  //   post_title
-  // );
 
   return (
     <BlogDetailsMainWrapper className="cmn_gap">
@@ -118,16 +109,16 @@ export default function BlogDeailsMain({
                             )}
                           </Box>
                           <List className="social_list">
-                            <ListItem disablePadding>
-                              <Link href="/">
-                                <FacebookIcon />
-                              </Link>
-                            </ListItem>
-                            <ListItem disablePadding>
-                              <Link href="/">
-                                <InstagramIcon />
-                              </Link>
-                            </ListItem>
+                            {blogContent && blogContent?.social_media && blogContent?.social_media?.map(
+                              (_s: any, index: number) => (
+                                <ListItem disablePadding key={index + 1}>
+                                  <Link href={_s?.social_media_link}>
+                                    <img src={_s?.social_media_icon} alt="social_media" />
+                                    {/* <FacebookIcon /> */}
+                                  </Link>
+                                </ListItem>
+                              )
+                            )}
                           </List>
                         </Stack>
                         {blogContent?.practitioner_first_content && (

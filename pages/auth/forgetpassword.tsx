@@ -61,7 +61,7 @@ const Forgetpassword = () => {
   const {
     register,
     handleSubmit,
-    watch,
+    watch,reset,
     formState: { errors }
   } = useForm<Inputs>({
     resolver: yupResolver(validationSchema)
@@ -79,6 +79,7 @@ const Forgetpassword = () => {
         toastSuccess(
           response ? response?.data?.message : "Something went wrong."
         );
+        reset()
         // handleOpenModal();
       },
       onError: (error: any) => {
