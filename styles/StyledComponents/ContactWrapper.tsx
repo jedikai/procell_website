@@ -36,7 +36,7 @@ export const ContactWrapper = styled(Box)`
   .small_pink_leaf {
     position: absolute;
     left: 38%;
-    top: 34%;
+    top: 250px;
     pointer-events: none;
     z-index: 4;
     max-width: 30px;
@@ -90,7 +90,7 @@ export const ContactWrapper = styled(Box)`
         );
         position: absolute;
         left: 0;
-        bottom: 0;
+        bottom: -10px;
         z-index: 9;
       }
     }

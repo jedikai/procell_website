@@ -56,6 +56,9 @@ export const OurProductWrapper = styled(Box)`
     bottom: 0;
     right: 0;
     max-width: 640px;
+    @media(max-width: 1199px){
+      display: none;
+    }
 
     img {
       width: 100%;
@@ -137,6 +140,12 @@ export const OurProductWrapper = styled(Box)`
   }
   .ourProductSliderwrapperSection {
     max-width: 730px;
+    @media(max-width: 1399px){
+      padding: 0 25px;
+    }
+    @media(max-width: 1199px){
+      max-width: none;
+    }
     @media (max-width: 599px) {
       max-width: 100%;
     }
@@ -161,18 +170,53 @@ export const OurProductWrapper = styled(Box)`
       .slick-arrow{
         width: 40px;
         height: 40px;
+        display: inline-flex;
+       
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid ${primaryColors.text_purple};
+        z-index: 1;
+        &:hover{
+          background: ${primaryColors.text_purple};
+          &:before{
+            filter: brightness(0) invert(1);
+          }
+        }
         &:before{
-          display: none;
+          width: 50%;
+          height: 50%;
+          display: inline-block;
+          content: "";
+          transition: all .3s  ease-in-out 0s;
+          
         }
         &.slick-prev{
-          background: url("/assets/images/ArrowLeft.svg") no-repeat center center;
-          background-size: 100%;
-          left: -30px;
+          
+          left: -40px;
+          @media(max-width: 1399px){
+            left: -30px;
+          }
+          &:before{
+
+            background: url("/assets/images/arrow_prev.svg") no-repeat center center;
+            background-size: 100%;
+           
+          
+          }
         }
         &.slick-next{
-          background: url("/assets/images/ArrowRight.svg") no-repeat center center;
+          
+          
+          right: -40px;
+          @media(max-width: 1399px){
+            right: -30px;
+          }
+          &:before{
+          background: url("/assets/images/arrow_next.svg") no-repeat center center;
           background-size: 100%;
-          right: -30px;
+           
+          }
         }
       }
 

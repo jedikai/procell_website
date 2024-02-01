@@ -70,6 +70,14 @@ function Index() {
       }
     }
   };
+  function formatDateString(inputDate: string): string {
+    const date = new Date(inputDate);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(2);
+
+    return `${month}/${day}/${year}`;
+  }
 
   useEffect(() => {
     if (inView) {
@@ -136,15 +144,15 @@ function Index() {
                           <TableCell align="center">
                             <Typography variant="body1">Sales order</Typography>
                           </TableCell>
-                          <TableCell align="left">
+                          <TableCell align="center">
                             <Typography variant="body1">Order date</Typography>
                           </TableCell>
                           <TableCell align="center">
                             <Typography variant="body1">Total</Typography>
                           </TableCell>
-                          <TableCell align="center">
+                          {/* <TableCell align="center">
                             <Typography variant="body1">Status</Typography>
-                          </TableCell>
+                          </TableCell> */}
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -157,20 +165,21 @@ function Index() {
                                   {row?.name}
                                 </Typography>
                               </TableCell>
-                              <TableCell align="left">
+                              <TableCell align="center">
                                 <Typography variant="body1">
-                                  {row?.date_order
+                                  {/* {row?.date_order
                                     ?.replaceAll("-", "/")
-                                    ?.replaceAll(" ", " - ")}
+                                    ?.replaceAll(" ", " - ").split(' - ')[0]} */}
+                                  {formatDateString(row?.date_order)}
                                 </Typography>
                               </TableCell>
                               <TableCell align="center">
-                                <Typography variant="body1">
+                                <Typography variant="body1" style={{ color: '#848484' }}>
                                   ${row?.amount_total}
                                 </Typography>
                               </TableCell>
 
-                              <TableCell align="center">
+                              {/* <TableCell align="center">
                                 <Typography
                                   variant="body1"
                                   className={
@@ -181,7 +190,7 @@ function Index() {
                                 >
                                   {row?.order_status}
                                 </Typography>
-                              </TableCell>
+                              </TableCell> */}
                             </TableRow>
                           ))}
                       </TableBody>

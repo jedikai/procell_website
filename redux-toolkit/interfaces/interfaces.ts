@@ -13,6 +13,7 @@ export interface globalStateInterface {
 export interface userProfileImageInterface {
   refresh: boolean;
   image: string;
-  AuthorizedNetCred: { login_id: string, client_key: string };
+  AuthorizedNetCred: { login_id: string; client_key: string };
   userName: string;
+  productVariantId: string | number;
 }

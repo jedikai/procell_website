@@ -14,7 +14,7 @@ import { ContactWrapper } from "@/styles/StyledComponents/ContactWrapper";
 import { primaryColors } from "@/themes/_muiPalette";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
-import DeliveryVendorRaioHandler from "@/ui/CustomRadio/DeliveryVendorRaioHandler";
+import ContactusRadioHandler from "@/ui/CustomRadio/ContactusRadioHandler";
 import CallIcon from "@/ui/Icons/CallIcon";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
@@ -45,6 +45,7 @@ type Inputs = {
   type: boolean;
 };
 
+const exceptThisSymbols = ["e", "E", "+", "-", "."];
 const phoneRegExp = /^[0-9]{10}$/;
 const regex = /^[0-9]+$/;
 // <------------------ REGISTRATION FORM VALIDATION SCHEMA ------------------>
@@ -201,6 +202,7 @@ export default function Index() {
   const consentHandler = (data: string) => {
     setValue("type", data == "professional");
     setConsent(data);
+    reset()
   };
   console.log("languageList", errors);
 
@@ -292,7 +294,7 @@ export default function Index() {
                     </Typography>
                   </Box>
                   <Box className="option_sec">
-                    <DeliveryVendorRaioHandler
+                    <ContactusRadioHandler
                       defaultValue={consent}
                       RadioGroupValue={consent}
                       radioList={radioChekcList}
@@ -304,6 +306,9 @@ export default function Index() {
                       <InputFieldCommon
                         placeholder="First name"
                         {...register("firstName")}
+                        onKeyDown={(e: any) =>
+                          [' '].includes(e.key) && e.preventDefault()
+                        }
                       />
                       {errors.firstName && (
                         <div className="profile_error">
@@ -315,6 +320,9 @@ export default function Index() {
                       <InputFieldCommon
                         placeholder="Last name"
                         {...register("lastName")}
+                        onKeyDown={(e: any) =>
+                          [' '].includes(e.key) && e.preventDefault()
+                        }
                       />
                       {errors.lastName && (
                         <div className="profile_error">
@@ -389,7 +397,7 @@ export default function Index() {
                               );
                             }}
                           />
-                          {errors.phnCode && (
+                          {errors.phnCode && !selectedValues.phnCode && (
                             <div className="profile_error">
                               {errors.phnCode.message}
                             </div>
@@ -398,8 +406,9 @@ export default function Index() {
                         <Box className="phn_num">
                           <InputFieldCommon
                             placeholder="Phone number"
-                            // type="number"
+                            type="number"
                             {...register("phone")}
+                            onKeyDown={(e: any) => exceptThisSymbols.includes(e.key) && e.preventDefault()}
                           // {...register("phone", {
                           //   max: 3
                           // })}
@@ -471,7 +480,7 @@ export default function Index() {
                               />
                             )}
                           />
-                          {errors.language && (
+                          {errors.language && !selectedValues.language && (
                             <div className="profile_error">
                               {errors?.language.message}
                             </div>
@@ -544,7 +553,7 @@ export default function Index() {
                                   />
                                 )}
                               />
-                              {errors.country && (
+                              {errors.country && !selectedValues.country && (
                                 <div className="profile_error">
                                   {errors.country.message}
                                 </div>
@@ -673,7 +682,7 @@ export default function Index() {
                                 />
                               )}
                             />
-                            {errors.country && (
+                            {errors.country && !selectedValues.country && (
                               <div className="profile_error">
                                 {errors.country.message}
                               </div>

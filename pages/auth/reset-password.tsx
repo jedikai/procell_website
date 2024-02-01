@@ -3,6 +3,7 @@ import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
 import validationText from "@/json/messages/validationText";
 import LoginWrapper from "@/layout/wrapper/LoginWrapper";
+import { getCookie } from "@/lib/functions/storage.lib";
 import { LoginPageWrapper } from "@/styles/StyledComponents/LoginPageWrapper";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
@@ -13,7 +14,7 @@ import { Box } from "@mui/system";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
@@ -38,6 +39,7 @@ const Resetpassword = () => {
   const { db, token, login }: any = router?.query ?? {};
   const { toastSuccess, toastError } = useNotiStack();
   const [openModal, setopenModal] = useState(false);
+  const [render, setRender] = useState(true);
 
   const { mutate: resetPassword, isLoading } = useResetPassword();
 
@@ -80,93 +82,123 @@ const Resetpassword = () => {
       }
     });
   };
-  console.log("router", login);
+
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const userLoginStatus: boolean =
+  //       !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
+  //     if (userLoginStatus) {
+  //       router.push("/dashboard/profile");
+  //       setRender(false);
+  //     } else {
+  //       setRender(true);
+  //     }
+  //   }
+  // }, []);
 
   return (
-    <LoginWrapper
-      title="welcome TO
+    <>
+      {render ? (
+        <>
+          <LoginWrapper
+            title="welcome TO
 PROCELL"
-    >
-      <LoginPageWrapper className="">
-        <Box className="wrapper reset_wrapper">
-          <Link href="/">
-            <Image
-              src={assest.logo_img}
-              alt="procell"
-              width={143}
-              height={54}
-            />
-          </Link>
-          <form onSubmit={handleSubmit(onFormSubmit)}>
-            <Box className="form_body">
-              <Box className="verified_box">
-                <Image
-                  src={assest.purple_tick}
-                  alt="verified"
-                  width={32}
-                  height={32}
-                />
-                <Typography variant="body1">Verification Successful</Typography>
-              </Box>
-              <Typography variant="h4">CREATE NEW PASSWORD</Typography>
+          >
+            <LoginPageWrapper className="">
+              <Box className="wrapper reset_wrapper">
+                <Link href="/">
+                  <Image
+                    src={assest.logo_img}
+                    alt="procell"
+                    width={143}
+                    height={54}
+                  />
+                </Link>
+                <form onSubmit={handleSubmit(onFormSubmit)}>
+                  <Box className="form_body">
+                    <Box className="verified_box">
+                      <Image
+                        src={assest.purple_tick}
+                        alt="verified"
+                        width={32}
+                        height={32}
+                      />
+                      <Typography variant="body1">
+                        Verification Successful
+                      </Typography>
+                    </Box>
+                    <Typography variant="h4">CREATE NEW PASSWORD</Typography>
 
-              <Box className="input_wrap">
-                <InputFieldCommon
-                  placeholder="Password"
-                  style2
-                  isPassword
-                  {...register("password")}
-                />
-                {errors.password && (
-                  <div className="error">{errors.password.message}</div>
-                )}
-                <InputFieldCommon
-                  placeholder="Confirm Password"
-                  isPassword
-                  style2
-                  {...register("confirmPassword")}
-                />
-                {errors.confirmPassword && (
-                  <div className="error">{errors.confirmPassword.message}</div>
-                )}
-              </Box>
+                    <Box className="input_wrap">
+                      <InputFieldCommon
+                        placeholder="Password"
+                        style2
+                        isPassword
+                        {...register("password")}
+                      />
+                      {errors.password && (
+                        <div className="error">{errors.password.message}</div>
+                      )}
+                      <InputFieldCommon
+                        placeholder="Confirm Password"
+                        isPassword
+                        style2
+                        {...register("confirmPassword")}
+                      />
+                      {errors.confirmPassword && (
+                        <div className="error">
+                          {errors.confirmPassword.message}
+                        </div>
+                      )}
+                    </Box>
 
-              <Box className="btn_wrapper">
-                <CustomButtonPrimary
-                  variant="contained"
-                  color="primary"
-                  type="submit"
-                >
-                  <Typography variant="body1">Change password</Typography>
-                </CustomButtonPrimary>
+                    <Box className="btn_wrapper">
+                      <CustomButtonPrimary
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                      >
+                        <Typography variant="body1">Change password</Typography>
+                      </CustomButtonPrimary>
+                    </Box>
+                  </Box>
+                </form>
               </Box>
-            </Box>
-          </form>
-        </Box>
-        <MuiModalWrapper open={openModal} onClose={handleCloseModal} title="">
-          <Box className="success_modal">
-            <Box className="icon_wrap">
-              <Image
-                src={assest.success_modal_img}
-                alt="success"
-                width={121}
-                height={127}
-              />
-            </Box>
-            <Typography variant="h3">Successfully Changed Password</Typography>
-            <Box className="btn_wrapper">
-              <CustomButtonPrimary
-                variant="contained"
-                color="primary"
-                onClick={() => router.push("/auth/login")}
+              <MuiModalWrapper
+                open={openModal}
+                onClose={handleCloseModal}
+                title=""
               >
-                <Typography variant="body1">Ok</Typography>
-              </CustomButtonPrimary>
-            </Box>
-          </Box>
-        </MuiModalWrapper>
-      </LoginPageWrapper>
-    </LoginWrapper>
+                <Box className="success_modal">
+                  <Box className="icon_wrap">
+                    <Image
+                      src={assest.success_modal_img}
+                      alt="success"
+                      width={121}
+                      height={127}
+                    />
+                  </Box>
+                  <Typography variant="h3">
+                    Successfully Changed Password
+                  </Typography>
+                  <Box className="btn_wrapper">
+                    <CustomButtonPrimary
+                      variant="contained"
+                      color="primary"
+                      onClick={() => router.push("/auth/login")}
+                    >
+                      <Typography variant="body1">Ok</Typography>
+                    </CustomButtonPrimary>
+                  </Box>
+                </Box>
+              </MuiModalWrapper>
+            </LoginPageWrapper>
+          </LoginWrapper>
+        </>
+      ) : (
+        <></>
+      )}
+    </>
   );
 };
 

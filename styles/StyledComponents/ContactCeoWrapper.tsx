@@ -36,7 +36,7 @@ export const ContactCeoWrapper = styled(Box)`
   .small_pink_leaf {
     position: absolute;
     left: 38%;
-    top: 34%;
+    top: 250px;
     pointer-events: none;
     z-index: 4;
     max-width: 30px;
@@ -250,5 +250,42 @@ export const ContactCeoWrapper = styled(Box)`
         }
       }
     }
+  }
+`;
+
+export const ContactCeoWrapperNew = styled(Box)`
+  .title_block {
+    > h4 {
+      font-size: 25px;
+      margin-bottom: 15px;
+    }
+    margin-bottom: 30px;
+  }
+  .each_input {
+    .MuiInputBase-root {
+      border-radius: 10px;
+      border: 1px solid ${primaryColors?.inputBorder};
+      background: ${primaryColors?.white};
+      padding: 11px 15px;
+      .MuiSelect-select {
+        line-height: 1.5;
+      }
+    }
+    .MuiFormControl-root {
+      &.MuiTextField-root {
+        .MuiInputBase-adornedEnd {
+          textarea {
+            padding: 10px 10px 20px 0px;
+          }
+        }
+      }
+    }
+    .blue_para {
+      color: ${primaryColors?.primary};
+      font-size: 14px;
+    }
+  }
+  .form_submit {
+    margin-top: 32px;
   }
 `;

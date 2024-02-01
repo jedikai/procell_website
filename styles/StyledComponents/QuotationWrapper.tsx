@@ -64,5 +64,11 @@ export const QuotationWrapper = styled(Box)`
     border: 1px solid ${primaryColors.inputBorder};
     background: ${primaryColors.white};
     padding: 14px 15px 27px 15px;
+
+    .valid_until{
+      @media(max-width: 899px){
+        display: none;
+      }
+    }
   }
 `;

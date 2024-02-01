@@ -46,9 +46,9 @@ export const BannerWrapper = styled(Box)`
         top: 25px;
         right: 25px;
       }
-      @media (max-width: 599px) {
+      /* @media (max-width: 599px) {
         display: none;
-      }
+      } */
     }
   }
   .banner_wrapper {
@@ -63,6 +63,24 @@ export const BannerWrapper = styled(Box)`
     justify-content: center;
     z-index: 1;
 
+    .btn_holder{
+      @media(max-width: 599px){
+        flex-direction: column;
+      }
+      button{
+        @media(max-width: 599px){
+          margin-left: 0 !important;
+        }
+        &:not(:last-child){
+          @media(max-width: 599px){
+            margin-bottom: 15px;
+            
+          }
+         
+        }
+      }
+    }
+
     .banner_inr {
       max-width: 520px;
       @media (max-width: 1199px) {
@@ -73,6 +91,7 @@ export const BannerWrapper = styled(Box)`
       }
       @media (max-width: 599px) {
         max-width: 380px;
+        text-align: center;
       }
       h1 {
         color: ${primaryColors.white};

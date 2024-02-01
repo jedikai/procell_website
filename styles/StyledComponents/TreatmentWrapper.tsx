@@ -5,6 +5,9 @@ import styled from "@emotion/styled";
 import { Box } from "@mui/material";
 
 export const TreatmentWrapper = styled(Box)`
+  @media (max-width: 1199px) {
+    padding-top: 30px;
+  }
   /* padding-top: 100px; */
   padding-bottom: 100px;
   @media (max-width: 1199px) {
@@ -20,9 +23,20 @@ export const TreatmentWrapper = styled(Box)`
     padding-bottom: 50px;
   }
   .sec_title {
+    margin-bottom: 70px;
+    @media (max-width: 599px) {
+      margin-bottom: 30px;
+    }
     h3 {
+      font-size: 66px;
+      @media (max-width: 899px) {
+        font-size: 40px;
+      }
+      @media (max-width: 599px) {
+        font-size: 30px;
+      }
       span {
-        font-size: 66px;
+        font-size: 80px;
         display: block;
         line-height: inherit;
         color: inherit;
@@ -31,7 +45,7 @@ export const TreatmentWrapper = styled(Box)`
           font-size: 60px;
         }
         @media (max-width: 899px) {
-          font-size: 50px;
+          font-size: 40px;
         }
         @media (max-width: 599px) {
           font-size: 30px;
@@ -61,6 +75,58 @@ export const TreatmentWrapper = styled(Box)`
         max-width: 90%;
         margin: -72px auto 0;
         padding: 10px;
+      }
+
+      .slick-arrow {
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        z-index: 100;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        border: 1px solid ${primaryColors.text_purple};
+        z-index: 1;
+        @media (max-width: 599px) {
+          width: 30px;
+          height: 30px;
+        }
+        &:hover {
+          background: ${primaryColors.text_purple};
+          &:before {
+            filter: brightness(0) invert(1);
+          }
+        }
+        &:before {
+          width: 50%;
+          height: 50%;
+          display: inline-block;
+          content: "";
+          transition: all 0.3s ease-in-out 0s;
+        }
+        &.slick-prev {
+          left: 5px;
+
+          &:before {
+            background: url("/assets/images/arrow_prev.svg") no-repeat center
+              center;
+            background-size: 100%;
+          }
+          @media (max-width: 599px) {
+            left: -32px;
+          }
+        }
+        &.slick-next {
+          right: 5px;
+          &:before {
+            background: url("/assets/images/arrow_next.svg") no-repeat center
+              center;
+            background-size: 100%;
+          }
+          @media (max-width: 599px) {
+            right: -32px;
+          }
+        }
       }
       .slick-dots {
         text-align: start;
@@ -116,8 +182,11 @@ export const TreatmentWrapper = styled(Box)`
         }
       }
 
-      .each_box {
+      .slick-slide {
         padding: 0 14px;
+      }
+      .each_box {
+        height: 148px;
         @media (max-width: 899px) {
           padding: 10px;
         }

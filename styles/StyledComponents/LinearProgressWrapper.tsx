@@ -5,6 +5,7 @@ import { Box } from "@mui/material";
 
 export const LinearProgressWrapper = styled(Box)`
   margin: 78px 0;
+
   @media (max-width: 1199px) {
     margin: 50px 0;
   }

@@ -115,12 +115,12 @@ export const HeaderWrap = styled(Box)`
   .navbar {
     margin-left: auto;
     a {
-      margin-right: 45px;
+      margin-right: 30px;
       display: inline-block;
       color: ${primaryColors.secondaryFont};
       font-size: 15px;
       @media (max-width: 1199px) {
-        margin-right: 40px;
+        margin-right: 14px;
         font-size: 14px;
       }
       @media (max-width: 899px) {
@@ -132,7 +132,7 @@ export const HeaderWrap = styled(Box)`
       }
 
       &:hover {
-        color: ${primaryColors.primary};
+        color: ${primaryColors.text_purple};
       }
       &:last-child {
         margin-right: 0;
@@ -141,7 +141,7 @@ export const HeaderWrap = styled(Box)`
         margin-left: 0;
       }
       &.active {
-        color: ${primaryColors.primary};
+        color: ${primaryColors.text_purple};
       }
     }
   }

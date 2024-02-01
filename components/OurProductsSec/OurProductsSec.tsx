@@ -2,7 +2,6 @@
 /* eslint-disable sort-imports */
 /* eslint-disable import/order */
 /* eslint-disable mui-path-imports/mui-path-imports */
-import { ourproductList2 } from "@/json/mock/ourproductLits.mock";
 import { searchList } from "@/json/mock/quationselectlList.mock";
 import { ProductsWrapper } from "@/styles/StyledComponents/ProductsWrapper";
 import CustomSelect from "@/ui/Filter/CustomSelect";
@@ -16,23 +15,36 @@ import {
 } from "@mui/material";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import React, { memo } from "react";
+import React, { memo, useMemo } from "react";
+import CategorySlider from "../CategorySlider/CategorySlider";
 import OurProductSlider from "../OurProductSlider/OurProductSlider";
 import SearchComponent from "../SearchComponent/SearchComponent";
 
-export default memo(function OurProductsSec({ productList, filterList }: any) {
-  const [value, setValue] = React.useState("");
+const OurProductsSec = ({
+  productList,
+  filterList,
+  categoriesList,
+  selectedCategory,
+  category
+}: any) => {
+  const [value, setValue] = React.useState("Featured");
+  const [shortList, setShortList] = React.useState(searchList);
 
   const handleChange = (event: SelectChangeEvent | any) => {
     setValue(event.target.value);
     filterList({ type: "sort", value: event.target.value });
+    setShortList(searchList.filter((_i: any) => _i?.name != value));
   };
-  console.log("value", value);
+  console.log("productList===>", productList);
 
   const getSearchValue = (e: any) => {
     filterList({ type: "search", value: e.target.value });
     console.log("searched value", e.target.value);
   };
+  const shortListHandler: any = useMemo(
+    () => searchList.filter((_i: any) => _i?.name != value),
+    [value]
+  );
   return (
     <ProductsWrapper className="cmn_gap">
       <Container fixed>
@@ -52,11 +64,10 @@ export default memo(function OurProductsSec({ productList, filterList }: any) {
                 value={value}
                 onChange={handleChange}
               >
-                <MenuItem value="" sx={{ display: "none" }}>
+                {/* <MenuItem value="" sx={{ display: "none" }}>
                   Featured
-                </MenuItem>
-                orderDataSelect
-                {searchList.map((item) => (
+                </MenuItem> */}
+                {searchList?.map((item: any) => (
                   <MenuItem
                     key={item?.name}
                     value={item?.name}
@@ -71,22 +82,43 @@ export default memo(function OurProductsSec({ productList, filterList }: any) {
             <SearchComponent getSearchValue={getSearchValue} />
           </Box>
         </Box>
-        <Box className="product_btm">
-          <Grid container spacing={{ lg: 4, md: 2, xs: 2 }}>
-            {productList?.map((item: any) => (
-              <Grid item xs={12} md={4} sm={6} key={item?.id}>
-                <OurProductSlider
-                  key={item?.id}
-                  OurProductsliderImg={item?.image_1920_url}
-                  productSlidertext={item?.name}
-                  productSliderPrice={item?.list_price}
-                  link={item.id ?? ""}
-                />
-              </Grid>
-            ))}
-          </Grid>
+        <Box className="product_mdl">
+          <CategorySlider
+            categorySlider={categoriesList}
+            selectedCategory={selectedCategory}
+            category={category}
+          />
         </Box>
+        {!!productList && productList?.length > 0 ? (
+          <Box className="product_btm">
+            <Grid container spacing={{ lg: 4, md: 2, xs: 2 }}>
+              {productList?.map((item: any) => (
+                <Grid item xs={12} md={4} sm={6} key={item?.id}>
+                  <OurProductSlider
+                    key={item?.id}
+                    OurProductsliderImg={item?.image_1920_url}
+                    productSlidertext={item?.name}
+                    productSliderPrice={item?.list_price}
+                    link={item.id ?? ""}
+                    product_variant_id={
+                      item?.product_variant_id &&
+                      item?.product_variant_id?.length > 0
+                        ? item?.product_variant_id[0]
+                        : ""
+                    }
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        ) : (
+          <Typography variant="body1" className="no_pr_text">
+            There is no product
+          </Typography>
+        )}
       </Container>
     </ProductsWrapper>
   );
-});
+};
+
+export default memo(OurProductsSec);

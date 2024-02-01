@@ -41,6 +41,9 @@ export const HealingSecWrapper = styled(Box)`
       width: 100%;
       height: 100%;
       object-fit: cover;
+      @media(max-width: 899px){
+        object-position: 20% top;
+      }
     }
   }
   .healing_content_wrapper {

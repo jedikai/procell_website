@@ -109,6 +109,9 @@ export const LoginPageWrapper = styled(Box)`
             background-color: ${primaryColors.text_purple} !important;
             opacity: 1;
           }
+          .MuiSwitch-thumb{
+            color: ${primaryColors.primary};;
+          }
         }
         .MuiSwitch-track {
           height: 20px;
@@ -121,6 +124,7 @@ export const LoginPageWrapper = styled(Box)`
           width: 16px;
           height: 16px;
           color: ${primaryColors.text_purple};
+          /* color: #2196f3; */
         }
         a {
           text-decoration: none;

@@ -108,11 +108,16 @@ const PaymentCardDetailsCard = ({
       landing_route,
       amount
     } = response ?? {};
+    const authorizeCreds =
+      providers && providers?.length > 0
+        ? providers?.filter((_i: any) => _i?.name == "Authorize.Net")
+        : [];
+
     const {
       encrypted_authorize_login,
       encrypted_authorize_client_key,
       id
-    }: any = providers && providers?.length > 0 ? providers[0] : {};
+    }: any = authorizeCreds[0];
     if (!!encrypted_authorize_login && !!encrypted_authorize_client_key) {
       setAuthorizationCred({
         apiLoginID:
@@ -142,11 +147,11 @@ const PaymentCardDetailsCard = ({
           checked: index == 0 ? true : false
         }))
       );
-      setSelectedCardId(tokens[0]?.id)
+      setSelectedCardId(tokens[0]?.id);
     } else {
       setIsNewCardAdded(true);
       setCardListData([]);
-      setSelectedCardId('')
+      setSelectedCardId("");
     }
     setPaymentTransactionInfo({
       reference_prefix,
@@ -446,7 +451,7 @@ const PaymentCardDetailsCard = ({
       );
       setSelectedCardId(userSelectedCardInfo[0]?.id);
     } else {
-      setSelectedCardId('')
+      setSelectedCardId("");
     }
   };
   const deleteCard = (cardNumber: string | number) => {
@@ -490,7 +495,7 @@ const PaymentCardDetailsCard = ({
       return true;
     }
   }, [cardData, selectedCardId]);
-  console.log("cardData", isButtonDisable);
+  console.log("authorizationCred", authorizationCred);
   return (
     <>
       {shipping != null && (

@@ -4,10 +4,13 @@ import { primaryColors } from "@/themes/_muiPalette";
 import CertifiedIcon from "@/ui/Icons/CertifiedIcon";
 import PeopleIcon from "@/ui/Icons/PeopleIcon";
 import StarIcon from "@/ui/Icons/StarIcon";
+import StudentIcon from "@/ui/Icons/StudentIcon";
 import styled from "@emotion/styled";
 import { Box } from "@mui/system";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
+import { useState } from "react";
 
 const FirstStepWrapper = styled(Box)`
   .wrapper {
@@ -48,7 +51,7 @@ const FirstStepWrapper = styled(Box)`
         padding: 10px;
         padding: 10;
       }
-      &:hover{
+      &:hover {
         border: 1px solid ${primaryColors.text_purple};
       }
       :not(:last-child) {
@@ -89,10 +92,10 @@ const FirstStepWrapper = styled(Box)`
           height: 40px;
           margin-right: 10px;
         }
-        svg{
+        svg {
           @media (max-width: 375px) {
-         width: 20px;
-        }
+            width: 20px;
+          }
         }
       }
     }
@@ -114,29 +117,54 @@ const Firststep = () => {
       icon: <StarIcon />,
       path: "/contact/",
       text: "Would like to become a Procell Therapies Practitioner"
-    }
+    },
+    // {
+    //   icon: <StudentIcon />,
+    //   path: "/auth/student-category/",
+    //   text: "Student"
+    // }
   ];
+  const router = useRouter();
+  const [render, setRender] = useState(true);
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const userLoginStatus: boolean =
+  //       !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
+  //     if (userLoginStatus) {
+  //       router.push("/dashboard/profile");
+  //       setRender(false);
+  //     } else {
+  //       setRender(true);
+  //     }
+  //   }
+  // }, []);
   return (
-    <LoginWrapper title="welcome TO PROCELL">
-      <FirstStepWrapper>
-        <Box className="wrapper">
-          <Link href="/">
-            <Image
-              src={assest.logo_img}
-              alt="procell"
-              width={143}
-              height={54}
-            />
-          </Link>
-          {firstStepOptions.map((item: any, index: number) => (
-            <Box className="step_items" key={index + 1}>
-              <Box className="icon_box">{item.icon}</Box>
-              <Link href={item.path}>{item.text}</Link>
+    <>
+      {render ? (
+        <LoginWrapper title="welcome TO PROCELL">
+          <FirstStepWrapper>
+            <Box className="wrapper">
+              <Link href="/">
+                <Image
+                  src={assest.logo_img}
+                  alt="procell"
+                  width={143}
+                  height={54}
+                />
+              </Link>
+              {firstStepOptions.map((item: any, index: number) => (
+                <Box className="step_items" key={index + 1}>
+                  <Box className="icon_box">{item.icon}</Box>
+                  <Link href={item.path}>{item.text}</Link>
+                </Box>
+              ))}
             </Box>
-          ))}
-        </Box>
-      </FirstStepWrapper>
-    </LoginWrapper>
+          </FirstStepWrapper>
+        </LoginWrapper>
+      ) : (
+        <></>
+      )}
+    </>
   );
 };
 

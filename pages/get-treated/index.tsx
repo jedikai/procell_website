@@ -42,6 +42,7 @@ type Inputs = {
   state: string;
   zipCode: string;
 };
+const exceptThisSymbols = ["e", "E", "+", "-", "."];
 
 export default function Index() {
   const { toastSuccess, toastError } = useNotiStack();
@@ -224,6 +225,9 @@ export default function Index() {
                       <InputFieldCommon
                         placeholder="First name"
                         {...register("firstName")}
+                        onKeyDown={(e: any) =>
+                          [' '].includes(e.key) && e.preventDefault()
+                        }
                       />
                       {errors.firstName && (
                         <div className="profile_error">
@@ -235,6 +239,9 @@ export default function Index() {
                       <InputFieldCommon
                         placeholder="Last name"
                         {...register("lastName")}
+                        onKeyDown={(e: any) =>
+                          [' '].includes(e.key) && e.preventDefault()
+                        }
                       />
                       {errors.lastName && (
                         <div className="profile_error">
@@ -318,8 +325,9 @@ export default function Index() {
                         <Box className="phn_num">
                           <InputFieldCommon
                             placeholder="Phone number"
-                            // type="number"
+                            type="number"
                             {...register("phone")}
+                            onKeyDown={(e: any) => exceptThisSymbols.includes(e.key) && e.preventDefault()}
                           // {...register("phone", {
                           //   max: 3
                           // })}

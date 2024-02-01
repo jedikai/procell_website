@@ -54,6 +54,7 @@ export default function BannerSec() {
                   justifyContent="start"
                   alignItems="center"
                   spacing={5}
+                  className="btn_holder"
                 >
                   <CustomButtonPrimary
                     endIcon={<WhiteArrowIcon />}

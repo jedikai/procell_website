@@ -16,6 +16,7 @@ interface MuiModalWrapperProps {
   children: JSX.Element | JSX.Element[];
   title: string;
   crossDelete?: boolean;
+  className?: string;
 }
 
 export default function MuiModalWrapper({
@@ -24,7 +25,8 @@ export default function MuiModalWrapper({
   scroll,
   children,
   title,
-  crossDelete
+  crossDelete,
+  className
 }: MuiModalWrapperProps) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
@@ -41,6 +43,7 @@ export default function MuiModalWrapper({
           borderRadius
         }
       }}
+      className={className}
     >
       <Box>
         <Stack

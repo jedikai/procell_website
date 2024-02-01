@@ -19,92 +19,118 @@ export const InvoiceCardWrap = styled(Stack)`
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    figure {
-      width: 92px;
-      height: 101px;
-      background-color: ${primaryColors.sliderBackColor};
-      justify-content: center;
-      display: flex;
-      align-items: center;
+    > figure {
       margin-right: 19px;
     }
-    .product_details {
-      max-width: 193px;
-      h5 {
-        color: ${primaryColors?.black};
+    @media (max-width: 1199px) {
+      margin-bottom: 15px;
+    }
+    .MuiAvatarGroup-root {
+      margin-right: 25px;
+      position: relative;
+      flex-direction: row;
+
+      .MuiAvatar-colorDefault {
+        background: rgba(0, 0, 0, 0.5);
+        border-color: transparent;
+        z-index: 1;
+        position: absolute;
+        top: 0;
+        right: 0;
+      }
+
+      .MuiAvatar-root {
+        margin-right: -16px;
+        border: 1px solid ${primaryColors?.primary};
+      }
+      figure {
+        width: 92px;
+        height: 101px;
+        background-color: ${primaryColors.sliderBackColor};
+        justify-content: center;
+        display: flex;
+        align-items: center;
+        margin-right: 19px;
+      }
+      .product_details {
+        max-width: 193px;
+        h5 {
+          color: ${primaryColors?.black};
+          font-family: Roboto;
+          font-size: 14px;
+          font-weight: 500;
+          text-transform: capitalize;
+          margin-bottom: 10px;
+        }
+        p {
+          color: ${primaryColors?.darkblack};
+          font-size: 15px;
+          font-weight: 800;
+          text-transform: capitalize;
+        }
+      }
+    }
+    .order_id {
+      margin-bottom: 7px;
+      font-size: 13px;
+      line-height: 1.2;
+      .order_idText {
         font-family: Roboto;
-        font-size: 14px;
-        font-weight: 500;
-        text-transform: capitalize;
-        margin-bottom: 10px;
-      }
-      p {
-        color: ${primaryColors?.darkblack};
-        font-size: 15px;
-        font-weight: 800;
-        text-transform: capitalize;
+        color: ${primaryColors.mainFontColor};
+        font-size: inherit;
+        font-weight: 600;
+        line-height: inherit;
       }
     }
-  }
-  .order_id {
-    margin-bottom: 7px;
-font-size: 13px;
-line-height: 1.2;
-    .order_idText{
-      font-family: Roboto;
-      color: ${primaryColors.mainFontColor};
-font-size: inherit;
-font-weight: 600;
-line-height:inherit;
+    .invoice_chip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 11px;
+      border-radius: 6px;
+      background: ${primaryColors?.lightPurple};
+      height: 35px;
+      cursor: pointer;
+      .MuiChip-label {
+        color: ${primaryColors?.text_purple};
+        font-family: Roboto;
+        font-size: 13px;
+        font-weight: 600;
+      }
+    }
+    .deliver_chip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 11px;
+      border-radius: 6px;
+      background: ${primaryColors?.lightGreen};
+      height: 35px;
+      .MuiChip-label {
+        color: ${primaryColors?.mintGreen};
+        font-family: Roboto;
+        font-size: 13px;
+        font-weight: 600;
+      }
     }
   }
-  .invoice_chip {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 11px;
-    border-radius: 6px;
-    background: ${primaryColors?.lightPurple};
-    height: 35px;
-    cursor: pointer;
-    .MuiChip-label {
-      color: ${primaryColors?.text_purple};
-      font-family: Roboto;
-      font-size: 13px;
-      font-weight: 600;
-    }
-  }
-  .deliver_chip {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 11px;
-    border-radius: 6px;
-    background: ${primaryColors?.lightGreen};
-    height: 35px;
-    .MuiChip-label {
-      color: ${primaryColors?.mintGreen};
-      font-family: Roboto;
-      font-size: 13px;
-      font-weight: 600;
-    }
-  }
+
   .rgt_block {
-    p{
+    p {
       color: ${primaryColors.mainFontColor};
-font-size: 13px;
-line-height: 1.2;
-text-align: right;
-@media (max-width:1199px) {
-  text-align:left;
-}
-span{
-  display: inline-block;
-  color: inherit;
-  font-size: inherit;
-  line-height: inherit;
-  font-weight: 400;
-}
+      font-size: 13px;
+      line-height: 1.2;
+      text-align: right;
+      @media (max-width: 1199px) {
+        text-align: left;
+      }
+      span {
+        display: inline-block;
+        color: inherit;
+        font-size: inherit;
+        line-height: inherit;
+        font-weight: 400;
+      }
     }
     ul {
       display: flex;
@@ -114,6 +140,11 @@ span{
       li {
         width: auto;
         display: block;
+        .MuiChip-root {
+          svg {
+            margin-left: 13px;
+          }
+        }
         &:not(:last-child) {
           margin-right: 10px;
 

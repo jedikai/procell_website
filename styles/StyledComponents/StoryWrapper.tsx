@@ -43,11 +43,14 @@ export const StoryWrapper = styled(Box)`
       }
       @media (max-width: 899px) {
         font-size: 90px;
+        max-width: none;
+        text-align: center;
+        padding-right: 0;
       }
       @media (max-width: 599px) {
         font-size: 36px;
         margin-bottom: 26px;
-        padding-right: 60px;
+        padding-right: 0;
         margin-left: 0;
       }
 

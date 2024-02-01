@@ -1,7 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
 import { endpoints } from "@/api/endpoints";
 import { useQuery } from "react-query";
-import { GET_IMAGE_COMPRESSION_DATA, GET_STORY_SECTION_DATA, GET_TREATMENT_VIDEO_DATA } from "../query-keys/storySecQuery.keys";
+import { GET_IMAGE_COMPRESSION_DATA, GET_STORY_SECTION_DATA, GET_TESTIMONIAL_DATA, GET_TREATMENT_VIDEO_DATA } from "../query-keys/storySecQuery.keys";
 
 const getStorySecData = async () => {
   const res = await axiosInstance.get(`${endpoints.app.story_section_data}`);
@@ -43,5 +43,20 @@ export const useImageCompressionData = (
   useQuery([GET_IMAGE_COMPRESSION_DATA], getImageCompressionData, {
     onSuccess,
     onError,
-    // select: (data) => data?.data?.data ?? []
+    select: (data) => data?.data?.data ?? []
+  });
+
+const getTestimonialData = async () => {
+  const res = await axiosInstance.get(endpoints.app.testimonial_data);
+  return res;
+};
+
+export const useTestimonialData = (
+  onSuccess: any = () => {},
+  onError: any = () => {}
+) =>
+  useQuery([GET_TESTIMONIAL_DATA], getTestimonialData, {
+    onSuccess,
+    onError,
+    select: (data) => data?.data?.data ?? []
   });

@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-no-useless-fragment */
+/* eslint-disable no-nested-ternary */
 import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
 import {
   useCountryList,
@@ -8,7 +10,6 @@ import {
   useProfileDetails,
   useUpdateProfile
 } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
-import { GET_PROFILE_DETAILS } from "@/hooks/react-qurey/query-keys/dashboardQuery.keys";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import useNotiStack from "@/hooks/useNotistack";
@@ -58,6 +59,7 @@ type Inputs = {
 };
 
 const phoneRegExp = /^[0-9]{10}$/;
+const exceptThisSymbols = ["e", "E", "+", "-", "."];
 // <------------------ PROFILE VALIDATION SCHEMA ------------------>
 const validationSchema = yup.object().shape({
   email: yup
@@ -537,6 +539,9 @@ export default function Profile(): JSX.Element {
                               fullWidth
                               defaultValue={profileDetails?.first_name}
                               {...register("firstName")}
+                              onKeyDown={(e: any) =>
+                                [' '].includes(e.key) && e.preventDefault()
+                              }
                             />
                             {errors.firstName && (
                               <div className="profile_error">
@@ -550,6 +555,9 @@ export default function Profile(): JSX.Element {
                               fullWidth
                               defaultValue={profileDetails?.last_name}
                               {...register("lastName")}
+                              onKeyDown={(e: any) =>
+                                [' '].includes(e.key) && e.preventDefault()
+                              }
                             />
                             {errors.lastName && (
                               <div className="profile_error">
@@ -626,9 +634,11 @@ export default function Profile(): JSX.Element {
                           <Grid item lg={6} xs={12}>
                             <InputFieldCommon
                               placeholder="Phone number"
+                              type="number"
                               fullWidth
                               defaultValue={profileDetails?.contact}
                               {...register("phone")}
+                              onKeyDown={(e: any) => exceptThisSymbols.includes(e.key) && e.preventDefault()}
                             />
                             {errors.phone && (
                               <div className="profile_error">
@@ -832,7 +842,7 @@ export default function Profile(): JSX.Element {
                     onClick={handleChange}
                     className="gradient_btn"
                   >
-                    <Typography variant="caption">
+                    <Typography variant="body1">
                       {!edit ? "Edit profile" : "Discard changes"}
                     </Typography>
                   </CustomButtonPrimary>

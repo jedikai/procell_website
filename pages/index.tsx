@@ -35,7 +35,7 @@ export default function Home() {
           async
         ></script>
       );
-      setRender(!render)
+      setRender(!render);
       // if ((window as any)?.Trustpilot) {
       //   (window as any)?.Trustpilot.loadFromElement(trustBoxRef.current!, true);
       // }
@@ -59,9 +59,11 @@ export default function Home() {
         async
       /> */}
       <Wrapper>
-        {render ? <>
-          <BannerSec />
-          {/* <Weoffers
+        {render ? (
+          <>
+            <BannerSec />
+            <SkinAgeSec title="Why Does Skin Age?" subTitle="" />
+            {/* <Weoffers
           weoffergirl_img={assest.weoffersGirlimg}
           weoffergirl_imgWidth={782}
           weoffergirl_imgHeight={817}
@@ -71,38 +73,45 @@ export default function Home() {
           weofferProductdetails="Lorem ipsum dolor sit amet consectetur. Purus neque sit fames ac orci egestas?"
           WeofferProductImg={assest.weoffersproductimg}
         /> */}
-          <OurProduct
-            producttitle="products"
-            producttitletop="Our"
-            ourProductimg={assest.ourProductLadyImg}
-          />
-          {/* <TreatmentSecUpper /> */}
-          <TreatmentSec />
-          <SkinAgeSec title="Why Does Skin Age?" subTitle="" />
-          <HealingSec />
+            <OurProduct
+              producttitle="products"
+              producttitletop="Our"
+              ourProductimg={assest.ourProductLadyImg}
+            />
+            {/* <TreatmentSecUpper /> */}
+            <TreatmentSec />
+            {/* <SkinAgeSec title="Why Does Skin Age?" subTitle="" /> */}
+            <TreatmentSecUpper />
+            <HealingSec />
 
-          <>{trustPilotScript && <ReviewSlider />}</>
-          <StorySec
-            cardList={cardList}
-            image={assest?.story_img}
-            title="Our Story"
-          >
-            <Typography variant="body1">
-              <Typography variant="caption"> Dr. Mitchell Schwartz</Typography>{" "}
-              founded Procell Therapies in 2013 with a bold vision. During his
-              30+ years as a practicing dermatologist he had observed the
-              limitations and damage caused by other anti-aging systems. Dr.
-              Schwartz realized that with some engineering and ingenuity he
-              could provide better results in a safe and non-invasive way.
-            </Typography>
-            <Typography variant="body1">
-              Thanks to our roots in dermatology practice, we know what it takes
-              to successfully adopt a new treatment technology. That’s why
-              Procell Therapies provides trainings, marketing materials, and a
-              lifetime guarantee for all of our products.
-            </Typography>
-          </StorySec>
-        </> : <></>}
+            <>{trustPilotScript && <ReviewSlider />}</>
+            <StorySec
+              cardList={cardList}
+              image={assest?.story_img}
+              title="Our Story"
+            >
+              <Typography variant="body1">
+                <Typography variant="caption">
+                  {" "}
+                  Dr. Mitchell Schwartz
+                </Typography>{" "}
+                founded Procell Therapies in 2013 with a bold vision. During his
+                30+ years as a practicing dermatologist he had observed the
+                limitations and damage caused by other anti-aging systems. Dr.
+                Schwartz realized that with some engineering and ingenuity he
+                could provide better results in a safe and non-invasive way.
+              </Typography>
+              <Typography variant="body1">
+                Thanks to our roots in dermatology practice, we know what it
+                takes to successfully adopt a new treatment technology. That’s
+                why Procell Therapies provides trainings, marketing materials,
+                and a lifetime guarantee for all of our products.
+              </Typography>
+            </StorySec>
+          </>
+        ) : (
+          <></>
+        )}
       </Wrapper>
     </>
   );

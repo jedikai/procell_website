@@ -3,6 +3,13 @@ import { primaryColors } from "@/themes/_muiPalette";
 import { Box, styled } from "@mui/material";
 
 export const ProductsWrapper = styled(Box)`
+  .no_pr_text {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 24px;
+    font-weight: 500;
+    color: ${primaryColors.primary};
+  }
   .product_hdr {
     display: flex;
     align-items: center;
@@ -18,6 +25,7 @@ export const ProductsWrapper = styled(Box)`
       }
     }
   }
+
   .product_hdr_rgt {
     display: flex;
     align-items: center;
@@ -92,5 +100,9 @@ export const ProductsWrapper = styled(Box)`
     @media (max-width: 1199px) {
       margin-top: 30px;
     }
+  }
+
+  .product_mdl {
+    padding: 40px 0 20px;
   }
 `;

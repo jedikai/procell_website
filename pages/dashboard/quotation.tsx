@@ -25,9 +25,9 @@ import {
   TableRow,
   Typography
 } from "@mui/material";
+import { removeDuplicates } from "common/functions/removeDublicate";
 import React, { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
-import { removeDuplicates } from "common/functions/removeDublicate";
 
 function Quotation() {
   const { ref, inView, entry } = useInView({
@@ -83,6 +83,15 @@ function Quotation() {
     }
   }, [inView]);
   console.log("data", quotationList);
+
+  function formatDateString(inputDate: string): string {
+    const date = new Date(inputDate);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(2);
+
+    return `${month}/${day}/${year}`;
+  }
 
   return (
     <Wrapper>
@@ -145,20 +154,25 @@ function Quotation() {
                           <TableCell align="center">
                             <Typography variant="body1">Quotation</Typography>
                           </TableCell>
-                          <TableCell align="left">
+                          <TableCell align="center">
                             <Typography variant="body1">
                               Quotation date
                             </Typography>
                           </TableCell>
-                          <TableCell align="center">
-                            <Typography variant="body1">Valid until</Typography>
+                          {/* <BrowserView> */}
+                          <TableCell align="center" className="valid_until">
+                            <Typography variant="body1">
+                              Valid until
+                            </Typography>
                           </TableCell>
+                          {/* </BrowserView> */}
+
                           <TableCell align="center">
                             <Typography variant="body1">Total</Typography>
                           </TableCell>
-                          <TableCell align="center">
+                          {/* <TableCell align="center">
                             <Typography variant="body1">Status</Typography>
-                          </TableCell>
+                          </TableCell> */}
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -171,26 +185,43 @@ function Quotation() {
                                   {row?.name}
                                 </Typography>
                               </TableCell>
-                              <TableCell align="left">
-                                <Typography variant="body1">
-                                  {row?.date_order
-                                    ?.replaceAll("-", "/")
-                                    ?.replaceAll(" ", " - ")}
-                                </Typography>
-                              </TableCell>
                               <TableCell align="center">
                                 <Typography variant="body1">
+                                  {/* {row?.date_order
+                                    ?.replaceAll("-", "/")
+                                    ?.replaceAll(" ", " - ").split(' - ')[0]} */}
+                                  {formatDateString(row?.date_order)}
+                                </Typography>
+                              </TableCell>
+                              {/* <BrowserView> */}
+                              <TableCell align="center" className="valid_until">
+                                <Typography
+                                  variant="body1"
+                                  style={{ color: "#848484" }}
+                                >
                                   {row?.validity_date == false
                                     ? " - "
-                                    : row?.validity_date?.replaceAll("-", "/")}
+                                    : formatDateString(row?.validity_date)}
+                                  {/* {row?.validity_date == false
+                                      ? " - "
+                                      : row?.validity_date?.replaceAll(
+                                        "-",
+                                        "/"
+                                      )} */}
+
                                 </Typography>
                               </TableCell>
+                              {/* </BrowserView> */}
+
                               <TableCell align="center">
-                                <Typography variant="body1">
+                                <Typography
+                                  variant="body1"
+                                  style={{ color: "#848484" }}
+                                >
                                   ${row?.amount_total}
                                 </Typography>
                               </TableCell>
-                              <TableCell align="center">
+                              {/* <TableCell align="center">
                                 <Typography
                                   variant="body1"
                                   className={
@@ -203,7 +234,7 @@ function Quotation() {
                                 >
                                   {row?.state}
                                 </Typography>
-                              </TableCell>
+                              </TableCell> */}
                             </TableRow>
                           ))}
                       </TableBody>

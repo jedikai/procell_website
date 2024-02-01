@@ -40,7 +40,7 @@ const Footer = () => {
           <List className="social-list">
             {social_links.map((item, i: number) => (
               <ListItem key={i + 1}>
-                <Link href={item.path}>{item.logo}</Link>
+                <Link href={item.path} target="_blank">{item.logo}</Link>
               </ListItem>
             ))}
           </List>

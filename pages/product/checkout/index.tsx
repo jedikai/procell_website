@@ -1,6 +1,5 @@
 import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import CheckoutAddress from "@/components/CheckoutAddress/CheckoutAddress";
-import DeliveryMethodList from "@/components/DeliveryMethod/DeliveryMethodList";
 import InnerHeader from "@/components/InnerHeader/InnerHeader";
 import ItemsCard from "@/components/ItemsCard/ItemsCard";
 import PaymentCardDetailsCard from "@/components/PaymentCardDetails/PaymentCardDetailsCard";
@@ -14,20 +13,15 @@ import assest from "@/json/assest";
 import Wrapper from "@/layout/wrapper/Wrapper";
 import { CheckoutWrapper } from "@/styles/StyledComponents/CheckoutWrapper";
 import { CheckOutAddressWrap } from "@/styles/StyledComponents/ChekOutAddressWrapper";
-import InputFieldCommon from "@/ui/CommonInput/CommonInput";
-import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
-import CustomRadio from "@/ui/CustomRadio/CustomRadio";
 import DeliveryVendorRaioHandler from "@/ui/CustomRadio/DeliveryVendorRaioHandler";
-import MuiModalWrapper from "@/ui/Modal/MuiModalWrapper";
-import { Button } from "@mui/material";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import { Box, Container } from "@mui/system";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const Checkout = () => {
+  const router = useRouter();
   const getIdRef = useRef(null);
   const targetRef = useRef<HTMLDivElement | null>(null);
   const [cartList, setCartList] = useState([]);
@@ -37,15 +31,16 @@ const Checkout = () => {
     deliveryCharge: 0,
     itemsTotal: 0
   });
-  const [scrollCount, setScrollCount] = useState<number>(0);
-  const [amount, setAmount] = useState(0);
+  // const [scrollCount, setScrollCount] = useState<number>(0);
+  const [isBackToTopVisible, setIsBackToTopVisible] = useState<boolean>(false);
+  // const [amount, setAmount] = useState(0);
   const [selectedVendor, setSelectedVendor] = useState(0);
   const [selectedShippingId, setSelectedShippingId] = useState<any>(null);
   const [showPaymentSection, setShowPaymentSection] = useState(false);
   const [deliveryMethodList, setDeliveryMethodList] = useState([]);
-  const [deliveryShipmentRate, setDeliveryShipmentRate] = useState<
-    number | null
-  >(null);
+  // const [deliveryShipmentRate, setDeliveryShipmentRate] = useState<
+  //   number | null
+  // >(null);
   const onSuccessCartList = (response: any) => {
     setCartList(
       response && response?.length > 0 && response[0]
@@ -83,50 +78,59 @@ const Checkout = () => {
   const onErrorDeliveryMedhodsList = () => {};
   const {
     data: deliveryMedhodsListData,
-    isLoading: deliveryMedhodsListloader
+    isLoading: deliveryMedhodsListloader,
+    refetch: fetchDeliveryMethodsList
   } = useDeliveryMethodsList(
     onSuccessDeliveryMedhodsList,
-    onErrorDeliveryMedhodsList
+    onErrorDeliveryMedhodsList,
+    false
   );
   const { mutate: shipmentRate, isLoading } = useShipmentRate();
   const { mutate: updateDeliveryMode, isLoading: updateLoader } =
     useUpdateDeleveryMode();
-  const getSelectedDeliveryMedhods = (e: any) => {
-    const id = e.target.value;
-    setSelectedVendor(id);
-    getIdRef.current = id;
-    const formData: FormData = new FormData();
-    formData.append("carrier_id", `${id}`);
-    // shipmentRate(formData, {
-    //   onSuccess: (response: any) => {
-    //     const rate = response ? response?.data?.data?.new_amount_delivery : 0;
-    //     setDeliveryShipmentRate(rate);
-    //   }
-    // });
-    updateDeliveryMode(formData, {
-      onSuccess: (response: any) => {
-        setShowPaymentSection(true);
-        if (response) {
-          const { new_amount_total, new_amount_delivery, new_amount_untaxed } =
-            response?.data?.data ?? {};
-          setCheckoutDetails({
-            totalAmount: new_amount_total,
-            deliveryCharge: new_amount_delivery,
-            itemsTotal: new_amount_untaxed
-          });
-          if (targetRef.current) {
-            targetRef.current.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-              inline: "center"
+  const getSelectedDeliveryMedhods = useCallback(
+    (e: any) => {
+      // console.log('called ===>')
+      const id = e.target.value;
+      setSelectedVendor(id);
+      getIdRef.current = id;
+      const formData: FormData = new FormData();
+      formData.append("carrier_id", `${id}`);
+      // shipmentRate(formData, {
+      //   onSuccess: (response: any) => {
+      //     const rate = response ? response?.data?.data?.new_amount_delivery : 0;
+      //     setDeliveryShipmentRate(rate);
+      //   }
+      // });
+      updateDeliveryMode(formData, {
+        onSuccess: (response: any) => {
+          setShowPaymentSection(true);
+          if (response) {
+            const {
+              new_amount_total,
+              new_amount_delivery,
+              new_amount_untaxed
+            } = response?.data?.data ?? {};
+            setCheckoutDetails({
+              totalAmount: new_amount_total,
+              deliveryCharge: new_amount_delivery,
+              itemsTotal: new_amount_untaxed
             });
+            if (targetRef.current) {
+              targetRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+                inline: "center"
+              });
+            }
           }
-        }
 
-        console.log("updatedDeliveryMode", response?.data?.data);
-      }
-    });
-  };
+          console.log("updatedDeliveryMode", response?.data?.data);
+        }
+      });
+    },
+    [selectedVendor, showPaymentSection, checkoutDetails]
+  );
   const updateBilling = useCallback(() => {
     const formData: FormData = new FormData();
     formData.append("carrier_id", `${getIdRef.current}`);
@@ -161,10 +165,15 @@ const Checkout = () => {
   //   const formData: FormData = new FormData();
   //   formData.append("product_variant_id", `${id}`);
   // };
-  console.log("selectedVendor", selectedVendor);
+  console.log("selectedVendor", isBackToTopVisible);
 
   const handleScroll = () => {
-    setScrollCount(window.scrollY);
+    if (window.scrollY >= 480) {
+      setIsBackToTopVisible(true);
+    } else {
+      setIsBackToTopVisible(false);
+    }
+    // setScrollCount(window.scrollY);
   };
   const handleScrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -174,12 +183,13 @@ const Checkout = () => {
     if (typeof window !== "undefined") {
       window.addEventListener("scroll", handleScroll);
     }
+    fetchDeliveryMethodsList();
 
     // Cleanup the event listener on component unmount
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-  }, [scrollCount]);
+  }, []);
 
   return (
     <Wrapper>
@@ -258,7 +268,7 @@ const Checkout = () => {
               )}
             </Grid>
           </Grid>
-          {scrollCount >= 480 && (
+          {isBackToTopVisible && (
             <button
               className="scroll_back_to_top_btn"
               onClick={handleScrollToTop}

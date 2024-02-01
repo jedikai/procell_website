@@ -1,7 +1,9 @@
 /* eslint-disable react/destructuring-assignment */
 import { primaryColors } from "@/themes/_muiPalette";
 import styled from "@emotion/styled";
-import Select, { SelectProps } from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Select, { SelectChangeEvent, SelectProps } from "@mui/material/Select";
+import React from "react";
 
 const CustomSelectWrapper = styled(Select)`
   &.MuiOutlinedInput-root {
@@ -46,28 +48,36 @@ const CustomSelectWrapper = styled(Select)`
   }
 `;
 interface CustomSelectProps extends SelectProps {
-  children: React.ReactNode;
+  initialValue?: string;
 }
-const CustomSelect = (props: CustomSelectProps) => {
+const CustomSelect = ({ initialValue, ...props }: CustomSelectProps) => {
   const MenuProps = {
     PaperProps: {
       style: {
         width: "auto"
-        // backgroundColor:"#000"
       }
     }
   };
 
+  const [value, setValue] = React.useState<string>("");
+
+  const handleChange = (event: SelectChangeEvent) => {
+    setValue(event.target.value as string);
+  };
+
   return (
     <CustomSelectWrapper
-      // input={<OutlinedInput />}
       IconComponent={props?.IconComponent}
       MenuProps={MenuProps}
       inputProps={{ "aria-label": "Without label" }}
-      // className={props.className}
-      {...props}
       displayEmpty
+      value={value}
+      onChange={handleChange as any}
+      {...props}
     >
+      <MenuItem value="" className="menu_item" sx={{ display: "none" }}>
+        {initialValue}
+      </MenuItem>
       {/* {dataset.map((name) => (
         <MenuItem key={name} value={name} className="menu_item">
           {name}

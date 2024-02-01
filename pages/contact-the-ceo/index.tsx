@@ -32,7 +32,12 @@ const validationSchema = yup.object().shape({
     .string()
     .email(validationText.error.email_format)
     .required(validationText.error.enter_email),
-  fullName: yup.string().required(validationText.error.fullName),
+  fullName: yup
+    .string()
+    .required(validationText.error.fullName)
+    .test('no-leading-space', 'Full name should not start with a blank space', (value) => {
+      return !value || !value.startsWith(' ');
+    }),
   callBackPhoneNumber: yup
     .string()
     .required(validationText.error.phone)
@@ -61,6 +66,7 @@ const validationSchema = yup.object().shape({
 });
 
 export default function Index() {
+  const exceptThisSymbols = ["e", "E", "+", "-", "."];
   const { toastSuccess, toastError } = useNotiStack();
   const {
     register,
@@ -160,8 +166,12 @@ export default function Index() {
                     </Box>
                     <Box className="form_group">
                       <InputFieldCommon
+                        type="number"
                         placeholder="Call back number"
                         {...register("callBackPhoneNumber")}
+                        onKeyDown={(e: any) =>
+                          exceptThisSymbols.includes(e.key) && e.preventDefault()
+                        }
                       />
                     </Box>
                     <Box className="form_group">
@@ -217,7 +227,7 @@ export default function Index() {
                           variant="contained"
                           color="primary"
                           type="submit"
-                          // form="contact_form"
+                        // form="contact_form"
                         >
                           <Typography>Submit</Typography>
                         </CustomButtonPrimary>
@@ -225,8 +235,8 @@ export default function Index() {
                         <CustomButtonPrimary
                           variant="contained"
                           color="primary"
-                          // type="submit"
-                          // form="contact_form"
+                        // type="submit"
+                        // form="contact_form"
                         >
                           <ButtonLoader />
                         </CustomButtonPrimary>

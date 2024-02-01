@@ -22,6 +22,9 @@ export const salesSelectlList = [
 ];
 export const searchList = [
   {
+    name: "Featured"
+  },
+  {
     name: "Name (A-Z)"
   },
   {

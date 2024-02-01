@@ -3,6 +3,13 @@ import styled from "@emotion/styled";
 import Box from "@mui/material/Box";
 
 export const CheckOutAddressWrap = styled(Box)`
+  .title_block {
+    h4 {
+      font-size: 25px;
+      margin: 0 0 30px;
+      font-weight: 400;
+    }
+  }
   .form_group {
     .form_group_inner {
       width: 49%;
@@ -41,6 +48,23 @@ export const CheckOutAddressWrap = styled(Box)`
               opacity: 1;
             }
           }
+        }
+      }
+    }
+  }
+
+  .form_submit {
+    button {
+      &:not(:last-child) {
+        margin-right: 15px;
+      }
+    }
+    @media (max-width: 599px) {
+      button {
+        width: 100%;
+        &:not(:last-child) {
+          margin-bottom: 15px;
+          margin-right: 0;
         }
       }
     }

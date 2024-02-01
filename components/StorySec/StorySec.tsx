@@ -48,7 +48,7 @@ StorySecProps) {
         number: formatNumber(parseInt(worlwide_treatment_count ?? "-")),
         title: "Procell Treatments",
         content:
-          "Procell Therapies has established a legacy of excellence in skincare. Each treatment reflects our commitment to innovation and quality, profoundly impacting individuals' lives across the globe. We're proud to be at the forefront of advanced skincare, continually advancing the field and setting new standards for effective, client-focused care."
+          "Procell Therapies has established a legacy of excellence in skincare. Each treatment reflects our commitment to innovation and quality, profoundly impacting individuals' lives across the globe."
       },
       {
         number: `${formatNumber(
@@ -98,8 +98,8 @@ StorySecProps) {
                     style={{ borderRadius: "20px" }} // You can adjust the value as per your preference
                   ></iframe> */}
                   <iframe
-                    width="560"
-                    height="315"
+                    width="660"
+                    height="378"
                     src="https://www.youtube.com/embed/k3DYWkUxbVg?si=62hTEPo2eJCwQw6P&rel=0"
                     title="YouTube video player"
                     frameBorder={0}

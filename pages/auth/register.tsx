@@ -4,6 +4,7 @@ import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
 import validationText from "@/json/messages/validationText";
 import LoginWrapper from "@/layout/wrapper/LoginWrapper";
+import { getCookie } from "@/lib/functions/storage.lib";
 import { primaryColors } from "@/themes/_muiPalette";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
@@ -14,6 +15,7 @@ import { Box } from "@mui/system";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
@@ -134,6 +136,7 @@ const RegisterWrapper = styled(Box)`
 `;
 const register = () => {
   const router = useRouter();
+  const [render, setRender] = useState(true);
   const { toastSuccess, toastError } = useNotiStack();
   const { mutate: practitionerSignUp, isLoading } = usePractitionerSignUp();
   const {
@@ -164,67 +167,95 @@ const register = () => {
       },
       onError: (error: any) => {
         const { response } = error;
-        console.log('message',response?.data?.message);
-        
-        toastError(response ? response?.data?.message : "Something went wrong.");
+        console.log("message", response?.data?.message);
+
+        toastError(
+          response ? response?.data?.message : "Something went wrong."
+        );
       }
     });
   };
+
+  // useEffect(() => {
+  //   if (typeof window !== "undefined") {
+  //     const userLoginStatus: boolean =
+  //       !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
+  //     if (userLoginStatus) {
+  //       router.push("/dashboard/profile");
+  //       setRender(false);
+  //     } else {
+  //       setRender(true);
+  //     }
+  //   }
+  // }, []);
   return (
-    <LoginWrapper
-      title="welcome TO
+    <>
+      {render ? (
+        <>
+          <LoginWrapper
+            title="welcome TO
   PROCELL"
-    >
-      <RegisterWrapper>
-        <Box className="wrapper">
-          <Link href="/">
-            <Image
-              src={assest.logo_img}
-              alt="procell"
-              width={143}
-              height={54}
-            />
-          </Link>
-          <form onSubmit={handleSubmit(onFormSubmit)}>
-            <Box className="form_body">
-              <Typography variant="h4">REGISTER NOW</Typography>
-              <Typography variant="body1">
-                Please enter the email associated with your orders
-              </Typography>
-              <Box className="input_wrap">
-                <InputFieldCommon
-                  placeholder="Email"
-                  style2
-                  {...register("email")}
-                />
-                {errors.email && (
-                  <div className="profile_error">{errors.email.message}</div>
-                )}
+          >
+            <RegisterWrapper>
+              <Box className="wrapper">
+                <Link href="/">
+                  <Image
+                    src={assest.logo_img}
+                    alt="procell"
+                    width={143}
+                    height={54}
+                  />
+                </Link>
+                <form onSubmit={handleSubmit(onFormSubmit)}>
+                  <Box className="form_body">
+                    <Typography variant="h4">REGISTER NOW</Typography>
+                    <Typography variant="body1">
+                      Please enter the email associated with your orders
+                    </Typography>
+                    <Box className="input_wrap">
+                      <InputFieldCommon
+                        placeholder="Email"
+                        style2
+                        {...register("email")}
+                      />
+                      {errors.email && (
+                        <div className="profile_error">
+                          {errors.email.message}
+                        </div>
+                      )}
+                    </Box>
+                    <Box className="btn_wrapper">
+                      {!isLoading ? (
+                        <CustomButtonPrimary
+                          variant="contained"
+                          color="primary"
+                          type="submit"
+                        >
+                          <Typography variant="body1">Submit</Typography>
+                        </CustomButtonPrimary>
+                      ) : (
+                        <CustomButtonPrimary
+                          variant="contained"
+                          color="primary"
+                        >
+                          <ButtonLoader />
+                        </CustomButtonPrimary>
+                      )}
+                    </Box>
+                    <Typography variant="body1" className="form_bottom">
+                      Already have an account?{" "}
+                      <Link href="/auth/login">Login Now</Link>
+                    </Typography>
+                  </Box>
+                </form>
               </Box>
-              <Box className="btn_wrapper">
-                {!isLoading ? (
-                  <CustomButtonPrimary
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                  >
-                    <Typography variant="body1">Submit</Typography>
-                  </CustomButtonPrimary>
-                ) : (
-                  <CustomButtonPrimary variant="contained" color="primary">
-                    <ButtonLoader />
-                  </CustomButtonPrimary>
-                )}
-              </Box>
-              <Typography variant="body1" className="form_bottom">
-                Already have an account?{" "}
-                <Link href="/auth/login">Login Now</Link>
-              </Typography>
-            </Box>
-          </form>
-        </Box>
-      </RegisterWrapper>
-    </LoginWrapper>
+            </RegisterWrapper>
+          </LoginWrapper>
+        </>
+      ) : (
+        <></>
+      )}
+    </>
   );
 };
 

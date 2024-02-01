@@ -26,6 +26,9 @@ export const LoginWrapperStyle = styled(Box)`
     width: 100%;
     object-position: right;
     object-fit: contain;
+    @media (max-width: 899px){
+      display: none;
+    }
     @media (max-width:599px) {
       max-width: 30vw;
     }

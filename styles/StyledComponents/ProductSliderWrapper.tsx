@@ -52,5 +52,84 @@ export const ProductSliderWrapper = styled(Box)`
         }
       }
     }
+    .quantity_field {
+      margin-top: 20px;
+    border-radius: 60px;
+    max-width: 70% !important;
+    margin: 20px auto 0;
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 20px;
+    max-height: 56px;
+    max-width: 235px;
+    @media (max-width:899px) {
+      max-width: 150px;
+      max-height: 40px;
+    }
+    @media (max-width:375px) {
+      max-width: 110px;
+      padding: 9px;
+     
+    }
+
+    .MuiInputBase-root{
+      border: none;
+      background-color: transparent;
+      text-align: center;
+      min-width: auto;
+    }
+
+    input{
+      text-align: center;
+      padding: 0;
+    }
+  
+    button {
+      font-weight: 100;
+      color: ${primaryColors.color353D4A};
+      font-size: 40px;
+      min-width: auto;
+      padding: 0;
+      &:hover {
+        background-color: transparent;
+      }
+      @media (max-width:899px) {
+        font-size:30px;
+      }
+     >button{
+      svg{
+        width: 11px;
+        path{
+          fill: rgba(0, 0, 0, 0.71);
+        }
+      }
+     }
+      
+    }
+    .form_control {
+      input {
+        text-align: center;
+        border: 0;
+        color: ${primaryColors.color353D4A};
+       
+      }
+      .MuiOutlinedInput-notchedOutline {
+        display: none;
+      }
+      /* Chrome, Safari, Edge, Opera */
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      /* Firefox */
+      input[type="number"] {
+        -moz-appearance: textfield;
+      }
+    }
+  }
   }
 `;

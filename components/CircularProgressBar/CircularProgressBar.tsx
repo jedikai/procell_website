@@ -65,7 +65,7 @@ export default function CircularProgressBar({ image, value }: props) {
   return (
     <CircularWrapper className="circular_wrap">
       <CircularProgressbarWithChildren value={value} strokeWidth={8}>
-        <Image
+        <img
           style={{ maxHeight: 98, marginTop: -5 }}
           src={image}
           alt=""

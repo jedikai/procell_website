@@ -88,7 +88,7 @@ export const useOrderConfirm = (
     onSuccess,
     onError,
     enabled,
-    select: (data) => data?.data?.data ?? []
+    select: (data) => data?.data ?? []
   });
 
 const updateShipping = async (body: object) => {

@@ -70,6 +70,7 @@ const validationSchema = yup.object().shape({
 });
 
 export default function Index() {
+  const exceptThisSymbols = ["e", "E", "+", "-", "."];
   const [reasonID, setReasonId] = useState("");
   const { toastSuccess, toastError } = useNotiStack();
   const {
@@ -195,8 +196,12 @@ export default function Index() {
                     </Box>
                     <Box className="form_group">
                       <InputFieldCommon
+                        type="number"
                         placeholder="Call back number"
                         {...register("callBackPhoneNumber")}
+                        onKeyDown={(e: any) =>
+                          exceptThisSymbols.includes(e.key) && e.preventDefault()
+                        }
                       />
                     </Box>
                     <Box className="form_group">
@@ -208,7 +213,7 @@ export default function Index() {
                     </Box>
                     <Box className="form_group">
                       <InputFieldCommon
-                        placeholder="Do you have any older number?"
+                        placeholder="Do you have any order number?"
                         {...register("salesOrder")}
                       />
                     </Box>

@@ -47,6 +47,7 @@ type Inputs = {
   proof_of_conversation: any;
 };
 
+const exceptThisSymbols = ["e", "E", "+", "-", "."];
 const phoneRegExp = /^[0-9]{10}$/;
 const regex = /^[0-9]+$/;
 // <------------------ REGISTRATION FORM VALIDATION SCHEMA ------------------>
@@ -303,6 +304,9 @@ export default function Index() {
                       <InputFieldCommon
                         placeholder="First name"
                         {...register("firstName")}
+                        onKeyDown={(e: any) =>
+                          [' '].includes(e.key) && e.preventDefault()
+                        }
                       />
                       {errors.firstName && (
                         <div className="profile_error">
@@ -314,6 +318,9 @@ export default function Index() {
                       <InputFieldCommon
                         placeholder="Last name"
                         {...register("lastName")}
+                        onKeyDown={(e: any) =>
+                          [' '].includes(e.key) && e.preventDefault()
+                        }
                       />
                       {errors.lastName && (
                         <div className="profile_error">
@@ -388,7 +395,7 @@ export default function Index() {
                               );
                             }}
                           />
-                          {errors.phnCode && (
+                          {errors.phnCode && !selectedValues.phnCode && (
                             <div className="profile_error">
                               {errors.phnCode.message}
                             </div>
@@ -397,8 +404,9 @@ export default function Index() {
                         <Box className="phn_num">
                           <InputFieldCommon
                             placeholder="Phone number"
-                            // type="number"
+                            type="number"
                             {...register("phone")}
+                            onKeyDown={(e: any) => exceptThisSymbols.includes(e.key) && e.preventDefault()}
                           // {...register("phone", {
                           //   max: 3
                           // })}
@@ -478,7 +486,7 @@ export default function Index() {
                               />
                             )}
                           />
-                          {errors.language && (
+                          {errors.language && !selectedValues.language && (
                             <div className="profile_error">
                               {errors?.language.message}
                             </div>
@@ -551,7 +559,7 @@ export default function Index() {
                                   />
                                 )}
                               />
-                              {errors.country && (
+                              {errors.country && !selectedValues.country && (
                                 <div className="profile_error">
                                   {errors.country.message}
                                 </div>
@@ -679,7 +687,7 @@ export default function Index() {
                                 />
                               )}
                             />
-                            {errors.country && (
+                            {errors.country && !selectedValues.country && (
                               <div className="profile_error">
                                 {errors.country.message}
                               </div>

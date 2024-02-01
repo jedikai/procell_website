@@ -1,11 +1,11 @@
-import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
+import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import InnerHeader from "@/components/InnerHeader/InnerHeader";
 import OurProductsSec from "@/components/OurProductsSec/OurProductsSec";
 import { useProductList } from "@/hooks/react-qurey/query-hooks/productQuery.hooks";
 import assest from "@/json/assest";
 import Wrapper from "@/layout/wrapper/Wrapper";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { InView, useInView } from "react-intersection-observer";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useInView } from "react-intersection-observer";
 
 export default function index() {
   const oldList = useRef<any>([]);
@@ -15,7 +15,10 @@ export default function index() {
   });
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState("");
+  const [category, setCategory] = useState("");
+  const [showEle, setShowEle] = useState(false);
   const [productList, setProductList] = useState<any>([]);
+  const [categoriesList, setCategoriesList] = useState<any>([]);
   const onSuccessProductList = (data: any) => {
     // setProductList([...data?.products_info]);
     const lastPage = data?.page_count ?? 0;
@@ -23,57 +26,24 @@ export default function index() {
       return false;
     }
     const newListData = data?.products_info ?? [];
-    // console.log("onSuccessProductList", newListData);
-    // const modifiedListData = [...productList, ...newListData];
-
-    // const uniqueObjects = new Set();
-
-    // // Filter the array to remove duplicates
-    // const filteredArray = modifiedListData.filter((obj) => {
-    //   const objString = JSON.stringify(obj);
-    //   const isUnique = !uniqueObjects.has(objString);
-    //   if (isUnique) {
-    //     uniqueObjects.add(objString);
-    //   }
-    //   return isUnique;
-    // });
-
-    // // Convert the Set back to an array
-    // let uniqueArray = Array.from(filteredArray);
-    // console.log("uniqueArray", uniqueArray);
-
-    // // oldList.current = Array.from(filteredArray);
-    // if (sort == "order=name+asc") {
-    //   uniqueArray = uniqueArray.sort((a: any, b: any) =>
-    //     a?.name.localeCompare(b?.name)
-    //   );
-    // } else if (sort == "order=list_price+asc") {
-    //   uniqueArray = uniqueArray.sort(
-    //     (a: any, b: any) => a?.list_price - b?.list_price
-    //   );
-    // } else if (sort == "order=list_price+desc") {
-    //   uniqueArray = uniqueArray.sort(
-    //     (a: any, b: any) => b?.list_price - a?.list_price
-    //   );
-    // } else if (sort.includes("search")) {
-    //   setProductList(newListData);
-    //   return false;
-    // }
-    // setProductList(uniqueArray);
+    const newCategoriesListData = data?.category ?? [];
     setProductList([...productList, ...newListData]);
+    setCategoriesList([...newCategoriesListData]);
+    setShowEle(true);
   };
   const onErrorProductList = () => {};
   const { data, isLoading } = useProductList(
     page,
     sort,
+    category,
     onSuccessProductList,
     onErrorProductList
   );
   const fetchList = (isInview: boolean) => {
-    console.log("isInview", isInview,data?.page_count,page);
+    console.log("isInview", isInview, data?.page_count, page);
 
     if (isInview && !isLoading) {
-      if (data?.page_count == page) {
+      if (data?.page_count >= page) {
         setPage(page + 1);
       }
     }
@@ -87,31 +57,43 @@ export default function index() {
 
   const filterList = useCallback(
     (data: any) => {
+      setShowEle(false);
       if (page !== 1) {
         setPage(1);
       }
       const { type, value } = data ?? {};
-      let filteredList = [];
+      const filteredList = [];
       if (type == "sort") {
         if (value == "Name (A-Z)") {
           setSort("order=name+asc");
         } else if (value == "Price - Low to High") {
           setSort("order=list_price+asc");
-        } else {
+        } else if (value == "Price - High to Low") {
           setSort("order=list_price+desc");
-        }
-      } else {
-        if (value != "") {
-          setSort(`search=${value}`);
         } else {
-          setSort(``);
+          setSort("");
         }
+      } else if (value != "") {
+        setSort(`search=${value}`);
+      } else {
+        setSort(``);
       }
       setProductList([]);
+      setCategoriesList([]);
     },
-    [sort, page]
+    [sort, page, showEle]
   );
-  console.log(data, "useProductList");
+  const selectedCategory = useCallback(
+    (_cat: any) => {
+      if (_cat) {
+        setCategory(`category=${_cat}`);
+        setProductList([]);
+        // setCategoriesList([]);
+      }
+    },
+    [category]
+  );
+  console.log(data, "productList");
 
   return (
     <Wrapper>
@@ -121,8 +103,25 @@ export default function index() {
         bannerImage={assest.innerHeaderbackground}
         innerHeaderMainPage="Home"
       />
-      <OurProductsSec productList={productList} filterList={filterList} />
-      <>{!isLoading && <div ref={ref}></div>}</>
+      {!isLoading ? (
+        <>
+          <OurProductsSec
+            productList={productList}
+            filterList={filterList}
+            categoriesList={categoriesList}
+            selectedCategory={selectedCategory}
+            category={category}
+          />
+          {showEle && <div ref={ref} />}
+        </>
+      ) : (
+        <div style={{ marginTop: "20px" }}>
+          <ButtonLoaderSecondary />
+        </div>
+      )}
+      <>
+        {/* {!isLoading && data?.products_info?.length > 0 && <div ref={ref}></div>} */}
+      </>
     </Wrapper>
   );
 }

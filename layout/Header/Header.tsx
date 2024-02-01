@@ -19,6 +19,13 @@ import * as React from "react";
 import assest from "@/json/assest";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 
+import { useCartListWithAuthCred } from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
+import { useProfileDetails } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
+import { useLogout } from "@/hooks/react-qurey/query-hooks/logoutQuery.hooks";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useAppSelector } from "@/hooks/useAppSelector";
+import { getCookie } from "@/lib/functions/storage.lib";
+import { getUserName } from "@/reduxtoolkit/slices/userProfle.slice";
 import { DrawerWrapper } from "@/styles/StyledComponents/DrawerWrapper";
 import { HeaderWrap } from "@/styles/StyledComponents/HeaderWrapper";
 import { MenuWrapperStyle } from "@/styles/StyledComponents/MenuWrapperStyle";
@@ -27,26 +34,13 @@ import LogoutIcon from "@/ui/Icons/LogoutIcon";
 import ProfileIcon from "@/ui/Icons/ProfileIcon";
 import CartIcon from "@/ui/Icons/cartIcon";
 import MuiModalWrapper from "@/ui/Modal/MuiModalWrapper";
+import Close from "@mui/icons-material/Close";
 import { Badge, Button, MenuItem } from "@mui/material";
 import { Container } from "@mui/system";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import Close from "@mui/icons-material/Close";
-import { useLogout } from "@/hooks/react-qurey/query-hooks/logoutQuery.hooks";
-import { getCookie } from "@/lib/functions/storage.lib";
 import { destroyCookie } from "nookies";
-import { useProfileDetails } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
-import { useAppSelector } from "@/hooks/useAppSelector";
-import {
-  useCartList,
-  useCartListWithAuthCred
-} from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
-import { useAppDispatch } from "@/hooks/useAppDispatch";
-import {
-  getAuthorizationNetCred,
-  getUserName
-} from "@/reduxtoolkit/slices/userProfle.slice";
 
 // const CustomButton = dynamic(() => import("@/ui/Buttons/CustomButton"));
 
@@ -60,14 +54,18 @@ interface Props {
 
 const drawerWidth = 240;
 
-export default React.memo(function Header(props: Props) {
+export default React.memo((props: Props) => {
   const navItems = [
+    // {
+    //   name: "Academy",
+    //   route: "/training-academy"
+    // },
     {
-      name: "Clinical studies",
+      name: "Clinical Studies",
       route: "/clinical-studies"
     },
     {
-      name: "The science",
+      name: "The Science",
       route: "/science"
     },
     {
@@ -75,7 +73,7 @@ export default React.memo(function Header(props: Props) {
       route: "/product/shop"
     },
     {
-      name: "Contact us",
+      name: "Contact Us",
       route: "/contact"
     },
     {
@@ -83,13 +81,13 @@ export default React.memo(function Header(props: Props) {
       route: "/workshop"
     },
     {
-      name: "FAQ",
+      name: "FAQs",
       route: "/faq"
     },
     {
       name: "Results",
       route: "/results"
-    },
+    }
     // {
     //   name: "Get Treated",
     //   route: "/get-treated"
@@ -102,38 +100,92 @@ export default React.memo(function Header(props: Props) {
   const [cardListData, setCardListData] = React.useState<any>([]);
   const [authenticUser, setAuthenticUser] = React.useState(false);
   const [sessionId, setSessionId] = React.useState("");
+  const [userLoggedIn, setUserLoggedIn] = React.useState(false);
+  const [navbarListItems, setNavbarListItems] = React.useState<any>(navItems);
   // const { userData, isLoggedIn } = useAppSelector((state) => state.userSlice);
   // const dispatch = useAppDispatch();
   const router = useRouter();
-  const { refresh, image } = useAppSelector((s) => s.userProfileImgSlice);
+  const { refresh, productVariantId } = useAppSelector(
+    (s) => s.userProfileImgSlice
+  );
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const onSuccessProfileDetails = (response: any) => {
-    const { first_name, last_name }: { first_name: string; last_name: string } =
-      response && response?.length > 0 ? response[0] : {};
-    dispatch(getUserName(`${first_name??''} ${last_name??''}`));
+    const {
+      first_name,
+      last_name,
+      can_access_rep_academy
+    }: {
+      first_name: string;
+      last_name: string;
+      can_access_rep_academy: boolean | string;
+    } = response && response?.length > 0 ? response[0] : {};
+    dispatch(getUserName(`${first_name ?? ""} ${last_name ?? ""}`));
+    if (!!can_access_rep_academy || can_access_rep_academy == "true") {
+      setNavbarListItems(
+        [
+          {
+            name: "Academy",
+            route: "/academy"
+          },
+          ...navItems
+        ]
+        // navbarListItems?.filter((_i: any) => _i?.name != "Academy")
+      );
+    }
   };
   const { data, isLoading, refetch, isFetched } = useProfileDetails(
     onSuccessProfileDetails,
     () => {},
-    true
+    // true
+    userLoggedIn
   );
-  // const { data: cardListData, isLoading: cartListloader } = useCartList(
-  //   () => { },
-  //   () => { }
-  // );
-  const onAuthorizationCredSuccess = (response: any) => {
-    const { data, providers_data }: any = response ?? {};
-    // console.log('onAuthorizationCredSuccess', data, providers_data);
 
-    setCardListData(data);
-    const authorizationCred: { login_id: string; client_key: string } = {
-      login_id: providers_data ? providers_data[0]?.login_id : "",
-      client_key: providers_data ? providers_data[0]?.client_key : ""
-    };
-    dispatch(getAuthorizationNetCred(authorizationCred));
+  const cartListApiHandler = React.useMemo(() => {
+    if (router && router.pathname.includes("product-details")) {
+      if (productVariantId) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
+  }, [router, productVariantId]);
+  const origin =
+    typeof window !== "undefined" && window.location.origin
+      ? window.location.origin
+      : "";
+  const tractUserActivityParams = `?page_name=${
+    router.pathname.includes("product-details")
+      ? "product-details"
+      : router.pathname.split("/").at(-1)
+  }&page_url=${router.pathname}${
+    router.pathname.includes("product-details")
+      ? `&track=product&product_id=${productVariantId}`
+      : ""
+  }${!!origin ? `&base_url=${origin}` : ""}`;
+  console.log("router header", tractUserActivityParams);
+  const onAuthorizationCredSuccess = (response: any) => {
+    const { cart_quantity }: any = response ?? {};
+
+    setCardListData(cart_quantity);
+    // console.log("onAuthorizationCredSuccess", cart_quantity);
+    // const authorizationCred: { login_id: string; client_key: string } = {
+    //   login_id: providers_data ? providers_data[0]?.login_id : "",
+    //   client_key: providers_data ? providers_data[0]?.client_key : ""
+    // };
+    // dispatch(getAuthorizationNetCred(authorizationCred));
   };
-  const { data: authorizationData, isLoading: authorizationloader } =
-    useCartListWithAuthCred(onAuthorizationCredSuccess, () => {});
+  const {
+    data: authorizationData,
+    isLoading: authorizationloader,
+    refetch: fetchCartList
+  } = useCartListWithAuthCred(
+    tractUserActivityParams,
+    onAuthorizationCredSuccess,
+    () => {},
+    cartListApiHandler
+  );
   const { mutate: logout } = useLogout();
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -209,8 +261,9 @@ export default React.memo(function Header(props: Props) {
       const isUserLoggedIn =
         !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
       if (isUserLoggedIn) {
+        setUserLoggedIn(true);
         let getUserDetails: any = {};
-        if (!!localStorage.getItem("userDetails")) {
+        if (localStorage.getItem("userDetails")) {
           getUserDetails = JSON.parse(
             localStorage.getItem("userDetails") ?? ""
           );
@@ -232,6 +285,8 @@ export default React.memo(function Header(props: Props) {
         console.log("getUserDetails", typeof getUserDetails, getUserDetails);
 
         //  getUserDetails=JSON.parse()
+      } else {
+        setUserLoggedIn(false);
       }
     }
   }, []);
@@ -258,7 +313,7 @@ export default React.memo(function Header(props: Props) {
         </Link>
         <Divider />
         <List>
-          {navItems.map((item: any, index: number) => (
+          {navbarListItems.map((item: any, index: number) => (
             <ListItem key={index + 1} disablePadding>
               <Link
                 href={item?.route}
@@ -289,12 +344,12 @@ export default React.memo(function Header(props: Props) {
 
   const cartItemsNumber = React.useMemo(() => {
     if (cardListData) {
-      return cardListData && cardListData?.length > 0 && cardListData[0]
-        ? cardListData[0]?.order_line?.length
-        : 0;
+      return cardListData;
+    } else {
+      return 0;
     }
   }, [cardListData]);
-  // console.log("header ========>", authorizationData);
+  console.log("header ========>", navbarListItems);
 
   return (
     <HeaderWrap sx={{ display: "flex" }} className="main_head">
@@ -325,7 +380,7 @@ export default React.memo(function Header(props: Props) {
             >
               {user && (
                 <Link
-                  href="/training-academy"
+                  href="/students/training-academy/"
                   className={
                     router.pathname === "/training-academy" ? "active" : ""
                   }
@@ -333,7 +388,7 @@ export default React.memo(function Header(props: Props) {
                   Training acadamy
                 </Link>
               )}
-              {navItems.map((item: any, index: number) => (
+              {navbarListItems.map((item: any, index: number) => (
                 <Link
                   href={item?.route}
                   key={index + 1}

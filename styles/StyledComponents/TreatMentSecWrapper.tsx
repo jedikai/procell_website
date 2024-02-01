@@ -10,7 +10,7 @@ export const TreatMentSecWrapper = styled(Box)`
   background-position: -100% 80%, 110% 100%;
   @media (max-width: 899px) {
     background-position: 100% 8%, 0% 0;
-    z-index: -1;
+    /* z-index: -1; */
   }
   @media (max-width: 599px) {
   }
@@ -100,30 +100,71 @@ export const TreatMentSecWrapper = styled(Box)`
     }
   }
 
-  .compare_slider{
-    .slick-arrow{
-        width: 40px;
-        height: 40px;
-        &:before{
-          display: none;
-        }
-        &.slick-prev{
-          background: url("/assets/images/ArrowLeft.svg") no-repeat center center;
-          background-size: 100%;
-          left: -30px;
-        }
-        &.slick-next{
-          background: url("/assets/images/ArrowRight.svg") no-repeat center center;
-          background-size: 100%;
-          right: -30px;
+  .compare_slider {
+    @media (max-width: 1399px) {
+      padding: 0 20px;
+    }
+    .slick-arrow {
+      width: 40px;
+      height: 40px;
+      display: inline-flex;
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      border: 1px solid ${primaryColors.text_purple};
+      z-index: 1;
+      @media (max-width: 599px) {
+        width: 30px;
+        height: 30px;
+      }
+      &:hover {
+        background: ${primaryColors.text_purple};
+        &:before {
+          filter: brightness(0) invert(1);
         }
       }
+      &:before {
+        width: 50%;
+        height: 50%;
+        display: inline-block;
+        content: "";
+        transition: all 0.3s ease-in-out 0s;
+      }
+      &.slick-prev {
+        left: -40px;
+
+        &:before {
+          background: url("/assets/images/arrow_prev.svg") no-repeat center
+            center;
+          background-size: 100%;
+        }
+        @media (max-width: 599px) {
+          left: -32px;
+        }
+      }
+      &.slick-next {
+        right: -40px;
+        &:before {
+          background: url("/assets/images/arrow_next.svg") no-repeat center
+            center;
+          background-size: 100%;
+        }
+        @media (max-width: 599px) {
+          right: -32px;
+        }
+      }
+    }
   }
   .compare_sec {
     position: relative;
     img {
-      max-height: 600px;
+      height: 600px !important;
       object-fit: contain !important;
+      object-position: center;
+      @media (max-width: 599px) {
+        height: 400px !important;
+      }
     }
     ::before {
       position: absolute;
@@ -146,8 +187,8 @@ export const TreatMentSecWrapper = styled(Box)`
   }
   .before_btn,
   .after_btn {
-    top: 50%;
-    transform: translateY(-50%);
+    bottom: 15px;
+
     position: absolute;
     border-radius: 0;
     border: none;
@@ -206,11 +247,14 @@ export const TreatMentSecWrapper = styled(Box)`
     }
 
     .stack_lft {
-      width: 80%;
+      max-width: 80%;
+      flex-basis: 80%;
       padding-right: 60px;
       border-right: 1px solid ${primaryColors.bordershadowcolor};
       @media (max-width: 1199px) {
         padding-right: 50px;
+        max-width: 100%;
+        flex-basis: 100%;
       }
       @media (max-width: 899px) {
         padding-right: 40px;
@@ -225,9 +269,11 @@ export const TreatMentSecWrapper = styled(Box)`
     }
     .stack_rgt {
       width: 20%;
-      padding-left: 60px;
+      padding-left: 20px;
       @media (max-width: 1199px) {
         padding-left: 50px;
+        max-width: 100%;
+        flex-basis: 100%;
       }
       @media (max-width: 899px) {
         width: 30%;
@@ -243,11 +289,17 @@ export const TreatMentSecWrapper = styled(Box)`
         justify-content: center;
         li {
           width: auto;
+          flex-direction: column;
+          svg {
+            width: 45px;
+            height: 45px;
+            margin-bottom: 5px;
+          }
           &:not(:last-child) {
-            padding-right: 60px;
-            @media (max-width: 899px) {
+            padding-right: 30px;
+            /* @media (max-width: 899px) {
               padding-right: 30px;
-            }
+            } */
             @media (max-width: 599px) {
               padding-right: 60px;
             }

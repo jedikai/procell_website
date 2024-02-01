@@ -11,8 +11,10 @@ import {
   InvoiceWrapper
 } from "@/styles/StyledComponents/InvoiceWrapper";
 import DownloadIcon from "@/ui/Icons/DownloadIcon";
-import { CircularProgress } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import AvatarGroup from "@mui/material/AvatarGroup";
 import Chip from "@mui/material/Chip";
+import CircularProgress from "@mui/material/CircularProgress";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Typography from "@mui/material/Typography";
@@ -55,17 +57,41 @@ export function InvoiceCard({ ...props }: any) {
         console.error("An error occurred:", error);
       });
   };
+  console.log("product_images", props?.product_images);
+
   return (
     <InvoiceCardWrap direction="row" flexWrap="wrap">
       <Box className="left_block">
-        <figure>
-          <img
-            src={props?.image_1920_url}
-            alt="product image"
-            width={67}
-            height={90}
-          />
-        </figure>
+        {!!props?.product_images && props?.product_images?.length == 1 ? (
+          <figure>
+            <img
+              src={
+                !!props?.product_images && props?.product_images?.length > 0
+                  ? props?.product_images[0]
+                  : ""
+              }
+              alt="product image"
+              width={67}
+              height={90}
+            />
+          </figure>
+        ) : (
+          <AvatarGroup max={3}>
+            {!!props?.product_images &&
+              props?.product_images?.length > 0 &&
+              props?.product_images?.map((_img: any, indx: number) => (
+                <Avatar alt="Remy Sharp" src={_img} key={indx + 1} />
+              ))}
+          </AvatarGroup>
+        )}
+        {/* <AvatarGroup max={4}>
+          <Avatar alt="Remy Sharp" src={assest.prd1} />
+          <Avatar alt="Travis Howard" src={assest.prd2} />
+          <Avatar alt="Cindy Baker" src={assest.prd3} />
+          <Avatar alt="Travis Howard" src={assest.prd2} />
+          <Avatar alt="Cindy Baker" src={assest.prd3} />
+        </AvatarGroup> */}
+
         <Box className="product_details">
           <Typography variant="h5">{props?.name}</Typography>
           <Typography>${props?.amount_paid}</Typography>
@@ -194,15 +220,13 @@ export default function Index() {
                 <></>
               )}
             </InvoiceWrapper>
-            <>
-              {!isLoading ? (
-                <div ref={ref}></div>
-              ) : (
-                <div style={{ marginTop: "10px" }}>
-                  <ButtonLoaderSecondary />
-                </div>
-              )}
-            </>
+            {!isLoading ? (
+              <div ref={ref} />
+            ) : (
+              <div style={{ marginTop: "10px" }}>
+                <ButtonLoaderSecondary />
+              </div>
+            )}
           </div>
         </Box>
       </DashboardWrapper>

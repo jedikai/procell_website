@@ -15,10 +15,12 @@ const getDeliveryMethodsList = async () => {
 export const useDeliveryMethodsList = (
   onSuccess: any = () => {},
   onError: any = () => {},
+  enabled: boolean = false
 ) =>
   useQuery([DELIVERY_METHODS_LIST], getDeliveryMethodsList, {
     onSuccess,
     onError,
+    enabled,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -83,3 +85,12 @@ const createAddress = async (body: object) => {
 };
 
 export const useCreateAddress = () => useMutation(createAddress);
+
+// <------------------------------ DELETE ADDRESS APIS ------------------------------>
+
+const deleteAddress = async (body: object) => {
+  const res = await axiosInstance.post(endpoints.app.delete_address, body);
+  return res;
+};
+
+export const useDeleteAddress = () => useMutation(deleteAddress);

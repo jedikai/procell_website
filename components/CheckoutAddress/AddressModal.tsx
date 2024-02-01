@@ -3,7 +3,7 @@ import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import MuiModalWrapper from "@/ui/Modal/MuiModalWrapper";
 import { Autocomplete, Grid, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { memo, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
@@ -63,6 +63,7 @@ const validationSchema = yup.object().shape({
   state: yup.string().required(validationText.error.state)
 });
 
+const exceptThisSymbols = ["e", "E", "+", "-", "."];
 const AddressModal = ({
   open,
   handleClose,
@@ -240,6 +241,9 @@ const AddressModal = ({
                       placeholder="First name"
                       style3
                       {...register("firstName")}
+                      onKeyDown={(e: any) =>
+                        [' '].includes(e.key) && e.preventDefault()
+                      }
                     />
                     {/* <InputFieldCommon
                       defaultValue={name?.split(" ")[0]??''}
@@ -259,6 +263,9 @@ const AddressModal = ({
                       placeholder="Last name"
                       style3
                       {...register("lastName")}
+                      onKeyDown={(e: any) =>
+                        [' '].includes(e.key) && e.preventDefault()
+                      }
                     />
                     {errors?.lastName && (
                       <div className="profile_error">
@@ -364,9 +371,11 @@ const AddressModal = ({
                             : phone?.split(" ")[1]
                           : ""
                       }
+                      type="number"
                       placeholder="Phone number"
                       style3
                       {...register("phnNumber")}
+                      onKeyDown={(e: any) => exceptThisSymbols.includes(e.key) && e.preventDefault()}
                     />
                     {errors?.phnNumber && (
                       <div className="profile_error">
@@ -583,4 +592,4 @@ const AddressModal = ({
   );
 };
 
-export default AddressModal;
+export default memo(AddressModal);

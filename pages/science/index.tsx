@@ -22,6 +22,7 @@ import Image from "next/image";
 import { useState } from "react";
 import Lottie from "react-lottie-player";
 import { animationURL } from "@/components/AnimationUrl/AnimationUrl";
+import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 
 export default function index() {
   const [categoryList, setCategoryList] = useState([]);
@@ -115,108 +116,120 @@ export default function index() {
         innerHeaderMainPage="Home"
       />
       <Box className="science_outr cmn_gap eclispe_effct">
-        <Container fixed>
-          <Grid
-            container
-            columnSpacing={{ lg: 5, xs: 3 }}
-            rowSpacing={{ lg: 0, md: 2, xs: 3 }}
-          >
-            {!(science_blog_loader || science_blog_loader_search_wise) && (
-              <Grid item xs={12} md={8}>
-                <Grid
-                  container
-                  columnSpacing={3}
-                  rowSpacing={{ lg: 7, md: 5, xs: 4 }}
-                >
-                  {scienceBlogList && scienceBlogList?.length > 0 ? (
-                    scienceBlogList
-                      ?.slice(0, loadMore)
-                      .map((data: any, index: number) => (
-                        <Grid item xs={12} md={6} key={index + 1}>
-                          <ScienceCard
-                            image={data?.image}
-                            title={data?.title}
-                            link={data.link}
-                          />
-                        </Grid>
-                      ))
-                  ) : (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyItems: "center",
-                        width: "100%"
-                      }}
+        {!(
+          science_blog_loader &&
+          science_blog_loader_search_wise &&
+          isLoading
+        ) ? (
+          <>
+            <Container fixed>
+              <Grid
+                container
+                columnSpacing={{ lg: 5, xs: 3 }}
+                rowSpacing={{ lg: 0, md: 2, xs: 3 }}
+              >
+                {!(science_blog_loader || science_blog_loader_search_wise) && (
+                  <Grid item xs={12} md={8}>
+                    <Grid
+                      container
+                      columnSpacing={3}
+                      rowSpacing={{ lg: 7, md: 5, xs: 4 }}
                     >
-                      {/* <MyLottieAnimation play /> */}
-                      <Lottie
-                        loop
-                        animationData={animationURL}
-                        play
-                        style={{
-                          width: "50%",
-                          height: "100%",
-                          marginLeft: "auto",
-                          marginRight: "auto"
-                        }}
+                      {scienceBlogList && scienceBlogList?.length > 0 ? (
+                        scienceBlogList
+                          ?.slice(0, loadMore)
+                          .map((data: any, index: number) => (
+                            <Grid item xs={12} md={6} key={index + 1}>
+                              <ScienceCard
+                                image={data?.image}
+                                title={data?.title}
+                                link={data.link}
+                              />
+                            </Grid>
+                          ))
+                      ) : (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyItems: "center",
+                            width: "100%"
+                          }}
+                        >
+                          {/* <MyLottieAnimation play /> */}
+                          <Lottie
+                            loop
+                            animationData={animationURL}
+                            play
+                            style={{
+                              width: "50%",
+                              height: "100%",
+                              marginLeft: "auto",
+                              marginRight: "auto"
+                            }}
+                          />
+                          <Typography
+                            variant="body1"
+                            className="no_found"
+                            style={{
+                              marginLeft: "auto",
+                              marginRight: "auto"
+                            }}
+                          >
+                            There is no Science blog.
+                          </Typography>
+                        </div>
+                      )}
+                    </Grid>
+                    {scienceBlogList.length > loadMore && (
+                      <Box className="text_center">
+                        <CustomButtonPrimary
+                          type="button"
+                          variant="contained"
+                          color="primary"
+                          onClick={loadMoreHandler}
+                        >
+                          <Typography>Load More</Typography>
+                        </CustomButtonPrimary>
+                      </Box>
+                    )}
+                  </Grid>
+                )}
+
+                <Grid item xs={12} md={4}>
+                  <PopularComp />
+                  {!isLoading && (
+                    <>
+                      <SearchComponent getSearchValue={getSearchValue} />
+                      <MaintopicComp
+                        title="New topics"
+                        topicData={categoryList}
+                        getCategoriesWiseBlog={getCategoriesWiseBlog}
+                        selectedCategoriesId={selectedCategoriesId}
                       />
-                      <Typography
-                        variant="body1"
-                        className="no_found"
-                        style={{
-                          marginLeft: "auto",
-                          marginRight: "auto"
-                        }}
-                      >
-                        There is no Science blog.
-                      </Typography>
-                    </div>
+                    </>
                   )}
                 </Grid>
-                {scienceBlogList.length > loadMore && (
-                  <Box className="text_center">
-                    <CustomButtonPrimary
-                      type="button"
-                      variant="contained"
-                      color="primary"
-                      onClick={loadMoreHandler}
-                    >
-                      <Typography>Load More</Typography>
-                    </CustomButtonPrimary>
-                  </Box>
-                )}
               </Grid>
-            )}
-
-            <Grid item xs={12} md={4}>
-              <SearchComponent getSearchValue={getSearchValue} />
-              <PopularComp />
-              {!isLoading && (
-                <MaintopicComp
-                  title="New topics"
-                  topicData={categoryList}
-                  getCategoriesWiseBlog={getCategoriesWiseBlog}
-                  selectedCategoriesId={selectedCategoriesId}
-                />
-              )}
-            </Grid>
-          </Grid>
-        </Container>
-        <Image
-          src={assest.eclipse1}
-          alt=""
-          width={380}
-          height={450}
-          className="pic1"
-        />
-        <Image
-          src={assest.eclipse2}
-          alt=""
-          width={380}
-          height={450}
-          className="pic2"
-        />
+            </Container>
+            <Image
+              src={assest.eclipse1}
+              alt=""
+              width={380}
+              height={450}
+              className="pic1"
+            />
+            <Image
+              src={assest.eclipse2}
+              alt=""
+              width={380}
+              height={450}
+              className="pic2"
+            />
+          </>
+        ) : (
+          <ButtonLoaderSecondary />
+        )}
       </Box>
     </Wrapper>
   );

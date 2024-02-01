@@ -56,22 +56,22 @@ const social_links = [
   {
     name: "Facebook",
     logo: <FacebookIcon />,
-    path: "#"
+    path: "https://www.facebook.com/procelltherapies/"
   },
-  {
-    name: "Twitter",
-    logo: <TwitterIcon />,
-    path: "#"
-  },
+  // {
+  //   name: "Twitter",
+  //   logo: <TwitterIcon />,
+  //   path: "#"
+  // },
   {
     name: "Instagram",
     logo: <InstagramIcon />,
-    path: "#"
+    path: "https://www.instagram.com/procelltherapies/"
   },
   {
     name: "Youtube",
     logo: <YoutubeIcon />,
-    path: "#"
+    path: "https://www.youtube.com/channel/UCO7nIDGEkMiuaRPDE7NtvZw"
   }
 ];
 

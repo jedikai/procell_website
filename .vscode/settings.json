@@ -16,22 +16,16 @@
     "titleBar.activeBackground": "#008000",
     "titleBar.activeForeground": "#e7e7e7",
     "titleBar.inactiveBackground": "#00800099",
-    "titleBar.inactiveForeground": "#e7e7e799",
-    "editorGroup.border": "#00b300",
-    "panel.border": "#00b300",
-    "sideBar.border": "#00b300",
-    "statusBar.border": "#008000",
-    "statusBar.debuggingBackground": "#800080",
-    "statusBar.debuggingBorder": "#800080",
-    "statusBar.debuggingForeground": "#e7e7e7",
-    "tab.activeBorder": "#00b300",
-    "titleBar.border": "#008000"
+    "titleBar.inactiveForeground": "#e7e7e799"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll": true,
-    "source.organizeImports": true
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
   },
-  "peacock.color": "green"
+  "peacock.color": "green",
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

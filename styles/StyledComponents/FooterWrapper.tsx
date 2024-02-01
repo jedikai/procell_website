@@ -218,7 +218,7 @@ export const FooterWrap = styled(Box)`
         font-size: 14px;
       }
       :hover {
-        color: ${primaryColors.textDisabled};
+        color: ${primaryColors.primary};
       }
     }
   }

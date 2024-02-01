@@ -2,6 +2,7 @@ import { useInfiniteQuery, useMutation, useQuery } from "react-query";
 import {
   GET_INVOICE_DOWNLOAD,
   GET_INVOICE_LIST,
+  GET_MANAGE_COMMUNICATION_DATA,
   GET_PROFILE_DETAILS,
   GET_PURCHASE_LIST,
   GET_QUOTATION_LIST,
@@ -147,3 +148,29 @@ const changePassword = async (body: object) => {
 };
 
 export const useChangePassword = () => useMutation(changePassword);
+
+
+
+const getMannageCommunicationData = async () => {
+  const res = await axiosInstance.get(
+    endpoints.app.get_manage_communication_data
+  );
+  return res;
+};
+
+export const useMannageCommunicationData = (
+  onSuccess: any = () => {},
+  onError: any = () => {}
+) =>
+  useQuery([GET_MANAGE_COMMUNICATION_DATA], getMannageCommunicationData, {
+    onSuccess,
+    onError,
+    select: (data) => data?.data?.data ?? []
+  });
+
+  const updateMannageCommunication = async (body: object) => {
+    const res = await axiosInstance.post(endpoints.app.get_manage_communication_data, body);
+    return res;
+  };
+  
+  export const useUpdateMannageCommunication = () => useMutation(updateMannageCommunication);

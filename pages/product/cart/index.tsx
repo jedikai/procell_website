@@ -16,12 +16,14 @@ import { Grid, SelectChangeEvent } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import { Box, Container, Stack } from "@mui/system";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { useState } from "react";
 import Lottie from "react-lottie-player";
 // import animation from "./animation.json";
 // const MyLottieAnimation = React.lazy(() => import("@/components/ReactLottiePlayer/ReactLottiePlayer"));
 
 const Cart = () => {
+  const router = useRouter();
   const [value, setValue] = useState("");
   const [amount, setAmount] = useState(0);
   const [cartList, setCartList] = useState([]);

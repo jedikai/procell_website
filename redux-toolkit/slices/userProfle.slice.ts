@@ -5,7 +5,8 @@ const initialState: userProfileImageInterface = {
   refresh: false,
   image: "",
   AuthorizedNetCred: { login_id: "", client_key: "" },
-  userName: ""
+  userName: "",
+  productVariantId: ""
 };
 
 const userProfileImgSlice = createSlice({
@@ -26,6 +27,9 @@ const userProfileImgSlice = createSlice({
     },
     getUserName: (state, action: PayloadAction<string>) => {
       state.userName = action.payload;
+    },
+    getProductVariantId: (state, action: PayloadAction<string>) => {
+      state.productVariantId = action.payload;
     }
   },
   extraReducers: {}
@@ -35,7 +39,8 @@ export const {
   refreshProfileImg,
   updatedProfileImg,
   getAuthorizationNetCred,
-  getUserName
+  getUserName,
+  getProductVariantId
 } = userProfileImgSlice.actions;
 
 export default userProfileImgSlice.reducer;

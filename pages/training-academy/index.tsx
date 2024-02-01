@@ -5,14 +5,16 @@ import TrainingSec from "@/components/TrainingSec/TrainingSec";
 import assest from "@/json/assest";
 import Wrapper from "@/layout/wrapper/Wrapper";
 
-export default function index() {
+export default function Index() {
   return (
     <Wrapper>
       <InnerHeader
-        innerHeaderTitle="training acadamy"
-        innerHeaderRediractedPage="Training acadamy"
-        bannerImage={assest.innerHeaderbackground} innerHeaderMainPage="Home"     />
-      <LinearProgressBar />
+        innerHeaderTitle="practitioner academy"
+        innerHeaderRediractedPage="Practitioner Academy"
+        bannerImage={assest.innerHeaderbackground}
+        innerHeaderMainPage="Home"
+      />
+      <LinearProgressBar completed={25} />
       <TrainingSec />
     </Wrapper>
   );

@@ -93,7 +93,12 @@ export const primaryColors = {
   textBoldgray: "#555",
   minusgray: "rgba(0, 0, 0, 0.71)",
   coloreee: "#eee",
-  colorF7F7F7: "#F7F7F7"
+  colorF7F7F7: "#F7F7F7",
+  color30A6E2: "#30A6E2",
+  colorF3FAFD: "#F3FAFD",
+  color1F1F1F: "#1F1F1F",
+  color5e5a5a: "#5e5a5a",
+  color5BB501: "#5BB501"
 };
 
 export const pallete = (mode: PaletteMode): PaletteOptions => {

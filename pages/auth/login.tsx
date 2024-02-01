@@ -4,7 +4,7 @@ import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
 import validationText from "@/json/messages/validationText";
 import LoginWrapper from "@/layout/wrapper/LoginWrapper";
-import { setCookieClient } from "@/lib/functions/storage.lib";
+import { getCookie, setCookieClient } from "@/lib/functions/storage.lib";
 import { LoginPageWrapper } from "@/styles/StyledComponents/LoginPageWrapper";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
@@ -39,6 +39,7 @@ const validationSchema = yup.object().shape({
 
 const Login = () => {
   const router = useRouter();
+  const [render, setRender] = useState(true);
   const [checked, setChecked] = useState(false);
   const { toastSuccess, toastError } = useNotiStack();
   const onSuccessUserLogin = () => {
@@ -102,8 +103,14 @@ const Login = () => {
   };
   useEffect(() => {
     if (typeof window !== "undefined") {
-      // const isUserLoggedIn = !!localStorage.getItem("userDetails");
-      // if (isUserLoggedIn) {
+      // const userLoginStatus: boolean =
+      //   !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
+      // if (userLoginStatus) {
+      //   router.push("/dashboard/profile");
+      //   setRender(false);
+      // } else {
+      //   setRender(true);
+      // }
       let getUserDetails: any = {};
       if (!!localStorage.getItem("userDetails")) {
         getUserDetails = JSON.parse(localStorage.getItem("userDetails") ?? "");
@@ -120,86 +127,99 @@ const Login = () => {
     }
     // }
   }, []);
+
   console.log("getValues", checked);
   const checkHandler = (data: boolean) => setChecked(data);
   return (
-    <LoginWrapper title="welcome TO PROCELL">
-      <LoginPageWrapper>
-        <Box className="wrapper">
-          <Link href="/">
-            <Image
-              src={assest.logo_img}
-              alt="procell"
-              width={143}
-              height={54}
-            />
-          </Link>
-          <form onSubmit={handleSubmit(onFormSubmit)}>
-            <Box className="form_body">
-              <Typography variant="h4">
-                Sign in to <Typography variant="caption">Procell</Typography>
-              </Typography>
-              <Typography variant="body1">
-                Enter your details to get sign in to your account
-              </Typography>
-              <Box className="input_wrap">
-                <InputFieldCommon
-                  placeholder="Email"
-                  style2
-                  defaultValue={""}
-                  {...register("email")}
-                />
-                {errors.email && (
-                  <div className="error">{errors.email.message}</div>
-                )}
-                <InputFieldCommon
-                  placeholder="Password"
-                  isPassword
-                  style2
-                  {...register("password")}
-                />
-                {errors.password && (
-                  <div className="error">{errors.password.message}</div>
-                )}
-              </Box>
-              <Box className="forgot_pass">
-                <Box className="rememberMewrap">
-                  <Switch
-                    checked={checked}
-                    // {...register("remember_me")}
-                    onChange={(e: any) => checkHandler(e.target.checked)}
+    <>
+      {render ? (
+        <>
+          <LoginWrapper title="welcome TO PROCELL">
+            <LoginPageWrapper>
+              <Box className="wrapper">
+                <Link href="/">
+                  <Image
+                    src={assest.logo_img}
+                    alt="procell"
+                    width={143}
+                    height={54}
                   />
-                  <Typography variant="body1">Remember me</Typography>
-                </Box>
+                </Link>
+                <form onSubmit={handleSubmit(onFormSubmit)}>
+                  <Box className="form_body">
+                    <Typography variant="h4">
+                      Sign in to{" "}
+                      <Typography variant="caption">Procell</Typography>
+                    </Typography>
+                    <Typography variant="body1">
+                      Enter your details to get sign in to your account
+                    </Typography>
+                    <Box className="input_wrap">
+                      <InputFieldCommon
+                        placeholder="Email"
+                        style2
+                        defaultValue={""}
+                        {...register("email")}
+                      />
+                      {errors.email && (
+                        <div className="error">{errors.email.message}</div>
+                      )}
+                      <InputFieldCommon
+                        placeholder="Password"
+                        isPassword
+                        style2
+                        {...register("password")}
+                      />
+                      {errors.password && (
+                        <div className="error">{errors.password.message}</div>
+                      )}
+                    </Box>
+                    <Box className="forgot_pass">
+                      <Box className="rememberMewrap">
+                        <Switch
+                          checked={checked}
+                          // {...register("remember_me")}
+                          onChange={(e: any) => checkHandler(e.target.checked)}
+                        />
+                        <Typography variant="body1">Remember me</Typography>
+                      </Box>
 
-                <Link href="/auth/forgetpassword">Forgot password?</Link>
-              </Box>
-              <Box className="btn_wrapper">
-                {!isLoading ? (
-                  <CustomButtonPrimary
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                  >
-                    <Typography variant="body1">Login</Typography>
-                  </CustomButtonPrimary>
-                ) : (
-                  <CustomButtonPrimary variant="contained" color="primary">
-                    <ButtonLoader />
-                  </CustomButtonPrimary>
-                )}
-              </Box>
+                      <Link href="/auth/forgetpassword">Forgot password?</Link>
+                    </Box>
+                    <Box className="btn_wrapper">
+                      {!isLoading ? (
+                        <CustomButtonPrimary
+                          variant="contained"
+                          color="primary"
+                          type="submit"
+                        >
+                          <Typography variant="body1">Login</Typography>
+                        </CustomButtonPrimary>
+                      ) : (
+                        <CustomButtonPrimary
+                          variant="contained"
+                          color="primary"
+                        >
+                          <ButtonLoader />
+                        </CustomButtonPrimary>
+                      )}
+                    </Box>
 
-              <Typography variant="body1" className="form_bottom">
-                Don’t have an account?{" "}
-                {/* <Link href="/auth/registerpage">Register Now</Link> */}
-                <Link href="/auth/firststep">Register Now</Link>
-              </Typography>
-            </Box>
-          </form>
-        </Box>
-      </LoginPageWrapper>
-    </LoginWrapper>
+                    <Typography variant="body1" className="form_bottom">
+                      Don’t have an account?{" "}
+                      {/* <Link href="/auth/registerpage">Register Now</Link> */}
+                      <Link href="/auth/firststep">Register Now</Link>
+                    </Typography>
+                  </Box>
+                </form>
+              </Box>
+            </LoginPageWrapper>
+          </LoginWrapper>
+        </>
+      ) : (
+        <></>
+      )}
+    </>
   );
 };
 

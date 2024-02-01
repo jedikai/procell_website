@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable react/jsx-curly-brace-presence */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
@@ -7,12 +9,10 @@ import {
   useUpdateProfile
 } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
 import { useLogout } from "@/hooks/react-qurey/query-hooks/logoutQuery.hooks";
-import { GET_PROFILE_DETAILS } from "@/hooks/react-qurey/query-keys/dashboardQuery.keys";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
-import { getCookie } from "@/lib/functions/storage.lib";
 import {
   refreshProfileImg,
   updatedProfileImg
@@ -21,14 +21,15 @@ import { SideBarWrapper } from "@/styles/StyledComponents/SideBarWrapper";
 import { primaryColors } from "@/themes/_muiPalette";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import BillIcon from "@/ui/Icons/BillIcon";
+import CertificateIcon from "@/ui/Icons/CertificateIcon";
 import EditIcon from "@/ui/Icons/EditIcon";
 import LogoutIcon from "@/ui/Icons/LogoutIcon";
+import MailBoxIcon from "@/ui/Icons/MailBoxIcon";
+import OrderIcon from "@/ui/Icons/OrderIcon";
 import PaymentIcon from "@/ui/Icons/PaymentIcon";
 import ProfileIcon from "@/ui/Icons/ProfileIcon";
-import PurchaseIcon from "@/ui/Icons/PurchaseIcon";
 import QuotationIcon from "@/ui/Icons/QuotationIcon";
 import SaleIcon from "@/ui/Icons/SaleIcon";
-import TicketIcon from "@/ui/Icons/TicketIcon";
 import UpdateProfileIcon from "@/ui/Icons/UpdateProfileIcon";
 import MuiModalWrapper from "@/ui/Modal/MuiModalWrapper";
 import Close from "@mui/icons-material/Close";
@@ -42,7 +43,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { useQueryClient } from "react-query";
 
 export default function SideNavbar() {
@@ -51,92 +52,6 @@ export default function SideNavbar() {
   const dispatch = useAppDispatch();
   const { refresh, image } = useAppSelector((s) => s.userProfileImgSlice);
   const { toastSuccess, toastError } = useNotiStack();
-  const handleClose = () => {
-    const sidebar = document.getElementById("sidebar");
-    sidebar?.classList.remove("showSidebar");
-    document.body.classList.remove("home");
-  };
-  const [openmod, setopenmod] = React.useState(false);
-  const [renderedSec, setRenderedSec] = React.useState(false);
-  // const [refresh, setRefresh] = React.useState(false);
-  const [userDetails, setUserDetails] = React.useState<any>({
-    short_name: null,
-    joining_date: null,
-    dp: null
-  });
-  const onProfileDetailsSuccess = (response: any) => {
-    console.log("first", response);
-
-    const {
-      id,
-      image_1920_url,
-      create_date,
-      first_name,
-      last_name,
-      phone,
-      email,
-      street,
-      street2,
-      city,
-      zip,
-      state_id,
-      country_id
-    } = response[0] ?? {};
-    setUserDetails({
-      short_name: first_name[0] + last_name[0],
-      joining_date: new Date(create_date).toLocaleString("en-US", {
-        month: "short",
-        year: "numeric"
-      }),
-      dp: image_1920_url
-    });
-    console.log("sidebarnav", response[0]);
-    dispatch(updatedProfileImg(image_1920_url));
-  };
-  const onProfileDetailsError = (response: any) => {
-    console.log("error", response);
-    toastError("Your profile is not authorized, please log in.");
-    router.push("/auth/login");
-  };
-
-  const {
-    data: userProfileDetailsData,
-    isLoading,
-    refetch
-  } = useProfileDetails(onProfileDetailsSuccess, onProfileDetailsError);
-  const { mutate: updateProfile, isLoading: updateLoader } = useUpdateProfile();
-  const { mutate: logout } = useLogout();
-  const handleLogin = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("userName");
-      router.push("/auth/login");
-
-      if (typeof window !== "undefined") {
-        // localStorage.removeItem("userDetails");
-        destroyCookie(null, "userDetails", { path: "/" });
-        // router.push("/auth/login");
-        destroyCookie(null, "userDetails", { path: "/" });
-        logout(
-          {},
-          {
-            onSuccess: () => {
-              // localStorage.removeItem("userDetails");
-              destroyCookie(null, "userDetails", { path: "/" });
-              router.push("/auth/login");
-            },
-            onError: () => {}
-          }
-        );
-      }
-    }
-  };
-  const handellogout = () => {
-    setopenmod(true);
-  };
-  const close = () => {
-    setopenmod(false);
-  };
-
   const sidebarRoutes = [
     {
       name: "Profile",
@@ -150,6 +65,19 @@ export default function SideNavbar() {
         />
       ),
       pathLink: "/dashboard/profile"
+    },
+    {
+      name: "Certificates",
+      icon: (
+        <CertificateIcon
+          IconColor={
+            router?.pathname === "/dashboard/student-certfictes"
+              ? primaryColors.white
+              : null
+          }
+        />
+      ),
+      pathLink: "/dashboard/student-certfictes"
     },
     {
       name: "Sales orders",
@@ -214,6 +142,19 @@ export default function SideNavbar() {
       pathLink: "/dashboard/edit-security"
     },
     {
+      name: "Manage Communications",
+      icon: (
+        <MailBoxIcon
+          IconColor={
+            router?.pathname === "/dashboard/edit-security"
+              ? primaryColors.white
+              : null
+          }
+        />
+      ),
+      pathLink: "/dashboard/manage-communications"
+    },
+    {
       name: "Quotations",
       icon: (
         <QuotationIcon
@@ -239,8 +180,222 @@ export default function SideNavbar() {
         />
       ),
       pathLink: "/dashboard/payment-methods"
+    },
+
+    //For Students
+
+    {
+      name: "My Profile",
+      icon: (
+        <ProfileIcon
+          IconColor={
+            router?.pathname === "/dashboard/profile"
+              ? primaryColors.white
+              : null
+          }
+        />
+      ),
+      pathLink: "/dashboard/student-profile"
+    },
+
+    {
+      name: "My Clients",
+      icon: (
+        <ProfileIcon
+          IconColor={
+            router?.pathname === "/dashboard/my-clients"
+              ? primaryColors.white
+              : null
+          }
+        />
+      ),
+      pathLink: "/dashboard/my-clients"
+    },
+
+    {
+      name: "My Orders",
+      icon: (
+        <OrderIcon
+          IconColor={
+            router?.pathname === "/dashboard/my-orders"
+              ? primaryColors.white
+              : null
+          }
+        />
+      ),
+      pathLink: "/dashboard/my-orders"
+    },
+
+    // {
+    //   name: "Certificates",
+    //   icon: (
+    //     <CertificateIcon
+    //       IconColor={
+    //         router?.pathname === "/dashboard/student-certfictes"
+    //           ? primaryColors.white
+    //           : null
+    //       }
+    //     />
+    //   ),
+    //   pathLink: "/dashboard/student-certfictes"
+    // },
+    {
+      name: "Manage Addresses",
+      icon: (
+        <CertificateIcon
+          IconColor={
+            router?.pathname === "/dashboard/manage-address"
+              ? primaryColors.white
+              : null
+          }
+        />
+      ),
+      pathLink: "/dashboard/manage-address"
+    },
+    {
+      name: "Contact a Rep",
+      icon: (
+        <CertificateIcon
+          IconColor={
+            router?.pathname === "/dashboard/contact-rep"
+              ? primaryColors.white
+              : null
+          }
+        />
+      ),
+      pathLink: "/dashboard/contact-rep"
     }
   ];
+
+  const subNavOne = [
+    {
+      name: "Manage Addresses",
+      pathLink: "/dashboard/manage-address"
+    },
+    {
+      name: "Get Help",
+      pathLink: "/dashboard/get-help"
+    },
+    {
+      name: "Manage Communication",
+      pathLink: "/dashboard/manage-communications"
+    },
+    {
+      name: "Contact a Rep",
+      pathLink: "/dashboard/contact-rep"
+    },
+    {
+      name: "Contact CEO",
+      pathLink: "/dashboard/contact-ceo"
+    }
+  ];
+  const handleClose = () => {
+    const sidebar = document.getElementById("sidebar");
+    sidebar?.classList.remove("showSidebar");
+    document.body.classList.remove("home");
+  };
+  const [openmod, setopenmod] = React.useState(false);
+  const [renderedSec, setRenderedSec] = React.useState(false);
+  const [sideNavBarMenu, setSideNavBarMenu] = React.useState<any>([]);
+  const [sideMenuList, setSideMenuList] = React.useState<any>([]);
+  const [userDetails, setUserDetails] = React.useState<any>({
+    short_name: null,
+    joining_date: null,
+    dp: null
+  });
+  const onProfileDetailsSuccess = (response: any) => {
+    console.log("first", response);
+
+    const {
+      id,
+      image_1920_url,
+      create_date,
+      first_name,
+      last_name,
+      phone,
+      email,
+      street,
+      street2,
+      city,
+      zip,
+      state_id,
+      country_id,
+      partner_type
+    } = response[0] ?? {};
+    console.log("partner_type", partner_type);
+    if (partner_type == "practitioner") {
+      const filterRoutes = sidebarRoutes?.filter(
+        (_i: any) => _i?.name != "My Profile"
+      );
+      setSideMenuList(filterRoutes);
+    } else {
+      const filterRoutes = sidebarRoutes?.filter(
+        (_i: any) =>
+          !(
+            _i?.name == "Certificates" ||
+            _i?.name == "Profile" ||
+            _i?.name == "Contact a Rep" ||
+            _i?.name == "My Clients"
+          )
+      );
+      setSideMenuList(filterRoutes);
+    }
+
+    setUserDetails({
+      short_name: first_name[0] + last_name[0],
+      joining_date: new Date(create_date).toLocaleString("en-US", {
+        month: "short",
+        year: "numeric"
+      }),
+      dp: image_1920_url
+    });
+    console.log("sidebarnav", response[0]);
+    dispatch(updatedProfileImg(image_1920_url));
+  };
+  const onProfileDetailsError = (response: any) => {
+    console.log("error", response);
+    toastError("Your profile is not authorized, please log in.");
+    router.push("/auth/login");
+  };
+
+  const {
+    data: userProfileDetailsData,
+    isLoading,
+    refetch
+  } = useProfileDetails(onProfileDetailsSuccess, onProfileDetailsError);
+  const { mutate: updateProfile, isLoading: updateLoader } = useUpdateProfile();
+  const { mutate: logout } = useLogout();
+  const handleLogin = () => {
+    if (typeof window !== "undefined") {
+      // localStorage.removeItem("userName");
+      // router.push("/auth/login");
+
+      // if (typeof window !== "undefined") {
+      // localStorage.removeItem("userDetails");
+      destroyCookie(null, "userDetails", { path: "/" });
+      // router.push("/auth/login");
+      destroyCookie(null, "userDetails", { path: "/" });
+      logout(
+        {},
+        {
+          onSuccess: () => {
+            // localStorage.removeItem("userDetails");
+            destroyCookie(null, "userDetails", { path: "/" });
+            router.push("/auth/login");
+          },
+          onError: () => {}
+        }
+      );
+
+      // }
+    }
+  };
+  const handellogout = () => {
+    setopenmod(true);
+  };
+  const close = () => {
+    setopenmod(false);
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -306,7 +461,7 @@ export default function SideNavbar() {
     });
   };
 
-  // console.log("getUserDetails side navbar", image);
+  console.log("getUserDetails side navbar", sideMenuList);
   return (
     <SideBarWrapper id="sidebar">
       <IconButton className="close_btn" onClick={handleClose}>
@@ -355,7 +510,7 @@ export default function SideNavbar() {
         </Box>
         <Box className="sidebar_btm">
           <List disablePadding>
-            {sidebarRoutes?.map((route) => (
+            {sideMenuList?.map((route: any) => (
               <ListItem disablePadding key={route?.name}>
                 <Link
                   href={route?.pathLink}
@@ -368,6 +523,36 @@ export default function SideNavbar() {
                 </Link>
               </ListItem>
             ))}
+            {/* <ListItem disablePadding>
+              <Accordion>
+                <AccordionSummary
+                  aria-controls="panel1-content"
+                  id="panel1-header"
+                >
+                  <Typography variant="caption">
+                    <MoreIcon />
+                  </Typography>
+                  More
+                </AccordionSummary>
+                <AccordionDetails>
+                  <List className="sub_nav">
+                    {subNavOne.map((item, index) => (
+                      // eslint-disable-next-line react/no-array-index-key
+                      <ListItem disablePadding key={index}>
+                        <Link
+                          href={item.pathLink}
+                          className={
+                            router?.pathname === item.pathLink ? "active" : ""
+                          }
+                        >
+                          {item.name}
+                        </Link>
+                      </ListItem>
+                    ))}
+                  </List>
+                </AccordionDetails>
+              </Accordion>
+            </ListItem> */}
             <ListItem>
               <Button className="logoutbtn" onClick={handellogout}>
                 <LogoutIcon

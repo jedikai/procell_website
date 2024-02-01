@@ -1,6 +1,9 @@
 import axiosInstance from "@/api/axiosInstance";
 import { endpoints } from "@/api/endpoints";
-import { CART_LIST, CART_LIST_WITH_AUTHORIZATION } from "../query-keys/cartQuery.keys";
+import {
+  CART_LIST,
+  CART_LIST_WITH_AUTHORIZATION
+} from "../query-keys/cartQuery.keys";
 import { useMutation, useQuery } from "react-query";
 
 const getCartList = async () => {
@@ -20,21 +23,29 @@ export const useCartList = (
   });
 //   <------------------ CART LIST WITH AUTHORIZATION.NET CRED ------------------->
 
-const getCartListWithAuthCred = async () => {
-  const res = await axiosInstance.get(endpoints.app.cart_list);
+const getCartListWithAuthCred = async (tractUserActivityParams: string) => {
+  const res = await axiosInstance.get(
+    `${endpoints.app.user_trac_with_cartlist_count}${tractUserActivityParams}`
+  );
   return res;
 };
 
 export const useCartListWithAuthCred = (
+  tractUserActivityParams: string,
   onSuccess: any = () => {},
-  onError: any = () => {}
+  onError: any = () => {},
+  enabled: boolean
 ) =>
-  useQuery([CART_LIST_WITH_AUTHORIZATION], getCartListWithAuthCred, {
-    onSuccess,
-    onError,
-    // enabled: false,
-    select: (data) => data?.data ?? {}
-  });
+  useQuery(
+    [CART_LIST_WITH_AUTHORIZATION],
+    () => getCartListWithAuthCred(tractUserActivityParams),
+    {
+      onSuccess,
+      onError,
+      enabled,
+      select: (data) => data?.data?.data ?? {}
+    }
+  );
 
 //   <------------------ DELETE ITEMS FROM CART LIST ------------------->
 const deleteItem = async (body: object) => {

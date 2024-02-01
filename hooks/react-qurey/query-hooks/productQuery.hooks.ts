@@ -3,9 +3,15 @@ import { endpoints } from "@/api/endpoints";
 import { useInfiniteQuery, useQuery } from "react-query";
 import { PRODUCT_DETAILS, PRODUCT_LIST } from "../query-keys/productQuery.keys";
 
-const getProductList = async (pageIndex: number, sort: string) => {
+const getProductList = async (
+  pageIndex: number,
+  sort: string,
+  category: string
+) => {
   const res = await axiosInstance.get(
-    `${endpoints.app.product_list}/page/${pageIndex}${sort ? `?${sort}` : ""}`
+    `${endpoints.app.product_list}/page/${pageIndex}${sort ? `?${sort}` : ""}${
+      category ? `${sort ? "&" : "?"}${category}` : ""
+    }`
   );
   return res;
 };
@@ -13,20 +19,23 @@ const getProductList = async (pageIndex: number, sort: string) => {
 export const useProductList = (
   page: number,
   sort: string,
+  category: string,
   onSuccess: any = () => {},
   onError: any = () => {}
 ) =>
-  useQuery([PRODUCT_LIST, page, sort], () => getProductList(page, sort), {
-    onSuccess,
-    onError,
-    select: (data) => data?.data?.data ?? [],
-    keepPreviousData: true
-  });
+  useQuery(
+    [PRODUCT_LIST, page, sort, category],
+    () => getProductList(page, sort, category),
+    {
+      onSuccess,
+      onError,
+      select: (data) => data?.data?.data ?? [],
+      keepPreviousData: true
+    }
+  );
 
 const getFeaturedProductList = async () => {
-  const res = await axiosInstance.get(
-    `${endpoints.app.product_list}/page/1`
-  );
+  const res = await axiosInstance.get(`${endpoints.app.product_list}/page/1`);
   return res;
 };
 
@@ -37,7 +46,7 @@ export const useFeaturedProductList = (
   useQuery([PRODUCT_LIST], getFeaturedProductList, {
     onSuccess,
     onError,
-    select: (data) => data?.data?.data?.products_info ?? [],
+    select: (data) => data?.data?.data?.products_info ?? []
   });
 
 const getProductDetails = async (pageId: string | number) => {

@@ -19,6 +19,7 @@ import Typography from "@mui/material/Typography";
 import { Box } from "@mui/system";
 import {
   SyntheticEvent,
+  memo,
   useCallback,
   useEffect,
   useMemo,
@@ -64,6 +65,7 @@ type Inputs = {
   state_shipping: string;
 };
 const phoneRegExp = /^[0-9]{10}$/;
+const exceptThisSymbols = ["e", "E", "+", "-", "."];
 
 const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
   const queryClient = useQueryClient();
@@ -71,8 +73,11 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
   const BillingRef = useRef<any>(null);
   const ShippingRef = useRef<any>(null);
   const [userGivenPhoneCode, setUserGivenPhoneCode] = useState("");
+  const [userGivenPhoneCodeShipping, setUserGivenPhoneCodeShipping] =
+    useState("");
   const [openmod, setopenmod] = useState(false);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [userPartnerId, setUserPartnerId] = useState("");
   const [checkoutAddress, setCheckoutAddress] = useState<any>({
     billing_address: [],
     shipping_address: []
@@ -86,41 +91,12 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
     phnCode: null,
     language: null,
     country: null,
-    state: null
+    state: null,
+    phnCode_shipping: null,
+    language_shipping: null,
+    country_shipping: null,
+    state_shipping: null
   });
-  const onSuccesCheckoutAddressList = (response: any) => {
-    console.log("CHECKOUT_ADDRESS_LIST", response);
-    if (Object.keys(response)?.length > 0) {
-      setIsButtonStatusChange(true);
-      setIsShippedToShippingAddress(false);
-      const { billing_address, shipping_address, is_data_completed }: any =
-        response ?? {};
-      setIsUserLoggedIn(!!is_data_completed);
-      setCheckoutAddress({
-        billing_address: [billing_address],
-        shipping_address
-      });
-
-      // setSelectedShippingaddressId(getselectedShippingAddressId);
-    } else {
-      setIsButtonStatusChange(false);
-      setIsUserLoggedIn(false);
-      setIsShippedToShippingAddress(true);
-    }
-  };
-  const { data, isLoading } = useAddressList(
-    onSuccesCheckoutAddressList,
-    () => { }
-  );
-  const { data: countryList, isLoading: countryLoader } = useCountryList();
-  const { data: stateList, isLoading: stateLoder } = useStateList(
-    !!selectedCountryId,
-    selectedCountryId
-  );
-  const { mutate: saveAddress, isLoading: saveAddressLoader } =
-    useSaveAddresss();
-  const { mutate: updateShipping, isLoading: updateShippingLoader } =
-    useUpdateShipping();
   const validationSchema = yup.object().shape({
     firstName: yup.string().required(validationText.error.first_name),
     lastName: yup.string().required(validationText.error.last_name),
@@ -130,20 +106,11 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
       .required(validationText.error.enter_email),
     phnCode: yup.string().required(validationText.error.phone_code),
     phnNumber: yup.string().required(validationText.error.phone),
-    // .matches(/^\d+$/, validationText.error.valid_phone_number)
-    // .test("isValid", validationText.error.phone_number_range, (value) => {
-    //   console.log(value);
-    //   if (value && value?.length >= 8 && value?.length <= 16) {
-    //     return true;
-    //   } else {
-    //     return false;
-    //   }
-    // }),
     address: yup.string().required(validationText.error.address),
     city: yup.string().required(validationText.error.city),
-    zip: yup.string().required(validationText.error.phone),
-    country: yup.string().required(validationText.error.phone),
-    state: yup.string().required(validationText.error.phone),
+    zip: yup.string().required(validationText.error.zipCode),
+    country: yup.string().required(validationText.error.country),
+    state: yup.string().required(validationText.error.state),
     ...(!isShippedToShippingAddress
       ? {
         firstName_shipping: yup
@@ -160,20 +127,11 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
           .string()
           .required(validationText.error.phone_code),
         phnNumber_shipping: yup.string().required(validationText.error.phone),
-        // .matches(/^\d+$/, validationText.error.valid_phone_number)
-        // .test("isValid", validationText.error.phone_number_range, (value) => {
-        //   console.log(value);
-        //   if (value && value?.length >= 8 && value?.length <= 16) {
-        //     return true;
-        //   } else {
-        //     return false;
-        //   }
-        // }),
         address_shipping: yup.string().required(validationText.error.address),
         city_shipping: yup.string().required(validationText.error.city),
-        zip_shipping: yup.string().required(validationText.error.phone),
-        country_shipping: yup.string().required(validationText.error.phone),
-        state_shipping: yup.string().required(validationText.error.phone)
+        zip_shipping: yup.string().required(validationText.error.zipCode),
+        country_shipping: yup.string().required(validationText.error.country),
+        state_shipping: yup.string().required(validationText.error.state)
       }
       : {})
   });
@@ -187,11 +145,115 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
   } = useForm<Inputs>({
     resolver: yupResolver(validationSchema)
   });
+
+  const onSuccesCheckoutAddressList = (response: any) => {
+    console.log("CHECKOUT_ADDRESS_LIST", response);
+    if (Object.keys(response)?.length > 0) {
+      setIsShippedToShippingAddress(false);
+      const { billing_address, shipping_address, is_data_completed }: any =
+        response ?? {};
+      if (billing_address && Object.keys(billing_address).length > 0) {
+        const { id } = billing_address ?? {};
+        setUserPartnerId(`${id}`);
+      }
+      setIsUserLoggedIn(!!is_data_completed);
+      setIsButtonStatusChange(!!is_data_completed);
+      setCheckoutAddress({
+        billing_address: [billing_address],
+        shipping_address
+      });
+      console.log("billing_address", billing_address);
+      const {
+        first_name,
+        last_name,
+        email,
+        phone,
+        street,
+        street2,
+        city,
+        state_id,
+        zip,
+        country_id
+      } = billing_address ?? {};
+      setValue("firstName", `${first_name}`);
+      setValue("firstName_shipping", `${first_name}`);
+      setValue("lastName", `${last_name}`);
+      setValue("lastName_shipping", `${last_name}`);
+      setValue("email", `${email}`);
+      setValue("email_shipping", `${email}`);
+      setValue("phnCode", `${!!phone ? phone?.split(" ")[0] : "N/A"}`);
+      setValue("phnCode_shipping", `${!!phone ? phone?.split(" ")[0] : "N/A"}`);
+      setValue("phnNumber", `${!!phone ? phone?.split(" ")[1] : "N/A"}`);
+      setValue(
+        "phnNumber_shipping",
+        `${!!phone ? phone?.split(" ")[1] : "N/A"}`
+      );
+      setValue("address", `${`${street}` == "false" ? "N/A" : street}`);
+      setValue(
+        "address_shipping",
+        `${`${street}` == "false" ? "N/A" : street}`
+      );
+      setValue("address2", `${`${street2}` == "false" ? "N/A" : street2}`);
+      setValue(
+        "address2_shipping",
+        `${`${street2}` == "false" ? "N/A" : street2}`
+      );
+      setValue("country", `${country_id[0]}`);
+      setValue("country_shipping", `${country_id[0]}`);
+      setValue("city", `${`${city}` == "false" ? "N/A" : city}`);
+      setValue("city_shipping", `${`${city}` == "false" ? "N/A" : city}`);
+      setValue("zip", `${`${zip}` == "false" ? "N/A" : zip}`);
+      setValue("zip_shipping", `${`${zip}` == "false" ? "N/A" : zip}`);
+      setSelectedCountryId(country_id[0]);
+      // setValue('phnCode', {phone_code:phone?.split(' ')[0]})
+      // setSelectedShippingaddressId(getselectedShippingAddressId);
+    } else {
+      // setIsButtonStatusChange(false);
+      // setIsUserLoggedIn(false);
+      // setIsShippedToShippingAddress(true);
+    }
+    // setIsShippedToShippingAddress()
+  };
+  const { data, isLoading } = useAddressList(
+    onSuccesCheckoutAddressList,
+    () => { }
+  );
+  const { data: countryList, isLoading: countryLoader } = useCountryList();
+  const { data: stateList, isLoading: stateLoder } = useStateList(
+    !!selectedCountryId,
+    selectedCountryId
+  );
+  const { mutate: saveAddress, isLoading: saveAddressLoader } =
+    useSaveAddresss();
+  const { mutate: updateShipping, isLoading: updateShippingLoader } =
+    useUpdateShipping();
+
+  const getDefaultCountry = useMemo(() => {
+    let filteredData =
+      countryList && countryList?.length > 0
+        ? countryList?.filter(
+          (_i: any) => _i?.id == data?.billing_address?.country_id[0]
+        )
+        : [];
+    return filteredData;
+  }, [countryList, data]);
+  const getDefaultPhoneCode = useMemo(() => {
+    let filteredData =
+      countryList && countryList?.length > 0
+        ? countryList?.filter(
+          (_i: any) =>
+            _i?.phone_code == data?.billing_address?.phone?.split(" ")[0]
+        )
+        : [];
+    return filteredData;
+  }, [countryList, data]);
+  console.log("getDefaultCountry", getDefaultCountry);
+
   const shippingAddressHandler = (event: SyntheticEvent, checked: boolean) =>
     setIsShippedToShippingAddress(checked);
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setopenmod(!openmod);
-  };
+  }, [openmod])
   const addMoreHandler = (type: string) => {
     setAddressType(type);
     handleClose();
@@ -229,6 +291,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
       address2_shipping
     } = data ?? {};
     const formData: FormData = new FormData();
+    if (!!userPartnerId) {
+      formData.append("partner_id", userPartnerId);
+    }
     if (isShippedToShippingAddress) {
       formData.append("use_same", `${1}`);
       formData.append("first_name", `${firstName}`);
@@ -276,6 +341,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
     }
     saveAddress(formData, {
       onSuccess: (response: any) => {
+        reset();
         queryClient.invalidateQueries(DELIVERY_ADDRESS_LIST);
         console.log("saveAddress response", response?.data?.message);
       },
@@ -311,23 +377,27 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
     });
   }, []);
   useEffect(() => {
-    let getselectedShippingAddressId =
-      data && data?.shipping_address && data?.shipping_address?.length > 0
-        ? data?.shipping_address?.filter((_i: any) => !!_i?.is_selected)[0]?.id
-        : null;
-    if (getselectedShippingAddressId) {
-      const formData: FormData = new FormData();
-      formData.append("partner_id", `${getselectedShippingAddressId}`);
-      updateShipping(formData, {
-        onSuccess: () => {
-          vendorSelectionHandler({
-            status: true,
-            id: getselectedShippingAddressId
-          });
-          queryClient.invalidateQueries(DELIVERY_METHODS_LIST);
-        },
-        onError: () => { }
-      });
+    if (!!data?.is_data_completed) {
+      let getselectedShippingAddressId =
+        data && data?.shipping_address && data?.shipping_address?.length > 0
+          ? data?.shipping_address?.filter((_i: any) => !!_i?.is_selected)[0]
+            ?.id
+          : null;
+      if (getselectedShippingAddressId) {
+        const formData: FormData = new FormData();
+        formData.append("partner_id", `${getselectedShippingAddressId}`);
+        updateShipping(formData, {
+          onSuccess: () => {
+            vendorSelectionHandler({
+              status: true,
+              id: getselectedShippingAddressId
+            });
+            queryClient.invalidateQueries(DELIVERY_METHODS_LIST);
+          },
+          onError: () => { }
+        });
+      }
+    } else {
     }
   }, [data]);
   // useEffect(() => {
@@ -350,12 +420,33 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
   });
 
   const filterPhoneCodes = useMemo(() => {
-    return userGivenPhoneCode == "" || userGivenPhoneCode == undefined
+    return userGivenPhoneCode == "" ||
+      userGivenPhoneCode == undefined ||
+      userGivenPhoneCode == getDefaultPhoneCode[0]?.phone_code
       ? countryList
       : countryList?.filter((_i: any) => _i?.phone_code == userGivenPhoneCode);
   }, [userGivenPhoneCode, countryList]);
 
-  console.log("checkoutAddress=====p", checkoutAddress);
+  const filterPhoneCodesShipping = useMemo(() => {
+    return userGivenPhoneCodeShipping == "" ||
+      userGivenPhoneCodeShipping == undefined ||
+      userGivenPhoneCode == getDefaultPhoneCode[0]?.phone_code
+      ? countryList
+      : countryList?.filter(
+        (_i: any) => _i?.phone_code == userGivenPhoneCodeShipping
+      );
+  }, [userGivenPhoneCodeShipping, countryList]);
+
+  const renderCheckBox = useMemo(
+    () => (
+      <FormControlLabel
+        onChange={shippingAddressHandler}
+        control={<Checkbox checked={isShippedToShippingAddress} />}
+        label="Ship to the same address"
+      />
+    ),
+    [shippingAddressHandler]
+  );
 
   return (
     <CheckOutAddressWrap>
@@ -388,6 +479,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                   placeholder="First name"
                   style3
                   {...register("firstName")}
+                  onKeyDown={(e: any) =>
+                    [' '].includes(e.key) && e.preventDefault()
+                  }
                 />
                 {errors?.firstName && (
                   <div className="profile_error">
@@ -400,6 +494,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                   placeholder="Last name"
                   style3
                   {...register("lastName")}
+                  onKeyDown={(e: any) =>
+                    [' '].includes(e.key) && e.preventDefault()
+                  }
                 />
                 {errors?.lastName && (
                   <div className="profile_error">
@@ -429,6 +526,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                         id="phonecode-select-demo"
                         className="autocomplete_div"
                         sx={{ width: 300 }}
+                        defaultValue={getDefaultPhoneCode[0]}
                         // value={selectedValues?.phnCode}
                         onChange={(event: any, newValue: any | null) => {
                           console.log("country", newValue);
@@ -439,16 +537,14 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                             "phnCode",
                             newValue ? newValue?.phone_code : ""
                           );
-                          //   setSelectedValues({
-                          //     ...selectedValues,
-                          //     phnCode: newValue
-                          //   });
+                          setSelectedValues({
+                            ...selectedValues,
+                            phnCode: newValue
+                          });
                         }}
                         options={filterPhoneCodes ?? []}
-                        // options={countryList ?? []}
                         disabled={countryLoader}
                         autoHighlight
-                        // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
                         getOptionLabel={(option: any) =>
                           ` +${option?.phone_code}`
                         }
@@ -486,7 +582,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                           );
                         }}
                       />
-                      {errors.phnCode && (
+                      {errors.phnCode && !selectedValues.phnCode && (
                         <div className="profile_error">
                           {errors.phnCode.message}
                         </div>
@@ -498,8 +594,12 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
               <Grid item lg={8} md={8} xs={12}>
                 <InputFieldCommon
                   placeholder="Phone number"
+                  type="number"
                   style3
                   {...register("phnNumber")}
+                  onKeyDown={(e: any) =>
+                    exceptThisSymbols.includes(e.key) && e.preventDefault()
+                  }
                 />
                 {errors?.phnNumber && (
                   <div className="profile_error">
@@ -548,6 +648,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                       <Autocomplete
                         id="country-select-demo"
                         className="autocomplete_div"
+                        defaultValue={getDefaultCountry[0]}
                         // sx={{ width: 300 }}
                         // value={selectedValues?.country}
                         filterOptions={filterCountryOptions}
@@ -555,10 +656,10 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                           console.log("country", newValue);
                           setSelectedCountryId(newValue ? newValue?.id : "");
                           setValue("country", newValue ? newValue?.id : "");
-                          //   setSelectedValues({
-                          //     ...selectedValues,
-                          //     country: newValue
-                          //   });
+                          setSelectedValues({
+                            ...selectedValues,
+                            country: newValue
+                          });
                         }}
                         options={countryList ?? []}
                         disabled={countryLoader}
@@ -592,7 +693,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                           />
                         )}
                       />
-                      {errors?.country && (
+                      {errors?.country && !selectedValues.country && (
                         <div className="profile_error">
                           {errors?.country.message}
                         </div>
@@ -614,10 +715,10 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                             console.log("state", newValue);
                             // setSelectedCountryId(newValue ? newValue?.id : "");
                             setValue("state", newValue ? newValue?.id : "");
-                            // setSelectedValues({
-                            //   ...selectedValues,
-                            //   state: newValue
-                            // });
+                            setSelectedValues({
+                              ...selectedValues,
+                              state: newValue
+                            });
                           }}
                           renderInput={(params) => (
                             <TextField
@@ -626,7 +727,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                             />
                           )}
                         />
-                        {errors?.state && (
+                        {errors?.state && !selectedValues.state && (
                           <div className="profile_error">
                             {errors?.state.message}
                           </div>
@@ -673,13 +774,14 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
             </Grid>
             // </form>
           )}
-          {!isLoading && !isUserLoggedIn && (
+          {!isLoading && !isUserLoggedIn && renderCheckBox}
+          {/* {!isLoading && !isUserLoggedIn && (
             <FormControlLabel
               onChange={shippingAddressHandler}
               control={<Checkbox checked={isShippedToShippingAddress} />}
               label="Ship to the same address"
             />
-          )}
+          )} */}
         </Box>
         {/* <FormControlLabel
         // onChange={(e) => checkHandler(e, idx)}
@@ -721,6 +823,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                     placeholder="First name"
                     style3
                     {...register("firstName_shipping")}
+                    onKeyDown={(e: any) =>
+                      [' '].includes(e.key) && e.preventDefault()
+                    }
                   />
                   {errors?.firstName_shipping && (
                     <div className="profile_error">
@@ -733,6 +838,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                     placeholder="Last name"
                     style3
                     {...register("lastName_shipping")}
+                    onKeyDown={(e: any) =>
+                      [' '].includes(e.key) && e.preventDefault()
+                    }
                   />
                   {errors?.lastName_shipping && (
                     <div className="profile_error">
@@ -764,6 +872,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                           id="phonecode-select-demo"
                           className="autocomplete_div"
                           sx={{ width: 300 }}
+                          defaultValue={getDefaultPhoneCode[0]}
                           // value={selectedValues?.phnCode}
                           onChange={(event: any, newValue: any | null) => {
                             console.log("country", newValue);
@@ -774,13 +883,13 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                               "phnCode_shipping",
                               newValue ? newValue?.phone_code : ""
                             );
-                            //   setSelectedValues({
-                            //     ...selectedValues,
-                            //     phnCode: newValue
-                            //   });
+                            setSelectedValues({
+                              ...selectedValues,
+                              phnCode_shipping: newValue
+                            });
                           }}
-                          options={filterPhoneCodes ?? []}
-                          // options={countryList ?? []}
+                          // options={filterPhoneCodes ?? []}
+                          options={filterPhoneCodesShipping ?? []}
                           disabled={countryLoader}
                           autoHighlight
                           // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
@@ -804,7 +913,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                             </Box>
                           )}
                           renderInput={(params) => {
-                            setUserGivenPhoneCode(
+                            setUserGivenPhoneCodeShipping(
                               `${params?.inputProps?.value ?? ""}`
                             );
                             return (
@@ -818,14 +927,15 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                                   // autoComplete: "new-password" // disable autocomplete and autofill
                                 }}
                               />
-                            )
+                            );
                           }}
                         />
-                        {errors.phnCode_shipping && (
-                          <div className="profile_error">
-                            {errors.phnCode_shipping.message}
-                          </div>
-                        )}
+                        {errors.phnCode_shipping &&
+                          !selectedValues.phnCode_shipping && (
+                            <div className="profile_error">
+                              {errors.phnCode_shipping.message}
+                            </div>
+                          )}
                       </Box>
                     </div>
                   </Box>
@@ -833,8 +943,12 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                 <Grid item lg={8} md={8} xs={12}>
                   <InputFieldCommon
                     placeholder="Phone number"
+                    type="number"
                     style3
                     {...register("phnNumber_shipping")}
+                    onKeyDown={(e: any) =>
+                      exceptThisSymbols.includes(e.key) && e.preventDefault()
+                    }
                   />
                   {errors?.phnNumber_shipping && (
                     <div className="profile_error">
@@ -883,6 +997,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                         <Autocomplete
                           id="country-select-demo"
                           className="autocomplete_div"
+                          defaultValue={getDefaultCountry[0]}
                           // sx={{ width: 300 }}
                           // value={selectedValues?.country}
                           filterOptions={filterCountryOptions}
@@ -893,10 +1008,10 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                               "country_shipping",
                               newValue ? newValue?.id : ""
                             );
-                            //   setSelectedValues({
-                            //     ...selectedValues,
-                            //     country: newValue
-                            //   });
+                            setSelectedValues({
+                              ...selectedValues,
+                              country_shipping: newValue
+                            });
                           }}
                           options={countryList ?? []}
                           disabled={countryLoader}
@@ -930,11 +1045,12 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                             />
                           )}
                         />
-                        {errors?.country_shipping && (
-                          <div className="profile_error">
-                            {errors?.country_shipping?.message}
-                          </div>
-                        )}
+                        {errors?.country_shipping &&
+                          !selectedValues.country_shipping && (
+                            <div className="profile_error">
+                              {errors?.country_shipping?.message}
+                            </div>
+                          )}
                       </Box>
                       {stateList && stateList.length > 0 && (
                         <Box className="form_group_inner">
@@ -955,10 +1071,10 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                                 "state_shipping",
                                 newValue ? newValue?.id : ""
                               );
-                              // setSelectedValues({
-                              //   ...selectedValues,
-                              //   state: newValue
-                              // });
+                              setSelectedValues({
+                                ...selectedValues,
+                                state_shipping: newValue
+                              });
                             }}
                             renderInput={(params) => (
                               <TextField
@@ -967,11 +1083,12 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                               />
                             )}
                           />
-                          {errors?.state_shipping && (
-                            <div className="profile_error">
-                              {errors?.state_shipping?.message}
-                            </div>
-                          )}
+                          {errors?.state_shipping &&
+                            !selectedValues.state_shipping && (
+                              <div className="profile_error">
+                                {errors?.state_shipping?.message}
+                              </div>
+                            )}
                         </Box>
                       )}
                     </div>
@@ -1063,4 +1180,4 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
   );
 };
 
-export default CheckoutAddress;
+export default memo(CheckoutAddress);

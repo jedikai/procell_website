@@ -9,6 +9,16 @@ const CustomButtonWrapper = styled(Button)`
   min-width: 194px;
   justify-content: center;
   align-items: center;
+  &.MuiButton-outlined{
+    &:hover{
+      p{
+        color: ${primaryColors.white};
+      }
+    }
+  }
+
+  
+  
   @media (max-width: 599px) {
     padding: 12px 32px;
   }
@@ -65,9 +75,8 @@ const CustomButtonPrimary = ({
 }: CustomButtonprops) => {
   return (
     <CustomButtonWrapper
-      className={`${buttonType === "small" && "smallButton"} ${
-        className || ""
-      }`}
+      className={`${buttonType === "small" && "smallButton"} ${className || ""
+        }`}
       {...others}
     >
       {children}

@@ -36,7 +36,7 @@ export const GetHelpswrapper = styled(Box)`
   .small_pink_leaf {
     position: absolute;
     left: 38%;
-    top: 34%;
+    top: 250px;
     pointer-events: none;
     z-index: 4;
     max-width: 30px;

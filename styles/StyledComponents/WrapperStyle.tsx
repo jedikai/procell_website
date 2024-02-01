@@ -6,6 +6,9 @@ export const WrapperStyle = styled(Box)`
   .main_body {
     min-height: calc(100vh - 96px);
   }
+  .body_content {
+    min-height: calc(100vh - 430px);
+  }
   strong,
   b {
     font-weight: 700;
@@ -152,7 +155,7 @@ export const WrapperStyle = styled(Box)`
   button:hover,
   input[type="button"]:hover,
   input[type="submit"]:hover {
-    background-color: #51bff0;
+    background: #51bff0;
     color: #ffffff;
     outline: none;
     text-decoration: none;
@@ -224,7 +227,7 @@ export const WrapperStyle = styled(Box)`
       width: 100%;
       background: var(--white);
       border: 1px solid var(--colorEBEBEB);
-      
+
       padding: 21.5px 28px;
       font-size: 16px;
 

@@ -10,7 +10,15 @@ import Wrapper from "@/layout/wrapper/Wrapper";
 import { OrderconfirmWrapper } from "@/styles/StyledComponents/OrderconfirmWrapper";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import SpinnerLoaderIcon from "@/ui/Icons/SpinnerLoaderIcon";
-import { Backdrop, Box, List, ListItem, Typography } from "@mui/material";
+import {
+  Alert,
+  AlertColor,
+  Backdrop,
+  Box,
+  List,
+  ListItem,
+  Typography
+} from "@mui/material";
 import Container from "@mui/system/Container/Container";
 import Image from "next/image";
 import { useRouter } from "next/router";
@@ -23,6 +31,7 @@ function Index() {
     (state) => state.userProfileImgSlice
   );
   const [enable, setEnable] = useState(false);
+  const [severity, setSeverity] = useState<AlertColor | undefined>(undefined);
   const [orderItemList, setOrderItemList] = useState([]);
   const [orderPrices, setOrderPrices] = useState({
     name: "",
@@ -41,8 +50,12 @@ function Index() {
         amount_tax,
         amount_untaxed,
         amount_delivery,
-        order_line
-      }: any = response && response?.length > 0 ? response[0] : {};
+        order_line,
+        message_color
+      }: any =
+        response && response?.data && response?.data?.length > 0
+          ? response?.data[0]
+          : {};
       setOrderItemList(order_line && order_line?.length > 0 ? order_line : []);
       setOrderPrices({
         name: `${name}`,
@@ -52,6 +65,8 @@ function Index() {
         amount_delivery: `${amount_delivery}`
       });
       setEnable(false);
+      setSeverity(message_color ?? '');
+
     },
     (error: any) => {
       let redirectionLink = error?.response?.data?.data?.redirect ?? "";
@@ -69,7 +84,7 @@ function Index() {
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={isLoading}
-          // onClick={handleClose}
+        // onClick={handleClose}
         >
           <div style={{ display: "flex", flexDirection: "column" }}>
             <SpinnerLoaderIcon width={150} height={150} fill="#56cfff" />
@@ -110,6 +125,7 @@ function Index() {
               sollicitudin nullam morbi nec eleifend. Dignissim ornare eget
               tortor lectus varius ultricies habitasse in ipsum. Erat cras.
             </Typography>
+
             {orderPrices?.name && (
               <Box className="orderdetailsStatusWrap">
                 <Typography variant="body1">
@@ -122,6 +138,18 @@ function Index() {
             )}
           </Box>
           <Box className="confirmProductDetials">
+            {data && data?.message && !!severity && (
+              <Alert
+                // variant="filled"
+                severity={severity}
+                style={{ marginBottom: "10px" }}
+              >
+                <Typography
+                  variant="body1"
+                  dangerouslySetInnerHTML={{ __html: data?.message ?? "" }}
+                />
+              </Alert>
+            )}
             <Image
               className="pinkWingGradinet"
               src={assest.pinkWindGradinet}
