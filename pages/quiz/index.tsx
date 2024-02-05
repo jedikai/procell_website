@@ -31,14 +31,14 @@ export default function Index() {
             <Typography variant="h5">Question 1 of 11</Typography>
             <Typography variant="h4">
               What is the difference between Traditional MicroNeedling and
-              ProCell MicroChanneling?
+              Procell MicroChanneling?
             </Typography>
             <Box className="answer_block">
               <Typography>Choose only ONE best answer.</Typography>
               <EachLinearComponent>
                 <Box className="wrapper">
                   <Typography>
-                    ProCell Microchanneling is a style of collagen rejuvenation
+                    Procell Microchanneling is a style of collagen rejuvenation
                     in which the "micro-injuries" are created by "stamping" in a
                     vertical fashion to create vertical micro-channels instead
                     of dragging or gliding across the skin like in traditional

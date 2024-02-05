@@ -52,7 +52,17 @@ export default memo(function AddedEntryCard({
   };
   return (
     <AddedEntryCardWrapper className="added_entry_card">
-      <Box className="image_box">
+      <Box
+        className="image_box"
+        style={{ cursor: "pointer" }}
+        onClick={() =>
+          openEntry({
+            id,
+            date,
+            images
+          })
+        }
+      >
         {images && images?.length >= 2 ? (
           <>
             <img
@@ -79,7 +89,7 @@ export default memo(function AddedEntryCard({
             />
           </>
         )}
-        <Box className="eidt_delete">
+        {/* <Box className="eidt_delete">
           <Button
             type="button"
             className="view_btn"
@@ -96,7 +106,7 @@ export default memo(function AddedEntryCard({
           <Button type="button" onClick={deleteEntryHandler}>
             <DeleteIcon IconColor="red" />
           </Button>
-        </Box>
+        </Box> */}
       </Box>
       <Stack
         direction="row"
@@ -117,4 +127,4 @@ export default memo(function AddedEntryCard({
       </Stack>
     </AddedEntryCardWrapper>
   );
-})
+});

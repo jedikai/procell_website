@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import { Container } from "@mui/system";
 import { formatNumber } from "common/functions/formatNumbers";
 import Image from "next/image";
-import { useState } from "react";
+import { memo, useState } from "react";
 
 export function StoryCard({ content, number, title }: StoryCardList) {
   return (
@@ -27,7 +27,7 @@ export function StoryCard({ content, number, title }: StoryCardList) {
   );
 }
 
-export default function StorySec({
+export default memo(function StorySec({
   image,
   title,
   children
@@ -124,4 +124,4 @@ StorySecProps) {
       </Container>
     </StoryWrapper>
   );
-}
+})

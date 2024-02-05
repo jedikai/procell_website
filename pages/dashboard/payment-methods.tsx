@@ -104,7 +104,8 @@ function PaymentMethods() {
     const {
       encrypted_authorize_login,
       encrypted_authorize_client_key,
-      id
+      id,
+      state
     }: any = providers && providers?.length > 0 ? providers[0] : {};
     setAuthorizedData({
       apiLoginID:
@@ -117,7 +118,8 @@ function PaymentMethods() {
           encrypted_authorize_client_key,
           process.env.NEXT_AUTHORIZATION_CRYPTO_SECRET_KEY ?? ""
         ) ?? "",
-      id: id
+      id: id,
+      state: state
     });
     setSavedCards(tokens && tokens?.length > 0 ? tokens : []);
     setPaymentTransactionInfo({
@@ -281,7 +283,7 @@ function PaymentMethods() {
               toastSuccess(response?.data?.message ?? "Card saved.");
               setCardSaveLoader(false);
               // clearInputs.current = true;
-              setClearInputs(true)
+              setClearInputs(true);
             },
             onError: (error: any) => {
               console.log("authorizePayment onError", error);

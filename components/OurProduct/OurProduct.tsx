@@ -12,6 +12,7 @@ import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import OurProductSlider from "../OurProductSlider/OurProductSlider";
 import { useFeaturedProductList } from "@/hooks/react-qurey/query-hooks/productQuery.hooks";
+import { memo } from "react";
 
 function OurProduct({
   producttitle,
@@ -91,4 +92,4 @@ function OurProduct({
   );
 }
 
-export default OurProduct;
+export default memo(OurProduct);

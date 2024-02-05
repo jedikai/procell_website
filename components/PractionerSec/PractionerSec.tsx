@@ -4,7 +4,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable import/order */
 /* eslint-disable mui-path-imports/mui-path-imports */
-import { practionerData } from "@/json/mock/trainingData.mock";
 import Container from "@mui/material/Container";
 import React, { memo, useMemo, useState } from "react";
 import CommonAccordion from "../CommonAccordion/CommonAccordion";
@@ -22,17 +21,17 @@ import {
 import {
   AccordionEachRowTypes,
   CircularProgressProps,
-  chekboxProps,
   showDataProps
 } from "@/interface/traningAcademy.interface";
 import { PractionerSecWrapper } from "@/styles/StyledComponents/PractionerWrapper";
 import DefaultAccordionIcon from "@/ui/Icons/DefaultAccordionIcon";
+import DownloadIcon from "@/ui/Icons/DownloadIcon";
+import PdfIconNew from "@/ui/Icons/PdfIconNew";
 import TickIconAccordion from "@/ui/Icons/TickIconAccordion";
+import YoutubeIconPurple from "@/ui/Icons/YoutubeIconPurple";
+import { useRouter } from "next/router";
 import CircularProgressBar from "../CircularProgressBar/CircularProgressBar";
 import TrainingButton from "../TrainingButton/TrainingButton";
-import YoutubeIconPurple from "@/ui/Icons/YoutubeIconPurple";
-import DownloadIcon from "@/ui/Icons/DownloadIcon";
-import { useRouter } from "next/router";
 
 const AccordionEachItemProgress = ({
   image,
@@ -71,9 +70,9 @@ const ShowData = ({
   );
 };
 
-const AccordionEachRow = (props: AccordionEachRowTypes) => {
+const AccordionEachRow = (props: any) => {
   const router = useRouter();
-  const { index, handleChange, expanded, data } = props;
+  const { index, handleChange, expanded, data, allModule } = props;
   const { id, name, description, full_image_url, completed, content }: any =
     data ?? {};
   const [checkNumber, setCheckNumber] = useState(0);
@@ -93,7 +92,7 @@ const AccordionEachRow = (props: AccordionEachRowTypes) => {
         <TrainingButton startIcon={<YoutubeIconPurple />} content="Video" />
       );
     } else if (type == "pdf") {
-      return <TrainingButton startIcon={<DownloadIcon />} content="PDF" />;
+      return <TrainingButton startIcon={<PdfIconNew />} content="PDF" />;
     } else if (type == "text") {
       return <TrainingButton startIcon={<DownloadIcon />} content="Text" />;
     } else {
@@ -113,6 +112,33 @@ const AccordionEachRow = (props: AccordionEachRowTypes) => {
   // const completePercentage = useMemo(() => {
   //   return Math.round((checkNumber / data.checkboxList.length) * 100 * 10) / 10;
   // }, [checkNumber, data.checkboxList.length]);
+  const moduleOpenHandler = (
+    _moduleArray: any,
+    _module: any,
+    index: number,
+    contentIndex: number
+  ) => {
+    if (index == 0) {
+      if (contentIndex == 0) {
+        return false;
+      } else {
+        return !_module[contentIndex - 1]?.is_completed;
+      }
+    } else {
+      const prevModuleIsCompleted = !_moduleArray[index - 1]?.content
+        ?.map((_m: any) => _m?.is_completed)
+        ?.includes(false);
+      if (prevModuleIsCompleted) {
+        return false;
+      } else {
+        if (contentIndex == 0) {
+          return false;
+        } else {
+          return !_module[contentIndex - 1]?.is_completed;
+        }
+      }
+    }
+  };
 
   return (
     <CommonAccordion
@@ -143,16 +169,24 @@ const AccordionEachRow = (props: AccordionEachRowTypes) => {
         <List disablePadding>
           {!!content &&
             content?.length > 0 &&
-            content?.map((item: any, index: number) => (
+            content?.map((item: any, content_index: number) => (
               <ListItem
-                key={index + 1}
+                key={content_index + 1}
                 disablePadding
                 onClick={() => {
-                  if (!!content[index == 0 ? 0 : index - 1]?.is_completed) {
-                    router.push(
-                      `/academy/${router?.query?.slug}/${item?.id ?? ""}`
-                    );
+                  console.log(
+                    "moduleOpenHandler",
+                    moduleOpenHandler(allModule, data, index, content_index)
+                  );
+
+                  if (
+                    moduleOpenHandler(allModule, data, index, content_index)
+                  ) {
+                    return false;
                   }
+                  router.push(
+                    `/academy/${router?.query?.slug}/${item?.id ?? ""}`
+                  );
                 }}
               >
                 <FormControlLabel
@@ -193,6 +227,7 @@ export default memo(function PractionerSec({ academyContentData }: any) {
               handleChange={handleChanges}
               index={index}
               data={data}
+              allModule={academyContentData}
               key={index + 1}
             />
           ))}

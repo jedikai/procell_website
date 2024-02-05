@@ -1,4 +1,4 @@
-import React, { memo, useState } from "react";
+import { memo, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 // import workerSrc from "pdfjs-dist/build/pdf.worker.entry";
 import { Box, CircularProgress } from "@mui/material";
@@ -16,6 +16,7 @@ const PdfViewer = ({ pdfUrl }: any) => {
   return (
     <>
       <div
+        className="pdf_outer_scrollable"
         style={{
           margin: "auto",
           width: "100%",

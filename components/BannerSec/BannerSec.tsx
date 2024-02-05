@@ -12,9 +12,9 @@ import WhiteArrowIcon from "@/ui/Icons/WhiteArrowIcon";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { memo, useState } from "react";
 
-export default function BannerSec() {
+export default memo(function BannerSec() {
   const router = useRouter();
   const [muted, setMuted] = useState(true);
   const handleToggleMute = () => setMuted((current) => !current);
@@ -82,4 +82,4 @@ export default function BannerSec() {
       </Box>
     </BannerWrapper>
   );
-}
+})

@@ -34,7 +34,7 @@ const ClientsList = ({
               handleChangeState("add_customer");
             }}
           >
-            Add Customer
+            Add Client
           </CustomButtonPrimary>
         </Box>
         <Stack direction="row" flexWrap="wrap" className="client_list">

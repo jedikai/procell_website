@@ -24,13 +24,14 @@ type BasicCardInfo = {
 };
 
 const AuthorizedNet = ({
-  getToken = () => { },
+  getToken = () => {},
   authorizedData = {},
   buttonloading = false,
   clearInputs = false
 }: any) => {
   const exceptThisSymbols = ["e", "E", "+", "-", "."];
   const { AuthorizedNetCred } = useAppSelector((s) => s.userProfileImgSlice);
+  const { toastSuccess, toastError } = useNotiStack();
   // const authData = {
   //   apiLoginID: AuthorizedNetCred?.login_id ?? '7V22xWuL',
   //   clientKey: AuthorizedNetCred?.client_key ?? '4S5Pw37LKgmHY4WpTs2G3xT2swRN25qMY34cbsfMQZqCg6q822c7GERfn3RaW4Bd'
@@ -39,7 +40,10 @@ const AuthorizedNet = ({
     apiLoginID: authorizedData?.apiLoginID,
     clientKey: authorizedData?.clientKey
   };
-  const { dispatchData, loading, error } = useAcceptJs({ authData });
+  const { dispatchData, loading, error } = useAcceptJs({
+    authData,
+    environment: authorizedData?.state == "enabled" ? "PRODUCTION" : "SANDBOX"
+  });
   const [cardData, setCardData] = React.useState<BasicCardInfo>({
     cardZipCode: "",
     cardNumber: "",
@@ -83,7 +87,7 @@ const AuthorizedNet = ({
         name: authData?.apiLoginID
         // transactionKey: "635FzCZUhfpS9927"
       });
-      console.log("Received response:", cardData);
+      console.log("Received response:", cardData, response);
       setVerificationLoader(false);
       setVerificationError({
         cardNumber: "",
@@ -114,6 +118,7 @@ const AuthorizedNet = ({
         } else if (code == "E_WC_15") {
           errMsgs = { ...errMsgs, cardCode: text };
         }
+        toastError(text);
       });
       // console.log("errMsgs", errMsgs, errorList,);
       setVerificationError(errMsgs);

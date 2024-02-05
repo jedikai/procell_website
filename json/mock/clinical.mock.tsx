@@ -6,7 +6,7 @@ export const clinicalData = [
         userName:"-Mitchell Schwartz, MD",
     },
     {
-        title:"The Emotional and Functional Benefits of ProCell Microchanneling and Concomitant Topical Application of a Proprietary Growth Factor Topical Serum",
+        title:"The Emotional and Functional Benefits of Procell Microchanneling and Concomitant Topical Application of a Proprietary Growth Factor Topical Serum",
         companyName:"by Richard G. Fried, MD, PhD et al, Yardley Clinical Research Associates",
         paragraph:"This study showed both the emotional and functional benefits of the Procell microchanneling system. There was improvement in the objective clinical status of individuals with acne scarring and rhytids. The subjects in this study reported satisfaction with the serums and optimism regarding ongoing improvement. They reported feeling more optimistic, more amorous, exercising more, being more social, and more likely to go out. These improvements in their appearance made the subjects feel more empowered to seek healthful activities and human contact, ultimately improving quality of life. ",
         userName:"-Mitchell Schwartz, MD",

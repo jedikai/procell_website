@@ -21,10 +21,17 @@ import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import TreatmentSecUpper from "../TreatmentSecUpper/TreatmentSecUpper";
 import TipIcon from "@/ui/Icons/TipIcon";
+import { memo, useState } from "react";
+import getGDriveImgLinkToPreview from "common/functions/googleImageLinkTransformer";
 
-export default function TreatmentSec() {
+export default memo(function TreatmentSec() {
+  const [sliderIndex, setSliderIndex] = useState(0);
   const { data } = useImageCompressionData();
   console.log("daaaaaaaata", data);
+  const handleSwipe = (data: number) => {
+    setSliderIndex(data);
+    console.log("show me data of rs", data);
+  };
   const settings = {
     dots: false,
     infinite: true,
@@ -35,8 +42,10 @@ export default function TreatmentSec() {
     slidesToScroll: 1,
     draggable: false,
     swipeToSlide: false,
-    touchMove: false
+    touchMove: false,
+    afterChange: handleSwipe
   };
+
   return (
     <TreatMentSecWrapper className="cmn_gap">
       <Image
@@ -78,8 +87,12 @@ export default function TreatmentSec() {
                     <ReactCompareSlider
                       itemOne={
                         <ReactCompareSliderImage
-                          src={_i?.before_image_url ?? ""}
-                          srcSet={_i?.before_image_url ?? ""}
+                          src={getGDriveImgLinkToPreview(
+                            _i?.before_image_url ?? ""
+                          )}
+                          srcSet={getGDriveImgLinkToPreview(
+                            _i?.before_image_url ?? ""
+                          )}
                           // src={assest?.black_img}
                           // srcSet={assest?.black_img}
                           alt="Image one"
@@ -87,8 +100,12 @@ export default function TreatmentSec() {
                       }
                       itemTwo={
                         <ReactCompareSliderImage
-                          src={_i?.after_image_url ?? ""}
-                          srcSet={_i?.after_image_url ?? ""}
+                          src={getGDriveImgLinkToPreview(
+                            _i?.after_image_url ?? ""
+                          )}
+                          srcSet={getGDriveImgLinkToPreview(
+                            _i?.after_image_url ?? ""
+                          )}
                           // src={assest?.glow_img}
                           // srcSet={assest?.glow_img}
                           alt="Image two"
@@ -99,7 +116,7 @@ export default function TreatmentSec() {
                     <Chip label="After" className="after_btn" />
                   </Box>
 
-                  <Stack direction="row" className="compare_btm">
+                  {/* <Stack direction="row" className="compare_btm">
                     <Box className="stack_lft">
                       <Typography>
                         Procell Microchanneling treatments enhance cellular
@@ -139,12 +156,58 @@ export default function TreatmentSec() {
                         )}
                       </List>
                     </Box>
-                  </Stack>
+                  </Stack> */}
                 </Box>
               ))}
           </Slider>
+          {data && data?.length > 0 && (
+            <Stack direction="row" className="compare_btm">
+              <Box className="stack_lft">
+                {data && !!data[sliderIndex] && (
+                  <Typography>
+                    {data[sliderIndex]?.desc
+                      ? data[sliderIndex]?.desc
+                      : `Procell Microchanneling treatments enhance cellular activity
+                    by creating hundreds of thousands of microchannels. Each
+                    micro-injury prompts an inflammatory response, initiating
+                    collagen formation. Over time, this repeated healing process
+                    significantly improves skin texture and overall appearance,
+                    rejuvenating the skin effectively.`}
+                  </Typography>
+                )}
+              </Box>
+              <Box className="stack_rgt">
+                <List disablePadding>
+                  {!!data[sliderIndex]?.no_of_treatments && (
+                    <ListItem disablePadding>
+                      <GirlIcon />
+                      <Typography variant="body1">
+                        {data[sliderIndex]?.no_of_treatments}
+                      </Typography>
+                    </ListItem>
+                  )}
+                  {!!data[sliderIndex]?.serum_used && (
+                    <ListItem disablePadding>
+                      <DropIcon />
+                      <Typography variant="body1">
+                        {data[sliderIndex]?.serum_used}
+                      </Typography>
+                    </ListItem>
+                  )}
+                  {!!data[sliderIndex]?.tip_size && (
+                    <ListItem disablePadding>
+                      <TipIcon />
+                      <Typography variant="body1">
+                        {data[sliderIndex]?.tip_size}
+                      </Typography>
+                    </ListItem>
+                  )}
+                </List>
+              </Box>
+            </Stack>
+          )}
         </Box>
       </Container>
     </TreatMentSecWrapper>
   );
-}
+});

@@ -139,5 +139,9 @@ export default {
   res_img5: "/assets/images/res_img5.png",
   res_img6: "/assets/images/res_img6.png",
   res_img7: "/assets/images/res_img7.png",
-  res_img8: "/assets/images/res_img8.png"
+  res_img8: "/assets/images/res_img8.png",
+  addClientImg: "/assets/images/addClientImg.png",
+  addClientImgNew: "/assets/images/add_clientImgUpld.png",
+  addClientIcon: "/assets/images/addClientIcon.svg",
+  AllClientIcon: "/assets/images/allClientIcon.svg"
 };

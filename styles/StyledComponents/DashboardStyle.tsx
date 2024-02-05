@@ -4,6 +4,9 @@ import styled from "@emotion/styled";
 import Box from "@mui/material/Box";
 
 export const DashboardStyle = styled(Box)`
+  .stage_secondary {
+    margin: 0;
+  }
   .dashboard_stack {
     padding: 70px 0 100px;
     @media (max-width: 1199px) {
@@ -13,9 +16,7 @@ export const DashboardStyle = styled(Box)`
       padding: 40px 0;
     }
     position: relative;
-   
-  
-    
+
     &::before {
       content: "";
       position: absolute;
@@ -54,7 +55,7 @@ export const DashboardStyle = styled(Box)`
     box-shadow: 0px 12px 37px -2px rgba(0, 0, 0, 0.1);
     /* min-height: 100%; */
     @media (max-width: 599px) {
-      padding:20px 16px;
+      padding: 20px 16px;
     }
   }
   .menu_btn {

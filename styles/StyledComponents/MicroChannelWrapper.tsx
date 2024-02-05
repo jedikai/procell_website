@@ -37,6 +37,14 @@ export const MicroChannelWrapper = styled(Box)`
         height: 100%;
         object-fit: cover;
       }
+      iframe {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
       .play_btn {
         position: absolute;
         left: 50%;

@@ -35,6 +35,7 @@ export const endpoints = {
     contact_rep: "web/get_salesperson",
     clinical_study: "web/clinical_study",
     faq_list: "web/faqs",
+    my_order_list: "web/portal/orders/page",
     story_section_data: "web/homepage_details",
     treatment_video_data: "web/video_urls",
     image_comparision_data: "web/img_comparison",

@@ -753,18 +753,20 @@ export default function ManageAdress() {
                                     IconHeight="18"
                                   />
                                 </Button>
-                                <Button
-                                  type="button"
-                                  onClick={() => {
-                                    getSelectedAddressId(`${data?.id ?? ""}`);
-                                    modalOpenHandler();
-                                  }}
-                                >
-                                  <DeleteIconTwo
-                                    IconWidth="13"
-                                    IconHeight="15"
-                                  />
-                                </Button>
+                                {!data?.is_selected && (
+                                  <Button
+                                    type="button"
+                                    onClick={() => {
+                                      getSelectedAddressId(`${data?.id ?? ""}`);
+                                      modalOpenHandler();
+                                    }}
+                                  >
+                                    <DeleteIconTwo
+                                      IconWidth="13"
+                                      IconHeight="15"
+                                    />
+                                  </Button>
+                                )}
                               </Box>
                               <Box className="address_btm_block">
                                 <Typography

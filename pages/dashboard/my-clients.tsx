@@ -70,14 +70,22 @@ export default function Index() {
     data: clientsList,
     isLoading: clientListLoader,
     refetch
-  }: any = useMyClientsListList((response: any) => {
+  }: any = useMyClientsListList(false, (response: any) => {
     // if (!(Object.keys(selectedClientData).length > 0)) {
-    setSelectedClientData(response[0]);
-    setSelectedClientId(response[0]?.id);
+    
+    if (
+      !!selectedClientId &&
+      !!selectedClientData &&
+      !!Object.keys(selectedClientData ?? {})?.length
+    ) {
+    } else {
+      setSelectedClientData(response[0]);
+      setSelectedClientId(response[0]?.id);
+    }
     // }
   });
   const { data: clientsEntries, isLoading: clientEntriesLoader }: any =
-    useClientEntries(selectedClientData?.id);
+    useClientEntries(selectedClientId);
 
   const handleDeleteEntry = useCallback(
     (data: any) => {
@@ -87,13 +95,6 @@ export default function Index() {
     },
     [selectedEntryData, profileState]
   );
-  // const handleCloseNewEntryModal = () => {
-  //   setOpenNewEntryModal(false);
-  // };
-
-  // const handleOpenNewEntryModal = useCallback(() => {
-  //   setOpenNewEntryModal(true);
-  // }, [openNewEntryModal]);
 
   const handleChangeState = useCallback(
     (nextState: string) => {
@@ -101,13 +102,6 @@ export default function Index() {
     },
     [profileState]
   );
-
-  // const clientProfileUpdateDecider = useCallback(
-  //   (data: boolean) => {
-  //     setIsProfileUpadte(data);
-  //   },
-  //   [isProfileUpadte]
-  // );
 
   const getSelectedClientData = useCallback(
     (data: any) => {
@@ -123,22 +117,6 @@ export default function Index() {
     },
     [selectedClientId]
   );
-
-  // const addUpdateClientsDataHandler = useMemo(() => {
-  //   if (!!isProfileUpadte) {
-  //     return {
-  //       status: "update",
-  //       data: {
-  //         ...selectedClientData,
-  //         profile_image_url: !!selectedClientData?.profile_image_url
-  //           ? selectedClientData?.profile_image_url
-  //           : "/assets/images/no-image.png"
-  //       }
-  //     };
-  //   } else {
-  //     return { status: "add" };
-  //   }
-  // }, [isProfileUpadte, profileState, selectedClientData]);
 
   useEffect(() => {
     refetch();
@@ -163,9 +141,10 @@ export default function Index() {
                     clientsEntries={clientsEntries}
                     getSelectedClientId={getSelectedClientId}
                     clientId={selectedClientId}
+                    fetchClientList={refetch}
                   />
                 ) : (
-                  <ButtonLoaderSecondary/>
+                  <ButtonLoaderSecondary />
                 )}
               </>
             ) : profileState === "add_customer" ? (
@@ -173,6 +152,7 @@ export default function Index() {
                 handleChangeState={handleChangeState}
                 getSelectedClientData={getSelectedClientData}
                 fetchClientList={refetch}
+                getSelectedClientId={getSelectedClientId}
                 // clientProfileUpdateDecider={clientProfileUpdateDecider}
                 // addUpdateClientsDataHandler={addUpdateClientsDataHandler}
                 clientId={selectedClientData?.id}

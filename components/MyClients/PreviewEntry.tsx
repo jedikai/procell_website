@@ -29,6 +29,7 @@ import useNotiStack from "@/hooks/useNotistack";
 import ButtonLoaderSecondary from "../ButtonLoader/ButtonLoaderSecondary";
 import ButtonLoader from "../ButtonLoader/ButtonLoader";
 import DeleteEntryConfirmModal from "./DeleteEntryConfirmModal";
+import DeleteImageWarningModal from "./DeleteImageWarningModal";
 
 const PreviewEntry = ({ entryData, handleChangeState, close }: any) => {
   const queryClient = useQueryClient();
@@ -39,6 +40,7 @@ const PreviewEntry = ({ entryData, handleChangeState, close }: any) => {
   const [updatedDate, setUpdatedDate] = useState<any>(null);
   const [selectedImage, setSelectedImage] = useState<any>({});
   const [open, setOpen] = useState(false);
+  const [imgModalOpen, setimgModalOpen] = useState(false);
 
   const {
     data: entryDetails,
@@ -55,6 +57,7 @@ const PreviewEntry = ({ entryData, handleChangeState, close }: any) => {
     useUpdateEntry();
 
   const modalHandler = useCallback(() => setOpen(!open), [open]);
+  const imgModalHandler = useCallback(() => setimgModalOpen(!imgModalOpen), [imgModalOpen]);
   const handleShowImage = (data: any) => {
     setShowImage(!showImage);
     setSelectedImage(data);
@@ -83,6 +86,7 @@ const PreviewEntry = ({ entryData, handleChangeState, close }: any) => {
         toastSuccess(response?.data?.message ?? "Customer image deleted.");
         setEditDate(false);
         setShowImage(false);
+        imgModalHandler()
         // handleChangeState("customer_profile");
         // close();
       },
@@ -157,7 +161,7 @@ const PreviewEntry = ({ entryData, handleChangeState, close }: any) => {
                 <BackArrowIcon />
               </Button>
               {!deleteImageLoader ? (
-                <Button type="button" onClick={deleteImageHandler}>
+                <Button type="button" onClick={imgModalHandler}>
                   <DeleteIcon />
                 </Button>
               ) : (
@@ -316,6 +320,11 @@ const PreviewEntry = ({ entryData, handleChangeState, close }: any) => {
         close={modalHandler}
         deleteEntry={deleteEntryHandler}
         type={"entry"}
+      />
+      <DeleteImageWarningModal
+        open={imgModalOpen}
+        close={imgModalHandler}
+        deleteEntry={deleteImageHandler}
       />
     </>
   );

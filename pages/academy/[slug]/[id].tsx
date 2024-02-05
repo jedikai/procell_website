@@ -14,11 +14,8 @@ import Wrapper from "@/layout/wrapper/Wrapper";
 import { MicroChannelWrapper } from "@/styles/StyledComponents/MicroChannelWrapper";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { Container } from "@mui/system";
-import axios from "axios";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "react-query";
@@ -141,9 +138,27 @@ const ContentDetails = () => {
   }, [router]);
   console.log(
     "router=====================================================>",
-    pdf_content_url
+    video_content
   );
+  const videoLinkChecker = useMemo(() => {
+    if (
+      !!video_content &&
+      typeof video_content == "string" &&
+      video_content?.includes("www.youtube.com")
+    ) {
+      const videoIdMatch = video_content.match(
+        /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+      );
 
+      // Check if a match is found
+      const videoId = videoIdMatch ? videoIdMatch[1] : "";
+
+      // Construct the embed URL
+      return `https://www.youtube.com/embed/${videoId}`;
+    } else {
+      return video_content;
+    }
+  }, [video_content]);
   return (
     <Wrapper>
       {pageLoader ? (
@@ -167,7 +182,7 @@ const ContentDetails = () => {
                 {!!video_content && (
                   <Box className="video_sec">
                     <Box className="video_sec_inner">
-                      <video
+                      {/* <video
                         width="auto"
                         height="auto"
                         loop
@@ -176,10 +191,13 @@ const ContentDetails = () => {
                         poster={assest.videoposter}
                         ref={videoRef as any}
                       >
-                        <source src={video_content} type="video/mp4" />
-                      </video>
+                        <source
+                          src={"https://www.youtube.com/embed/imZQKFcbGPk"}
+                          type="video/mp4"
+                        />
+                      </video> */}
 
-                      {play ? (
+                      {/* {play ? (
                         <Button
                           type="button"
                           className="play_btn pause_btn"
@@ -205,6 +223,16 @@ const ContentDetails = () => {
                             height={48}
                           />
                         </Button>
+                      )} */}
+                      {!!videoLinkChecker && (
+                        <iframe
+                          width="100%"
+                          height="100%"
+                          src={videoLinkChecker}
+                          title="YouTube Video"
+                          frameBorder="0"
+                          allowFullScreen
+                        ></iframe>
                       )}
                     </Box>
                   </Box>

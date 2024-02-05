@@ -40,7 +40,12 @@ export default memo(function AddImageInput({
           fetchEntryDetails();
         },
         onError: (error: any) => {
-          toastError("Something went wrong, please try again later.");
+          console.log("error", error.message);
+
+          toastError(
+            error?. response?.data?.message ??
+              "Something went wrong, please try again later."
+          );
         }
       });
     }

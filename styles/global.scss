@@ -1334,3 +1334,35 @@ body {
 .cursor_pointer {
   cursor: pointer;
 }
+
+.react-pdf__Document {
+  .react-pdf__Page__canvas {
+    margin: 0 auto;
+  }
+}
+
+.pdf_outer_scrollable {
+  &::-webkit-scrollbar {
+    width: 6px;
+    background: #f9f9f9;
+    border-radius: 44px;
+  }
+
+  &::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 0px rgba(0, 0, 0, 0);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    width: 6px;
+    background: #329691;
+    border-radius: 44px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #329691;
+  }
+}
+
+.channel_content {
+  text-align: center;
+}

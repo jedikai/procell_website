@@ -6,6 +6,7 @@ import {
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Container } from "@mui/system";
+import { memo } from "react";
 // import { url } from "inspector";
 // import Image from "next/image";
 
@@ -36,7 +37,7 @@ export function SkinAgeCard({
   );
 }
 
-export default function SkinAgeSec({ title, subTitle }: SkinAgeSecProps) {
+export default memo(function SkinAgeSec({ title, subTitle }: SkinAgeSecProps) {
   return (
     <SkinAgeWrapper className="cmn_gap">
       <Container fixed>
@@ -80,4 +81,4 @@ export default function SkinAgeSec({ title, subTitle }: SkinAgeSecProps) {
       </Container>
     </SkinAgeWrapper>
   );
-}
+})

@@ -14,10 +14,12 @@ const getMyClientsList = async () => {
 };
 
 export const useMyClientsListList = (
+  enabled:boolean = false,
   onSuccess: any = () => {},
   onError: any = () => {}
 ) =>
   useQuery([GET_CLIENTS_LIST], getMyClientsList, {
+    enabled,
     onSuccess,
     onError,
     select: (data) => data?.data?.data ?? []

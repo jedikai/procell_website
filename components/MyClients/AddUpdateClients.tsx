@@ -36,6 +36,7 @@ const AddUpdateClients = ({
   handleChangeState,
   getSelectedClientData,
   fetchClientList,
+  getSelectedClientId,
   // clientProfileUpdateDecider,
   clientId
 }: any) => {
@@ -77,13 +78,14 @@ const AddUpdateClients = ({
 
   const cancelActionHandler = () => {
     // clientProfileUpdateDecider(false);
-    fetchClientList();
+    // fetchClientList();
     handleChangeState("customer_profile");
   };
 
   const validationSchema = yup.object().shape({
     first_name: yup
       .string()
+      .max(15, "First name should be 10 charecter long.")
       .required(validationText.error.first_name)
       .test(
         "no-leading-space",
@@ -94,6 +96,7 @@ const AddUpdateClients = ({
       ),
     last_name: yup
       .string()
+      .max(15, "Last name should be 10 charecter long.")
       .required(validationText.error.last_name)
       .test(
         "no-leading-space",
@@ -169,13 +172,17 @@ const AddUpdateClients = ({
           const { data, message } = response?.data ?? {};
           console.log("response updateClient", response);
           getSelectedClientData(data[0]);
+          getSelectedClientId(data[0].id);
           toastSuccess(message ?? "Customer profile updated.");
-          queryClient.invalidateQueries(GET_CLIENTS_ENTRIES);
-          queryClient.invalidateQueries(GET_CLIENTS_LIST);
+          // queryClient.invalidateQueries(GET_CLIENTS_ENTRIES);
+          // queryClient.invalidateQueries(GET_CLIENTS_LIST);
+          fetchClientList();
           handleChangeState("customer_profile");
           setBtnLoader(false);
         },
         onError: (error: any) => {
+          console.log('error?.response?.data?.message',error);
+          setBtnLoader(false);
           toastError(error?.response?.data?.message ?? "Something went wrong.");
         }
       });
@@ -192,15 +199,19 @@ const AddUpdateClients = ({
       createClient(formData, {
         onSuccess: (response: any) => {
           const { data, message } = response?.data ?? {};
+          console.log("response createClient", response);
           getSelectedClientData(data[0]);
+          getSelectedClientId(data[0].id)
           toastSuccess(message ?? "Customer profile created.");
-          queryClient.invalidateQueries(GET_CLIENTS_ENTRIES);
-          queryClient.invalidateQueries(GET_CLIENTS_LIST);
+          fetchClientList();
+          // queryClient.invalidateQueries(GET_CLIENTS_ENTRIES);
+          // queryClient.invalidateQueries(GET_CLIENTS_LIST);
           handleChangeState("customer_profile");
           setBtnLoader(false);
         },
         onError: (error: any) => {
           toastError(error?.response?.data?.message ?? "Something went wrong.");
+          setBtnLoader(false);
         }
       });
     }
@@ -305,11 +316,12 @@ const AddUpdateClients = ({
                       if (e.target.value.length > 0) {
                         setIsEmailEnable(true);
                         setValue("email", e.target.value);
-                        setEmailPhn({ ...emailPhn, email: e.target.value });
+                        // setEmailPhn({ ...emailPhn, email: e.target.value });
                       } else {
                         setIsEmailEnable(false);
                         setValue("email", "");
                       }
+                      setEmailPhn({ ...emailPhn, email: e.target.value });
                     }}
                     // {...register("email")}
                   />
@@ -331,11 +343,11 @@ const AddUpdateClients = ({
                       if (e.target.value.length > 0) {
                         setIsPhoneEnable(true);
                         setValue("phone", e.target.value);
-                        setEmailPhn({ ...emailPhn, phn: e.target.value });
                       } else {
                         setIsPhoneEnable(false);
                         setValue("phone", "");
                       }
+                      setEmailPhn({ ...emailPhn, phn: e.target.value });
                     }}
                     // value={phone ?? ""}
                     // {...register("phone")}
