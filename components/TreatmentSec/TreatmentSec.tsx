@@ -87,27 +87,27 @@ export default memo(function TreatmentSec() {
                     <ReactCompareSlider
                       itemOne={
                         <ReactCompareSliderImage
-                          src={getGDriveImgLinkToPreview(
-                            _i?.before_image_url ?? ""
-                          )}
-                          srcSet={getGDriveImgLinkToPreview(
-                            _i?.before_image_url ?? ""
-                          )}
-                          // src={assest?.black_img}
-                          // srcSet={assest?.black_img}
+                          src={_i?.before_image_url ?? ""}
+                          srcSet={_i?.before_image_url ?? ""}
+                          // src={getGDriveImgLinkToPreview(
+                          //   _i?.before_image_url ?? ""
+                          // )}
+                          // srcSet={getGDriveImgLinkToPreview(
+                          //   _i?.before_image_url ?? ""
+                          // )}
                           alt="Image one"
                         />
                       }
                       itemTwo={
                         <ReactCompareSliderImage
-                          src={getGDriveImgLinkToPreview(
-                            _i?.after_image_url ?? ""
-                          )}
-                          srcSet={getGDriveImgLinkToPreview(
-                            _i?.after_image_url ?? ""
-                          )}
-                          // src={assest?.glow_img}
-                          // srcSet={assest?.glow_img}
+                          src={_i?.after_image_url ?? ""}
+                          srcSet={_i?.after_image_url ?? ""}
+                          // src={getGDriveImgLinkToPreview(
+                          //   _i?.after_image_url ?? ""
+                          // )}
+                          // srcSet={getGDriveImgLinkToPreview(
+                          //   _i?.after_image_url ?? ""
+                          // )}
                           alt="Image two"
                         />
                       }

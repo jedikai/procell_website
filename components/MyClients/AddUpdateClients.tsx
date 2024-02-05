@@ -155,14 +155,16 @@ const AddUpdateClients = ({
     if (!!last_name) {
       formData.append("last_name", `${last_name}`);
     }
+    console.log("show me data", dp);
+
     if (!!clientDetails) {
-      if (email != clientDetails[0].email) {
+      if (email != clientDetails[0].email && email != "N/A") {
         formData.append("email", `${email}`);
       }
-      if (phone != clientDetails[0].phone) {
+      if (phone != clientDetails[0].phone && phone != "N/A") {
         formData.append("phone", `${phone}`);
       }
-      if (typeof dp != "string") {
+      if (!!dp && typeof dp != "string") {
         formData.append("profile_image", dp);
       }
       formData.append("customer_id", `${clientId}`);
@@ -181,7 +183,7 @@ const AddUpdateClients = ({
           setBtnLoader(false);
         },
         onError: (error: any) => {
-          console.log('error?.response?.data?.message',error);
+          console.log("error?.response?.data?.message", error);
           setBtnLoader(false);
           toastError(error?.response?.data?.message ?? "Something went wrong.");
         }
@@ -201,7 +203,7 @@ const AddUpdateClients = ({
           const { data, message } = response?.data ?? {};
           console.log("response createClient", response);
           getSelectedClientData(data[0]);
-          getSelectedClientId(data[0].id)
+          getSelectedClientId(data[0].id);
           toastSuccess(message ?? "Customer profile created.");
           fetchClientList();
           // queryClient.invalidateQueries(GET_CLIENTS_ENTRIES);

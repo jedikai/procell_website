@@ -5,7 +5,7 @@
 /* eslint-disable import/order */
 /* eslint-disable mui-path-imports/mui-path-imports */
 import Container from "@mui/material/Container";
-import React, { memo, useMemo, useState } from "react";
+import React, { memo, useCallback, useMemo, useState } from "react";
 import CommonAccordion from "../CommonAccordion/CommonAccordion";
 
 import {
@@ -72,7 +72,13 @@ const ShowData = ({
 
 const AccordionEachRow = (props: any) => {
   const router = useRouter();
-  const { index, handleChange, expanded, data, allModule } = props;
+  const {
+    index: _moduleIndex,
+    handleChange,
+    expanded,
+    data,
+    allModule
+  } = props;
   const { id, name, description, full_image_url, completed, content }: any =
     data ?? {};
   const [checkNumber, setCheckNumber] = useState(0);
@@ -112,37 +118,65 @@ const AccordionEachRow = (props: any) => {
   // const completePercentage = useMemo(() => {
   //   return Math.round((checkNumber / data.checkboxList.length) * 100 * 10) / 10;
   // }, [checkNumber, data.checkboxList.length]);
-  const moduleOpenHandler = (
-    _moduleArray: any,
-    _module: any,
-    index: number,
-    contentIndex: number
-  ) => {
-    if (index == 0) {
-      if (contentIndex == 0) {
-        return false;
-      } else {
-        return !_module[contentIndex - 1]?.is_completed;
-      }
-    } else {
-      const prevModuleIsCompleted = !_moduleArray[index - 1]?.content
-        ?.map((_m: any) => _m?.is_completed)
-        ?.includes(false);
-      if (prevModuleIsCompleted) {
-        return false;
-      } else {
-        if (contentIndex == 0) {
-          return false;
+  const moduleOpenHandler = useCallback(
+    (
+      _moduleArray: any,
+      _module: any,
+      _moduleIndex: number,
+      _contentIndex: number
+    ) => {
+      // return {
+      //   _moduleIndex,
+      //   _contentIndex,
+      //   _moduleArray: _moduleArray[_moduleIndex - 1]?.completed,
+      //   _module: _module[_contentIndex - 1]?.is_completed
+      // };
+      if (_moduleIndex == 0) {
+        if (Math.abs(_moduleArray[_moduleIndex]?.completed) == 100) {
+          return true;
         } else {
-          return !_module[contentIndex - 1]?.is_completed;
+          if (_contentIndex == 0) {
+            return true;
+          } else {
+            if (
+              !!_module &&
+              _module?.content &&
+              _module?.content?.length > 0 &&
+              _module?.content[_contentIndex - 1]?.is_completed
+            ) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+        }
+      } else {
+        if (Math.abs(_moduleArray[_moduleIndex - 1]?.completed) == 100) {
+          if (_contentIndex == 0) {
+            return true;
+          } else {
+            if (
+              !!_module &&
+              _module?.content &&
+              _module?.content?.length > 0 &&
+              _module?.content[_contentIndex - 1]?.is_completed
+            ) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+        } else {
+          return false;
         }
       }
-    }
-  };
+    },
+    []
+  );
 
   return (
     <CommonAccordion
-      indexNumber={index}
+      indexNumber={_moduleIndex}
       handleClick={handleChange}
       expand={expanded}
       accordianHead={
@@ -176,17 +210,26 @@ const AccordionEachRow = (props: any) => {
                 onClick={() => {
                   console.log(
                     "moduleOpenHandler",
-                    moduleOpenHandler(allModule, data, index, content_index)
+                    moduleOpenHandler(
+                      allModule,
+                      content,
+                      _moduleIndex,
+                      content_index
+                    )
                   );
 
                   if (
-                    moduleOpenHandler(allModule, data, index, content_index)
+                    moduleOpenHandler(
+                      allModule,
+                      data,
+                      _moduleIndex,
+                      content_index
+                    )
                   ) {
-                    return false;
+                    router.push(
+                      `/academy/${router?.query?.slug}/${item?.id ?? ""}`
+                    );
                   }
-                  router.push(
-                    `/academy/${router?.query?.slug}/${item?.id ?? ""}`
-                  );
                 }}
               >
                 <FormControlLabel

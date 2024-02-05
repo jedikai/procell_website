@@ -41,6 +41,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
+import Head from "next/head";
 
 // const CustomButton = dynamic(() => import("@/ui/Buttons/CustomButton"));
 
@@ -352,218 +353,252 @@ export default React.memo((props: Props) => {
   console.log("header ========>", navbarListItems);
 
   return (
-    <HeaderWrap sx={{ display: "flex" }} className="main_head">
-      <AppBar
-        component="nav"
-        position="static"
-        elevation={0}
-        className="headerContainer"
-      >
-        <Container fixed>
-          <Toolbar>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2, display: { md: "none", sm: "block" } }}
-              className="menu_btn"
-            >
-              <Image src={assest.Menu_icon} alt="menu" height={24} width={24} />
-            </IconButton>
-            <Link href="/" className="headerLogo">
-              <Image src={assest.logo_img} width={122} height={46} alt="Logo" />
-            </Link>
-            <Box
-              sx={{ display: { xs: "none", md: "block" } }}
-              className="navbar"
-            >
-              {user && (
-                <Link
-                  href="/students/training-academy/"
-                  className={
-                    router.pathname === "/training-academy" ? "active" : ""
-                  }
-                >
-                  Training acadamy
-                </Link>
-              )}
-              {navbarListItems.map((item: any, index: number) => (
-                <Link
-                  href={item?.route}
-                  key={index + 1}
-                  className={router.pathname === item.route ? "active" : ""}
-                >
-                  {item?.name}
-                </Link>
-              ))}
-            </Box>
-            <Box className="hdr_rgt">
-              {router.pathname.includes("dashboard") && (
-                <IconButton className="menu_btn" onClick={handleSidebarShow}>
-                  <Image
-                    src={assest.dashboard_icon}
-                    alt="dashboard"
-                    width={24}
-                    height={24}
-                  />
-                </IconButton>
-              )}
-              <Box className="cart_icon">
-                <Link href="/product/cart">
-                  <Badge
-                    color="primary"
-                    // variant="dot"
-                    badgeContent={cartItemsNumber}
-                    // invisible={!!cartItemsNumber}
+    <>
+      {!authorizationloader && (
+        <Head>
+          {/* Include external stylesheet */}
+          <link
+            rel="stylesheet"
+            href="https://procelltherapies-staging-11007389.dev.odoo.com/im_livechat/external_lib.css"
+          />
+          {/* Include external scripts */}
+          <script
+            type="text/javascript"
+            src="https://procelltherapies-staging-11007389.dev.odoo.com/im_livechat/external_lib.js"
+          ></script>
+          <script
+            type="text/javascript"
+            src="https://procelltherapies-staging-11007389.dev.odoo.com/im_livechat/loader/3"
+          ></script>
+        </Head>
+      )}
+      <HeaderWrap sx={{ display: "flex" }} className="main_head">
+        <AppBar
+          component="nav"
+          position="static"
+          elevation={0}
+          className="headerContainer"
+        >
+          <Container fixed>
+            <Toolbar>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ mr: 2, display: { md: "none", sm: "block" } }}
+                className="menu_btn"
+              >
+                <Image
+                  src={assest.Menu_icon}
+                  alt="menu"
+                  height={24}
+                  width={24}
+                />
+              </IconButton>
+              <Link href="/" className="headerLogo">
+                <Image
+                  src={assest.logo_img}
+                  width={122}
+                  height={46}
+                  alt="Logo"
+                />
+              </Link>
+              <Box
+                sx={{ display: { xs: "none", md: "block" } }}
+                className="navbar"
+              >
+                {user && (
+                  <Link
+                    href="/students/training-academy/"
+                    className={
+                      router.pathname === "/training-academy" ? "active" : ""
+                    }
                   >
-                    <CartIcon IconHeight="24" IconWidth="24" />
-                  </Badge>
-                </Link>
+                    Training acadamy
+                  </Link>
+                )}
+                {navbarListItems.map((item: any, index: number) => (
+                  <Link
+                    href={item?.route}
+                    key={index + 1}
+                    className={router.pathname === item.route ? "active" : ""}
+                  >
+                    {item?.name}
+                  </Link>
+                ))}
               </Box>
-              <Box className="login_part">
-                {authenticUser ? (
-                  <>
-                    <Button
-                      id="basic-button"
-                      aria-controls={open ? "basic-menu" : undefined}
-                      aria-haspopup="true"
-                      aria-expanded={open ? "true" : undefined}
-                      onClick={handleClick}
-                      className="user_btn"
+              <Box className="hdr_rgt">
+                {router.pathname.includes("dashboard") && (
+                  <IconButton className="menu_btn" onClick={handleSidebarShow}>
+                    <Image
+                      src={assest.dashboard_icon}
+                      alt="dashboard"
+                      width={24}
+                      height={24}
+                    />
+                  </IconButton>
+                )}
+                <Box className="cart_icon">
+                  <Link href="/product/cart">
+                    <Badge
+                      color="primary"
+                      // variant="dot"
+                      badgeContent={cartItemsNumber}
+                      // invisible={!!cartItemsNumber}
                     >
-                      {data && data?.length > 0 && data[0]?.image_1920_url && (
-                        // {!!image && (
-                        <img
-                          src={
-                            data ? data[0]?.image_1920_url : assest?.avatr_img
-                            // !!image ? image : assest?.avatr_img
-                          }
-                          alt="image"
-                          width={36}
-                          height={36}
-                          key={refresh ? "render" : "no-render"}
-                        />
-                      )}
-                      {/* <Typography
+                      <CartIcon IconHeight="24" IconWidth="24" />
+                    </Badge>
+                  </Link>
+                </Box>
+                <Box className="login_part">
+                  {authenticUser ? (
+                    <>
+                      <Button
+                        id="basic-button"
+                        aria-controls={open ? "basic-menu" : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? "true" : undefined}
+                        onClick={handleClick}
+                        className="user_btn"
+                      >
+                        {data &&
+                          data?.length > 0 &&
+                          data[0]?.image_1920_url && (
+                            // {!!image && (
+                            <img
+                              src={
+                                data
+                                  ? data[0]?.image_1920_url
+                                  : assest?.avatr_img
+                                // !!image ? image : assest?.avatr_img
+                              }
+                              alt="image"
+                              width={36}
+                              height={36}
+                              key={refresh ? "render" : "no-render"}
+                            />
+                          )}
+                        {/* <Typography
                         variant="caption"
                         sx={{ display: { xs: "none" } }}
                       >
                         {trimmedString}
                       </Typography> */}
-                    </Button>
-                    <MenuWrapperStyle
-                      id="basic-menu"
-                      anchorEl={anchorEl}
-                      open={open}
-                      onClose={handleClose}
-                      MenuListProps={{
-                        "aria-labelledby": "basic-button"
-                      }}
-                      className="user_menu"
-                    >
-                      <MenuItem
-                        onClick={() => router.push("/dashboard/profile")}
+                      </Button>
+                      <MenuWrapperStyle
+                        id="basic-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleClose}
+                        MenuListProps={{
+                          "aria-labelledby": "basic-button"
+                        }}
+                        className="user_menu"
                       >
-                        <ProfileIcon />
-                        Profile
-                      </MenuItem>
-                      <MenuItem onClick={handleLogout}>
-                        <LogoutIcon />
-                        Logout
-                      </MenuItem>
-                    </MenuWrapperStyle>
-                  </>
-                ) : (
-                  <CustomButtonPrimary
-                    type="button"
-                    variant="contained"
-                    color="primary"
-                    onClick={() => router.push("/auth/login")}
-                    className="login_btn"
-                  >
-                    <Box
-                      sx={{
-                        display: { md: "none", sx: "flex" },
-                        justifyContent: "center",
-                        alignItems: "center",
-                        lineHeight: "0"
-                      }}
+                        <MenuItem
+                          onClick={() => router.push("/dashboard/profile")}
+                        >
+                          <ProfileIcon />
+                          Profile
+                        </MenuItem>
+                        <MenuItem onClick={handleLogout}>
+                          <LogoutIcon />
+                          Logout
+                        </MenuItem>
+                      </MenuWrapperStyle>
+                    </>
+                  ) : (
+                    <CustomButtonPrimary
+                      type="button"
+                      variant="contained"
+                      color="primary"
+                      onClick={() => router.push("/auth/login")}
+                      className="login_btn"
                     >
-                      <ProfileIcon IconColor={primaryColors.white} />
-                    </Box>
-                    <Typography
-                      variant="body1"
-                      sx={{ display: { md: "block", xs: "none" } }}
-                    >
-                      Login
-                    </Typography>
-                  </CustomButtonPrimary>
-                )}
+                      <Box
+                        sx={{
+                          display: { md: "none", sx: "flex" },
+                          justifyContent: "center",
+                          alignItems: "center",
+                          lineHeight: "0"
+                        }}
+                      >
+                        <ProfileIcon IconColor={primaryColors.white} />
+                      </Box>
+                      <Typography
+                        variant="body1"
+                        sx={{ display: { md: "block", xs: "none" } }}
+                      >
+                        Login
+                      </Typography>
+                    </CustomButtonPrimary>
+                  )}
+                </Box>
               </Box>
-            </Box>
-          </Toolbar>
-        </Container>
-      </AppBar>
-      <Box component="nav">
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: "block", lg: "none" },
-            "& .MuiDrawer-paper": {
-              boxSizing: "border-box",
-              width: drawerWidth
-            }
-          }}
-        >
-          {drawer}
-        </Drawer>
-      </Box>
-      <Toolbar />
-      <MuiModalWrapper open={openmod} onClose={close} title="">
-        <Box className="loginModal">
-          <Box className="modalimgWrap">
-            <Image
-              src={assest.logoutGradient}
-              alt={"logout"}
-              width={28}
-              height={28}
-            />
-          </Box>
-
-          <Typography variant="h3">
-            Are you sure you want to logout from your account?
-          </Typography>
-
-          <List disablePadding className="btn_wrapper">
-            <ListItem disablePadding>
-              <CustomButtonPrimary
-                variant="contained"
-                color="primary"
-                className="deletebtn"
-                onClick={handleLogin}
-              >
-                <Typography variant="body1">Yes</Typography>
-              </CustomButtonPrimary>
-            </ListItem>
-            <ListItem disablePadding>
-              <CustomButtonPrimary
-                variant="outlined"
-                color="info"
-                className="gradient_btn"
-                onClick={close}
-              >
-                <Typography variant="body1">No</Typography>
-              </CustomButtonPrimary>
-            </ListItem>
-          </List>
+            </Toolbar>
+          </Container>
+        </AppBar>
+        <Box component="nav">
+          <Drawer
+            variant="temporary"
+            open={mobileOpen}
+            onClose={handleDrawerToggle}
+            ModalProps={{
+              keepMounted: true // Better open performance on mobile.
+            }}
+            sx={{
+              display: { xs: "block", lg: "none" },
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: drawerWidth
+              }
+            }}
+          >
+            {drawer}
+          </Drawer>
         </Box>
-      </MuiModalWrapper>
-    </HeaderWrap>
+        <Toolbar />
+        <MuiModalWrapper open={openmod} onClose={close} title="">
+          <Box className="loginModal">
+            <Box className="modalimgWrap">
+              <Image
+                src={assest.logoutGradient}
+                alt={"logout"}
+                width={28}
+                height={28}
+              />
+            </Box>
+
+            <Typography variant="h3">
+              Are you sure you want to logout from your account?
+            </Typography>
+
+            <List disablePadding className="btn_wrapper">
+              <ListItem disablePadding>
+                <CustomButtonPrimary
+                  variant="contained"
+                  color="primary"
+                  className="deletebtn"
+                  onClick={handleLogin}
+                >
+                  <Typography variant="body1">Yes</Typography>
+                </CustomButtonPrimary>
+              </ListItem>
+              <ListItem disablePadding>
+                <CustomButtonPrimary
+                  variant="outlined"
+                  color="info"
+                  className="gradient_btn"
+                  onClick={close}
+                >
+                  <Typography variant="body1">No</Typography>
+                </CustomButtonPrimary>
+              </ListItem>
+            </List>
+          </Box>
+        </MuiModalWrapper>
+      </HeaderWrap>
+    </>
   );
 });

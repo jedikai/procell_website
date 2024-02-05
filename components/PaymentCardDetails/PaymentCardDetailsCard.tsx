@@ -90,10 +90,14 @@ const PaymentCardDetailsCard = ({
     apiLoginID: authorizationCred?.apiLoginID,
     clientKey: authorizationCred?.clientKey
   };
-  const { dispatchData, loading, error } = useAcceptJs({ authData });
+  const { dispatchData, loading, error } = useAcceptJs({
+    authData,
+    environment:
+      authorizationCred?.state == "enabled" ? "PRODUCTION" : "SANDBOX"
+  });
   const { data } = useProfileDetails(
-    () => { },
-    () => { },
+    () => {},
+    () => {},
     true
   );
 
@@ -116,7 +120,8 @@ const PaymentCardDetailsCard = ({
     const {
       encrypted_authorize_login,
       encrypted_authorize_client_key,
-      id
+      id,
+      state
     }: any = authorizeCreds[0];
     if (!!encrypted_authorize_login && !!encrypted_authorize_client_key) {
       setAuthorizationCred({
@@ -130,7 +135,8 @@ const PaymentCardDetailsCard = ({
             encrypted_authorize_client_key,
             process.env.NEXT_AUTHORIZATION_CRYPTO_SECRET_KEY ?? ""
           ) ?? "",
-        id: id
+        id: id,
+        state: state
       });
       console.log(
         "show me decryption",
@@ -166,7 +172,7 @@ const PaymentCardDetailsCard = ({
     data: getPaymentCredAndData,
     isLoading,
     refetch
-  } = usePaymentCredAndData(onSuccessCardList, () => { }, false);
+  } = usePaymentCredAndData(onSuccessCardList, () => {}, false);
 
   const onSuccessPolingData = (response: any) => {
     const { message, data }: any = response ?? {};
@@ -208,7 +214,7 @@ const PaymentCardDetailsCard = ({
   };
   const { data: pollingData } = usePollingCard(
     onSuccessPolingData,
-    () => { },
+    () => {},
     pollingEnable,
     refetchInterval
   );
