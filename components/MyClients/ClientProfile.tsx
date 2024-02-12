@@ -1,16 +1,14 @@
 import { useDeleteClient } from "@/hooks/react-qurey/query-hooks/myClientsQuery.hooks";
-import {
-  GET_CLIENTS_ENTRIES,
-  GET_CLIENTS_LIST
-} from "@/hooks/react-qurey/query-keys/myClientsQuery.keys";
+
 import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
 import { CustomerProfileWrapper } from "@/styles/StyledComponents/CustomerProfileWrapper";
 import { primaryColors } from "@/themes/_muiPalette";
-import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import DeleteIcon from "@/ui/Icons/DeleteIcon";
 import EditProfileIcon from "@/ui/Icons/EditProfileIcon";
-import { Button, Grid, Typography } from "@mui/material";
+import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 import { Box, Stack } from "@mui/system";
 import Image from "next/image";
 import { memo, useCallback, useState } from "react";
@@ -110,7 +108,7 @@ const ClientProfile = ({
         <Typography variant="h4" className="main_heading">
           Client profile
         </Typography>
-        {!!clientsList && clientsList?.length > 0 ? (
+        {!!clientsList && (
           <>
             <Stack
               className="profile_header"
@@ -119,36 +117,6 @@ const ClientProfile = ({
               alignItems="center"
             >
               <Stack className="left" direction="row">
-                {/* <Box className="cl_image_wrap">
-                  <Box className="client_image">
-                    <img
-                      src={
-                        profile_image_url != "false" && !!profile_image_url
-                          ? profile_image_url
-                          : assest.avatarIcon
-                      }
-                      alt=""
-                      width={80}
-                      height={80}
-                    />
-                    <Box className="editProfileWrap">
-                      <Button
-                        type="button"
-                        className="editButnIcon"
-                        onClick={updateClientProfile}
-                      >
-                        <EditProfileIcon />
-                      </Button>
-                    </Box>
-                  </Box>
-                  <Typography
-                    variant="body1"
-                    className="profiletext"
-                    sx={{ textAlign: "center" }}
-                  >
-                    {`${first_name} ${last_name}`}
-                  </Typography>
-                </Box> */}
 
                 <Box
                   className="see_all"
@@ -177,7 +145,7 @@ const ClientProfile = ({
                   className="see_all"
                   onClick={() => handleChangeState("all_client_list")}
                 >
-                  <Box className="client_image">
+                  <Box className="client_image addClientImg">
                     <Image
                       src={assest.AllClientIcon}
                       alt=""
@@ -195,107 +163,111 @@ const ClientProfile = ({
                 </Box>
               </Stack>
               {/* {!!clientsList && !clientListLoader && ( */}
-              <Box className="right">
-                {clientsList?.length > 5 ? (
-                  <Box className="slider_wrap">
-                    <Slider {...settings}>
-                      {clientsList?.map((_client: any) => (
-                        <Box
-                          className={`slide_image${
-                            id == _client?.id ? " slide_image_active" : ""
-                          }`}
-                          key={_client?.id}
-                          onClick={() => clientSelector(_client)}
-                        >
-                          <Box className="client_image">
-                            <img
-                              src={
-                                !!_client?.profile_image_url &&
-                                _client?.profile_image_url != "false"
-                                  ? _client?.profile_image_url
-                                  : assest.avatarIcon
-                              }
-                              alt=""
-                              width={80}
-                              height={80}
-                            />
+              {!!clientsList && clientsList?.length > 0 && (
+                <Box className="right">
+                  {clientsList?.length > 5 ? (
+                    <Box className="slider_wrap">
+                      <Slider {...settings}>
+                        {clientsList?.map((_client: any) => (
+                          <Box
+                            className={`slide_image${
+                              id == _client?.id ? " slide_image_active" : ""
+                            }`}
+                            key={_client?.id}
+                            onClick={() => clientSelector(_client)}
+                          >
+                            <Box className="client_image">
+                              <img
+                                src={
+                                  !!_client?.profile_image_url &&
+                                  _client?.profile_image_url != "false"
+                                    ? _client?.profile_image_url
+                                    : assest.avatarIcon
+                                }
+                                alt=""
+                                width={80}
+                                height={80}
+                              />
+                            </Box>
+                            {!!_client?.first_name && !!_client?.last_name && (
+                              <Typography
+                                variant="body1"
+                                sx={{ textAlign: "center" }}
+                              >
+                                {`${_client?.first_name} ${_client?.last_name}`}
+                              </Typography>
+                            )}
                           </Box>
-                          {!!_client?.first_name && !!_client?.last_name && (
-                            <Typography
-                              variant="body1"
-                              sx={{ textAlign: "center" }}
-                            >
-                              {`${_client?.first_name} ${_client?.last_name}`}
-                            </Typography>
-                          )}
-                        </Box>
-                      ))}
-                    </Slider>
-                  </Box>
-                ) : (
-                  <Stack
-                    direction="row"
-                    alignItems="center"
-                    className="right_image_part"
-                  >
-                    {clientsList?.length > 0 &&
-                      clientsList?.map((_client: any) => (
-                        <Box
-                          className={`image_wrap${
-                            id == _client?.id ? " slide_image_active" : ""
-                          }`}
-                          key={_client?.id}
-                          onClick={() => clientSelector(_client)}
-                        >
-                          <Box className="client_image">
-                            <img
-                              src={
-                                !!_client?.profile_image_url &&
-                                _client?.profile_image_url != "false"
-                                  ? _client?.profile_image_url
-                                  : assest.avatarIcon
-                              }
-                              alt=""
-                              width={80}
-                              height={80}
-                            />
+                        ))}
+                      </Slider>
+                    </Box>
+                  ) : (
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      className="right_image_part"
+                    >
+                      {clientsList?.length > 0 &&
+                        clientsList?.map((_client: any) => (
+                          <Box
+                            className={`image_wrap${
+                              id == _client?.id ? " slide_image_active" : ""
+                            }`}
+                            key={_client?.id}
+                            onClick={() => clientSelector(_client)}
+                          >
+                            <Box className="client_image">
+                              <img
+                                src={
+                                  !!_client?.profile_image_url &&
+                                  _client?.profile_image_url != "false"
+                                    ? _client?.profile_image_url
+                                    : assest.avatarIcon
+                                }
+                                alt=""
+                                width={80}
+                                height={80}
+                              />
+                            </Box>
+                            {!!_client?.first_name && !!_client?.last_name && (
+                              <Typography
+                                variant="body1"
+                                sx={{ textAlign: "center" }}
+                                className="profiletext"
+                              >
+                                {`${_client?.first_name} ${_client?.last_name}`}
+                              </Typography>
+                            )}
                           </Box>
-                          {!!_client?.first_name && !!_client?.last_name && (
-                            <Typography
-                              variant="body1"
-                              sx={{ textAlign: "center" }}
-                              className="profiletext"
-                            >
-                              {`${_client?.first_name} ${_client?.last_name}`}
-                            </Typography>
-                          )}
-                        </Box>
-                      ))}
-                  </Stack>
-                )}
-              </Box>
+                        ))}
+                    </Stack>
+                  )}
+                </Box>
+              )}
               {/* )} */}
             </Stack>
-            <Stack
-              className="profile_header"
-              direction="row"
-              flexWrap="wrap"
-              alignItems="center"
-            >
-              <Stack className="left_customer_profile" direction="row">
-                <Box className="cl_image_wrap">
-                  <Box className="client_image">
-                    <img
-                      src={
-                        profile_image_url != "false" && !!profile_image_url
-                          ? profile_image_url
-                          : assest.avatarIcon
-                      }
-                      alt=""
-                      width={80}
-                      height={80}
-                    />
-                    {/* <Box className="editProfileWrap">
+            {clientsList?.length > 0 ? (
+              <>
+                <Stack
+                  className="profile_header"
+                  direction="row"
+                  flexWrap="wrap"
+                  alignItems="center"
+                >
+                  <Stack className="left_customer_profile" direction="row">
+                    <Box className="cl_image_wrap">
+                      <Box className="client_image">
+                        <img
+                          src={
+                            profile_image_url != "false" && !!profile_image_url
+                              ? profile_image_url
+                              : assest.avatarIcon
+                          }
+                          alt=""
+                          width={80}
+                          height={80}
+                        />
+                        {/* <Box className="editProfileWrap">
                       <Button
                         type="button"
                         className="editButnIcon"
@@ -304,65 +276,83 @@ const ClientProfile = ({
                         <EditProfileIcon />
                       </Button>
                     </Box> */}
-                  </Box>
-                </Box>
-                <Box className="textWrapInfo">
-                  <Box className="textWrap_only">
-                    <Typography
-                      variant="body1"
-                      className={"profiletext name_title"}
-                      sx={{ textAlign: "center" }}
-                    >
-                      {`${first_name} ${last_name}`}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      className="profiletext"
-                      sx={{ textAlign: "center" }}
-                    >
-                      Email : {!!email && email != "false" ? email : "N/A"}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      className="profiletext"
-                      sx={{ textAlign: "center" }}
-                    >
-                      Number : {!!phone && phone != "false" ? phone : "N/A"}
-                    </Typography>
-                  </Box>
-                  <Box className="btnwrap_all">
-                    <Button onClick={updateClientProfile}>
-                      <EditProfileIcon />
-                    </Button>
-                    <Button onClick={modalHandler}>
-                      <DeleteIcon IconColor={primaryColors.white} />
-                    </Button>
-                  </Box>
-                </Box>
-              </Stack>
-            </Stack>
-            <Box className="new_entries_sec">
-              <Grid container spacing={3}>
-                <Grid item lg={6} md={6} sm={12} xs={12}>
-                  <NewEntryCard
-                    text="Create a new entry"
-                    onClick={() => {
-                      handleChangeState("create_entry");
-                    }}
-                  />
-                </Grid>
-                {clientsEntries?.map((_entry: any) => (
-                  <Grid item lg={6} md={6} sm={12} xs={12} key={_entry?.id}>
-                    <AddedEntryCard {..._entry} openEntry={handleDeleteEntry} />
+                      </Box>
+                    </Box>
+                    <Box className="textWrapInfo">
+                      <Box className="textWrap_only">
+                        <Typography
+                          variant="body1"
+                          className="profiletext name_title"
+                          sx={{ textAlign: "center" }}
+                        >
+                          {`${first_name} ${last_name}`}
+                        </Typography>
+                        <Typography
+                          variant="body1"
+                          className="profiletext"
+                          sx={{ textAlign: "center" }}
+                        >
+                          Email : {!!email && email != "false" ? email : "N/A"}
+                        </Typography>
+                        <Typography
+                          variant="body1"
+                          className="profiletext"
+                          sx={{ textAlign: "center" }}
+                        >
+                          Number : {!!phone && phone != "false" ? phone : "N/A"}
+                        </Typography>
+                      </Box>
+                      <Box className="btnwrap_all">
+                        <Button onClick={updateClientProfile}>
+                          <EditProfileIcon />
+                        </Button>
+                        <Button onClick={modalHandler}>
+                          <DeleteIcon IconColor={primaryColors.white} />
+                        </Button>
+                      </Box>
+                    </Box>
+                  </Stack>
+                </Stack>
+                <Box className="new_entries_sec">
+                  <Grid container spacing={3}>
+                    <Grid item lg={6} md={6} sm={12} xs={12}>
+                      <NewEntryCard
+                        text="Create a new entry"
+                        onClick={() => {
+                          handleChangeState("create_entry");
+                        }}
+                      />
+                    </Grid>
+                    {clientsEntries
+                      ?.sort(
+                        (a: any, b: any) =>
+                          new Date(a.date).getTime() -
+                          new Date(b.date).getTime()
+                      )
+                      ?.map((_entry: any) => (
+                        <Grid
+                          item
+                          lg={6}
+                          md={6}
+                          sm={12}
+                          xs={12}
+                          key={_entry?.id}
+                        >
+                          <AddedEntryCard
+                            {..._entry}
+                            openEntry={handleDeleteEntry}
+                          />
+                        </Grid>
+                      ))}
                   </Grid>
-                ))}
-              </Grid>
-            </Box>
+                </Box>
+              </>
+            ) : (
+              <Typography variant="body1" className="no_pr_text">
+                There is no client please add client.
+              </Typography>
+            )}
           </>
-        ) : (
-          <Typography variant="body1">
-            There is no client please app client.
-          </Typography>
         )}
         {/* <Stack
           direction="row"
@@ -396,7 +386,7 @@ const ClientProfile = ({
         open={open}
         close={modalHandler}
         deleteEntry={deleteClientHandler}
-        type={"client"}
+        type="client"
       />
     </>
   );

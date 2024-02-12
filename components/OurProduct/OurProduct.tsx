@@ -41,53 +41,57 @@ function OurProduct({
 
   return (
     <OurProductWrapper>
-      <figure className="ourProductLadyimg">
-        <Image src={ourProductimg} alt="img" width={610} height={873} />
-      </figure>
-      <figure className="ourProductPinkWing">
-        <Image
-          src={assest.ourProductpinkwing}
-          alt="img"
-          width={387}
-          height={452}
-        />
-      </figure>
-      <figure className="ourProducteclips">
-        <Image
-          src={assest.ourProductEclips}
-          alt="img"
-          width={1046}
-          height={722}
-        />
-      </figure>
+      {!isLoading && featuredProductData && (
+        <>
+          <figure className="ourProductLadyimg">
+            <Image src={ourProductimg} alt="img" width={610} height={873} />
+          </figure>
+          <figure className="ourProductPinkWing">
+            <Image
+              src={assest.ourProductpinkwing}
+              alt="img"
+              width={387}
+              height={452}
+            />
+          </figure>
+          <figure className="ourProducteclips">
+            <Image
+              src={assest.ourProductEclips}
+              alt="img"
+              width={1046}
+              height={722}
+            />
+          </figure>
 
-      <Container fixed>
-        <Box className="ourProductTitle">
-          <Typography variant="h3">
-            <Typography variant="caption">{producttitletop}</Typography>
-            {producttitle}
-          </Typography>
-        </Box>
-        <Box className="ourProductSliderwrapperSection">
-          <Slider {...settings}>
-            {!isLoading &&
-              featuredProductData &&
-              featuredProductData?.length > 0 &&
-              featuredProductData.map((item: any, index: number) => {
-                const { id, name, image_1920_url, list_price } = item ?? {};
-                return (
-                  <OurProductSlider
-                    key={index + 1}
-                    OurProductsliderImg={image_1920_url ?? ""}
-                    productSlidertext={name ?? ""}
-                    productSliderPrice={list_price ?? ""}
-                    link={id ?? ""}
-                  />
-                );
-              })}
-          </Slider>
-        </Box>
-      </Container>
+          <Container fixed>
+            <Box className="ourProductTitle">
+              <Typography variant="h3">
+                <Typography variant="caption">{producttitletop}</Typography>
+                {producttitle}
+              </Typography>
+            </Box>
+            <Box className="ourProductSliderwrapperSection">
+              <Slider {...settings}>
+                {!isLoading &&
+                  !!featuredProductData &&
+                  featuredProductData?.length > 0 &&
+                  featuredProductData.map((item: any, index: number) => {
+                    const { id, name, image_1920_url, list_price } = item ?? {};
+                    return (
+                      <OurProductSlider
+                        key={index + 1}
+                        OurProductsliderImg={image_1920_url ?? ""}
+                        productSlidertext={name ?? ""}
+                        productSliderPrice={list_price ?? ""}
+                        link={id ?? ""}
+                      />
+                    );
+                  })}
+              </Slider>
+            </Box>
+          </Container>
+        </>
+      )}
     </OurProductWrapper>
   );
 }

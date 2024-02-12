@@ -19,7 +19,6 @@ import {
 } from "@mui/material";
 
 import {
-  AccordionEachRowTypes,
   CircularProgressProps,
   showDataProps
 } from "@/interface/traningAcademy.interface";
@@ -90,7 +89,6 @@ const AccordionEachRow = (props: any) => {
       setCheckNumber((prev) => prev - 1);
     }
   };
-  console.log("content", router);
 
   const contentType = (type: string) => {
     if (type == "video") {
@@ -173,6 +171,29 @@ const AccordionEachRow = (props: any) => {
     },
     []
   );
+  const allContentIdList = useMemo(() => {
+    if (!!allModule && allModule?.length > 0) {
+      const contentList = allModule
+        ?.map((_c: any) => _c?.content)
+        .flat(Infinity);
+      const idList = contentList?.map((_i: any) => _i?.id);
+      return idList;
+    } else {
+      return [];
+    }
+  }, [allModule]);
+  const getNextContentId = (_id: any) => {
+    if (!!allContentIdList && allContentIdList?.length > 0 && !!_id) {
+      const index = allContentIdList?.indexOf(_id);
+      if (index !== -1 && index < allContentIdList.length - 1) {
+        return `?next_content=${allContentIdList[index + 1]}`;
+      } else {
+        return "";
+      }
+    } else {
+      return "";
+    }
+  };
 
   return (
     <CommonAccordion
@@ -208,16 +229,6 @@ const AccordionEachRow = (props: any) => {
                 key={content_index + 1}
                 disablePadding
                 onClick={() => {
-                  console.log(
-                    "moduleOpenHandler",
-                    moduleOpenHandler(
-                      allModule,
-                      content,
-                      _moduleIndex,
-                      content_index
-                    )
-                  );
-
                   if (
                     moduleOpenHandler(
                       allModule,
@@ -227,7 +238,9 @@ const AccordionEachRow = (props: any) => {
                     )
                   ) {
                     router.push(
-                      `/academy/${router?.query?.slug}/${item?.id ?? ""}`
+                      `/academy/${router?.query?.slug}/${
+                        item?.id ?? ""
+                      }${getNextContentId(item?.id)}`
                     );
                   }
                 }}

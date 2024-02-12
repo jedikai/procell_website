@@ -6,6 +6,7 @@ export const OurProductWrapper = styled(Box)`
   padding: 140px 0 107px 0;
   position: relative;
   z-index: 5;
+  overflow: hidden;
   @media (max-width: 1199px) {
     padding: 100px 0 100px 0;
   }
@@ -51,12 +52,13 @@ export const OurProductWrapper = styled(Box)`
   .ourProductLadyimg {
     line-height: 1;
     box-sizing: border-box;
-    width: 40%;
+    width: 65%;
     position: absolute;
-    bottom: 0;
-    right: 0;
-    max-width: 640px;
-    @media(max-width: 1199px){
+    top: 20%;
+
+    right: -400px;
+
+    @media (max-width: 1199px) {
       display: none;
     }
 
@@ -140,10 +142,10 @@ export const OurProductWrapper = styled(Box)`
   }
   .ourProductSliderwrapperSection {
     max-width: 730px;
-    @media(max-width: 1399px){
+    @media (max-width: 1399px) {
       padding: 0 25px;
     }
-    @media(max-width: 1199px){
+    @media (max-width: 1199px) {
       max-width: none;
     }
     @media (max-width: 599px) {
@@ -167,55 +169,49 @@ export const OurProductWrapper = styled(Box)`
         }
       }
 
-      .slick-arrow{
+      .slick-arrow {
         width: 40px;
         height: 40px;
         display: inline-flex;
-       
+
         align-items: center;
         justify-content: center;
         border-radius: 50%;
         border: 1px solid ${primaryColors.text_purple};
         z-index: 1;
-        &:hover{
+        &:hover {
           background: ${primaryColors.text_purple};
-          &:before{
+          &:before {
             filter: brightness(0) invert(1);
           }
         }
-        &:before{
+        &:before {
           width: 50%;
           height: 50%;
           display: inline-block;
           content: "";
-          transition: all .3s  ease-in-out 0s;
-          
+          transition: all 0.3s ease-in-out 0s;
         }
-        &.slick-prev{
-          
+        &.slick-prev {
           left: -40px;
-          @media(max-width: 1399px){
+          @media (max-width: 1399px) {
             left: -30px;
           }
-          &:before{
-
-            background: url("/assets/images/arrow_prev.svg") no-repeat center center;
+          &:before {
+            background: url("/assets/images/arrow_prev.svg") no-repeat center
+              center;
             background-size: 100%;
-           
-          
           }
         }
-        &.slick-next{
-          
-          
+        &.slick-next {
           right: -40px;
-          @media(max-width: 1399px){
+          @media (max-width: 1399px) {
             right: -30px;
           }
-          &:before{
-          background: url("/assets/images/arrow_next.svg") no-repeat center center;
-          background-size: 100%;
-           
+          &:before {
+            background: url("/assets/images/arrow_next.svg") no-repeat center
+              center;
+            background-size: 100%;
           }
         }
       }
@@ -233,7 +229,6 @@ export const OurProductWrapper = styled(Box)`
           height: 10px;
           margin: 0 2px;
           button {
-            
             width: 10px;
             height: 10px;
             background: rgba(84, 55, 149, 0.1);

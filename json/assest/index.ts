@@ -19,6 +19,7 @@ export default {
   ourProductimgOne: "/assets/images/ourproductimg1.png",
   ourProductimgtwo: "/assets/images/ourproductimg2.png",
   ourProductLadyImg: "/assets/images/ourProductLadyimg_new.png",
+  ourProductLadyImgNew: "/assets/images/ourProductLadyimg_new1.png",
   ourProductpinkwing: "/assets/images/ourproductPinkWing.png",
   ourProductEclips: "/assets/images/ourProductEllipse.png",
   black_img: "/assets/images/black_img.png",

@@ -155,7 +155,6 @@ const AddUpdateClients = ({
     if (!!last_name) {
       formData.append("last_name", `${last_name}`);
     }
-    console.log("show me data", dp);
 
     if (!!clientDetails) {
       if (email != clientDetails[0].email && email != "N/A") {

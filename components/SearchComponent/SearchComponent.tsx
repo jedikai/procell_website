@@ -3,9 +3,9 @@ import { SearchComponentWrapper } from "@/styles/StyledComponents/SearchComponen
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import SearchIcon from "@/ui/Icons/SearchIcon";
 import { Box, Typography } from "@mui/material";
-import React from "react";
+import React, { memo } from "react";
 
-export default function SearchComponent({getSearchValue}:any) {
+export default memo(function SearchComponent({getSearchValue}:any) {
   return (
     <SearchComponentWrapper>
       <Box className="search_wrapper">
@@ -19,4 +19,4 @@ export default function SearchComponent({getSearchValue}:any) {
       </Box>
     </SearchComponentWrapper>
   );
-}
+})

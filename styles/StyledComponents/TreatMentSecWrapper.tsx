@@ -101,6 +101,9 @@ export const TreatMentSecWrapper = styled(Box)`
   }
 
   .compare_slider {
+    .compare_top {
+      position: relative;
+    }
     @media (max-width: 1399px) {
       padding: 0 20px;
     }
@@ -284,7 +287,7 @@ export const TreatMentSecWrapper = styled(Box)`
         padding: 20px 0 0 0;
       }
       ul {
-        display: flex;
+        display: flex !important;
         align-items: center;
         justify-content: center;
         li {

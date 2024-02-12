@@ -12,9 +12,9 @@ import { userData } from "@/types/common.type";
 import ToastifyProvider from "@/ui/toastify/ToastifyProvider";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
-import axios from "axios";
 import type { AppContext, AppProps } from "next/app";
 import App from "next/app";
+import { useRouter } from "next/router";
 import nookies from "nookies";
 import React, { useEffect } from "react";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
@@ -51,6 +51,8 @@ export default function CustomApp({
   fixSSRLayout();
 
   store.dispatch(checkLoggedInServer({ hasToken, user }));
+  const router = useRouter();
+
   useEffect(() => {
     const isUserLoggedIn =
       !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
@@ -66,6 +68,35 @@ export default function CustomApp({
       }
     }
   }, []);
+  useEffect(() => {
+    if (window != undefined) {
+      const origin =
+        typeof window !== "undefined" && window.location.origin
+          ? window.location.origin
+          : "";
+      const currentPage = localStorage.getItem("current_page") ?? "";
+      if (router.asPath != currentPage) {
+        const formData: FormData = new FormData();
+        formData.append(
+          "track",
+          router.pathname.includes("product-details") ? `product` : "page"
+        );
+        formData.append(
+          "page_name",
+          router.pathname.includes("product-details")
+            ? "product-details"
+            : `${router.pathname.split("/").at(-1)}`
+        );
+        formData.append("page_url", `${router.asPath}`);
+        formData.append("base_url", `${origin}`);
+        axiosInstance
+          .post(endpoints.app.track_user, formData)
+          .then((response: any) => {
+            localStorage.setItem("current_page", router.asPath);
+          });
+      }
+    }
+  }, [router]);
 
   return (
     <Provider store={store}>

@@ -3,6 +3,13 @@ import styled from "@emotion/styled";
 import Box from "@mui/material/Box";
 
 export const CustomerProfileWrapper = styled(Box)`
+  .no_pr_text {
+    text-align: center;
+    margin-top: 50px;
+    font-size: 24px;
+    font-weight: 500;
+    color: ${primaryColors.primary};
+  }
   .main_heading {
     font-size: 25px;
     margin: 0 0 30px;
@@ -147,6 +154,8 @@ export const CustomerProfileWrapper = styled(Box)`
       .see_all {
         padding: 0 8px;
         width: 50%;
+        .client_image {
+        }
       }
 
       p {

@@ -19,7 +19,10 @@ import * as React from "react";
 import assest from "@/json/assest";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 
-import { useCartListWithAuthCred } from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
+import {
+  useCartList,
+  useCartListWithAuthCred
+} from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
 import { useProfileDetails } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
 import { useLogout } from "@/hooks/react-qurey/query-hooks/logoutQuery.hooks";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
@@ -166,11 +169,12 @@ export default React.memo((props: Props) => {
       : ""
   }${!!origin ? `&base_url=${origin}` : ""}`;
   console.log("router header", tractUserActivityParams);
-  const onAuthorizationCredSuccess = (response: any) => {
-    const { cart_quantity }: any = response ?? {};
+  const onCartListSuccess = (response: any) => {
+    const { order_line }: any =
+      !!response && response?.length > 0 ? response[0] : [];
 
-    setCardListData(cart_quantity);
-    // console.log("onAuthorizationCredSuccess", cart_quantity);
+    console.log("onAuthorizationCredSuccess", order_line?.length);
+    setCardListData(order_line?.length);
     // const authorizationCred: { login_id: string; client_key: string } = {
     //   login_id: providers_data ? providers_data[0]?.login_id : "",
     //   client_key: providers_data ? providers_data[0]?.client_key : ""
@@ -181,11 +185,11 @@ export default React.memo((props: Props) => {
     data: authorizationData,
     isLoading: authorizationloader,
     refetch: fetchCartList
-  } = useCartListWithAuthCred(
-    tractUserActivityParams,
-    onAuthorizationCredSuccess,
-    () => {},
-    cartListApiHandler
+  } = useCartList(
+    // tractUserActivityParams,
+    onCartListSuccess
+    // () => {},
+    // cartListApiHandler
   );
   const { mutate: logout } = useLogout();
   const open = Boolean(anchorEl);
@@ -354,14 +358,12 @@ export default React.memo((props: Props) => {
 
   return (
     <>
-      {!authorizationloader && (
+      {/* {!authorizationloader && (
         <Head>
-          {/* Include external stylesheet */}
           <link
             rel="stylesheet"
             href="https://procelltherapies-staging-11007389.dev.odoo.com/im_livechat/external_lib.css"
           />
-          {/* Include external scripts */}
           <script
             type="text/javascript"
             src="https://procelltherapies-staging-11007389.dev.odoo.com/im_livechat/external_lib.js"
@@ -371,7 +373,7 @@ export default React.memo((props: Props) => {
             src="https://procelltherapies-staging-11007389.dev.odoo.com/im_livechat/loader/3"
           ></script>
         </Head>
-      )}
+      )} */}
       <HeaderWrap sx={{ display: "flex" }} className="main_head">
         <AppBar
           component="nav"

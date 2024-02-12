@@ -76,7 +76,7 @@ export default function Home() {
             <OurProduct
               producttitle="products"
               producttitletop="Our"
-              ourProductimg={assest.ourProductLadyImg}
+              ourProductimg={assest.ourProductLadyImgNew}
             />
             {/* <TreatmentSecUpper /> */}
             <TreatmentSec />

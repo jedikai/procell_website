@@ -39,7 +39,7 @@ StorySecProps) {
       response ?? {};
     setCardList([
       {
-        number: "2013",
+        number: "2014",
         title: "Founded",
         content:
           "With over 30 years in dermatology, Dr. Mitchell Schwartz established Procell Therapies to create safer, non-invasive anti-aging solutions through innovative engineering."

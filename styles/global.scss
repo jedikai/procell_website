@@ -128,7 +128,7 @@ body {
     }
   }
 
-  > p {
+  >p {
     text-align: center;
     font-size: 15px;
     font-weight: 400;
@@ -400,23 +400,17 @@ body {
       height: 100%;
       background: hsla(259, 46%, 40%, 1);
 
-      background: linear-gradient(
-        90deg,
-        hsla(259, 46%, 40%, 1) 0%,
-        hsla(197, 82%, 48%, 1) 100%
-      );
+      background: linear-gradient(90deg,
+          hsla(259, 46%, 40%, 1) 0%,
+          hsla(197, 82%, 48%, 1) 100%);
 
-      background: -moz-linear-gradient(
-        90deg,
-        hsla(259, 46%, 40%, 1) 0%,
-        hsla(197, 82%, 48%, 1) 100%
-      );
+      background: -moz-linear-gradient(90deg,
+          hsla(259, 46%, 40%, 1) 0%,
+          hsla(197, 82%, 48%, 1) 100%);
 
-      background: -webkit-linear-gradient(
-        90deg,
-        hsla(259, 46%, 40%, 1) 0%,
-        hsla(197, 82%, 48%, 1) 100%
-      );
+      background: -webkit-linear-gradient(90deg,
+          hsla(259, 46%, 40%, 1) 0%,
+          hsla(197, 82%, 48%, 1) 100%);
       opacity: 0.12;
       border-radius: 100%;
     }
@@ -1365,4 +1359,17 @@ body {
 
 .channel_content {
   text-align: center;
+}
+
+
+.science_outr {
+  .search_comp_wrapper {
+    .search_wrapper {
+      h3 {
+        @media(max-width: 599px) {
+          text-align: center;
+        }
+      }
+    }
+  }
 }

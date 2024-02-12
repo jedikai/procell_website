@@ -85,6 +85,8 @@ export default function index() {
   );
   const selectedCategory = useCallback(
     (_cat: any) => {
+      setShowEle(false);
+      setPage(1);
       if (_cat) {
         setCategory(`category=${_cat}`);
         setProductList([]);

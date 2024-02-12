@@ -11,6 +11,7 @@ import {
 import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
 import Wrapper from "@/layout/wrapper/Wrapper";
+import { checkWindow } from "@/lib/functions/_helpers.lib";
 import { MicroChannelWrapper } from "@/styles/StyledComponents/MicroChannelWrapper";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import Box from "@mui/material/Box";
@@ -19,6 +20,12 @@ import { Container } from "@mui/system";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "react-query";
+import ReactPlayer from "react-player";
+import { getCookie } from "@/lib/functions/storage.lib";
+import {
+  usePractitionerAcademyContent,
+  useRepAcademyContent
+} from "@/hooks/react-qurey/query-hooks/academyQuery.hooks";
 
 const ContentDetails = () => {
   const router = useRouter();
@@ -27,8 +34,34 @@ const ContentDetails = () => {
   const [play, setPlay] = useState(false);
   const [loader, setLoader] = useState(false);
   const [pageLoader, setPageLoader] = useState(true);
+  const [contentIdList, setContentIdList] = useState<any>([]);
   const videoRef = useRef<any>(null);
   const pdfRef = useRef<any>(null);
+
+  const {
+    data: practitionerAcademyData,
+    isLoading: practitionerAcademyLoader,
+    refetch: fetchPractitionerAcademyContent
+  } = usePractitionerAcademyContent(false);
+  const {
+    data: repAcademyData,
+    isLoading: repAcademyLoader,
+    refetch: fetchRepAcademyContent
+  } = useRepAcademyContent(false);
+
+  const { practitioner_academy_progress, module_data: academyContentData } =
+    useMemo(() => {
+      if (!!repAcademyData && repAcademyData?.length > 0) {
+        return repAcademyData[0];
+      } else if (
+        !!practitionerAcademyData &&
+        practitionerAcademyData?.length > 0
+      ) {
+        return practitionerAcademyData[0];
+      } else {
+        return [];
+      }
+    }, [practitionerAcademyData, repAcademyData]);
 
   const {
     data: repContentData,
@@ -100,7 +133,12 @@ const ContentDetails = () => {
           setLoader(false);
           // queryClient.invalidateQueries(DELIVERY_ADDRESS_LIST);
           toastSuccess(data?.data?.message ?? "Address deleted successfully.");
-          router.push(`/academy/${router?.query?.slug}`);
+          // router.push(`/academy/${router?.query?.slug}`);
+          router.push(
+            `/academy/${router?.query?.slug}/${
+              router?.query?.next_content
+            }/${getNextContentId(router?.query?.next_content)}`
+          );
         },
         onError: (data: any) => {
           setLoader(false);
@@ -112,7 +150,12 @@ const ContentDetails = () => {
         onSuccess: (data: any) => {
           setLoader(false);
           toastSuccess(data?.data?.message ?? "Address deleted successfully.");
-          router.push(`/academy/${router?.query?.slug}`);
+          // router.push(`/academy/${router?.query?.slug}`);
+          router.push(
+            `/academy/${router?.query?.slug}/${
+              router?.query?.next_content
+            }/${getNextContentId(router?.query?.next_content)}`
+          )
         },
         onError: (data: any) => {
           setLoader(false);
@@ -121,16 +164,43 @@ const ContentDetails = () => {
       });
     }
   };
+  const allContentIdList = useMemo(() => {
+    if (!!academyContentData && academyContentData?.length > 0) {
+      const contentList = academyContentData
+        ?.map((_c: any) => _c?.content)
+        .flat(Infinity);
+      const idList = contentList?.map((_i: any) => `${_i?.id}`);
+      return idList;
+    } else {
+      return [];
+    }
+  }, [academyContentData]);
+  const getNextContentId = (_id: any) => {
+    if (!!allContentIdList && allContentIdList?.length > 0 && !!_id) {
+      const index = allContentIdList?.indexOf(_id);
+      console.log("index", index, allContentIdList, _id);
+
+      if (index !== -1 && index < allContentIdList.length - 1) {
+        return `?next_content=${allContentIdList[index + 1]}`;
+      } else {
+        return "1";
+      }
+    } else {
+      return "2";
+    }
+  };
   useEffect(() => {
     setPageLoader(true);
-    const { slug } = router?.query;
+    const { slug, next_content } = router?.query;
     if (!!slug) {
       if (slug == "practitioner-academy") {
         // setAcademyType("Practitioner acadamy");
         fetchPractitioner();
+        fetchPractitionerAcademyContent();
       } else if (slug == "rep-academy") {
         // setAcademyType("Rep acadamy");
         fetchRep();
+        fetchRepAcademyContent();
       } else {
         router.push("/academy");
       }
@@ -138,7 +208,8 @@ const ContentDetails = () => {
   }, [router]);
   console.log(
     "router=====================================================>",
-    video_content
+    getNextContentId(router?.query?.next_content),
+    allContentIdList
   );
   const videoLinkChecker = useMemo(() => {
     if (
@@ -159,6 +230,19 @@ const ContentDetails = () => {
       return video_content;
     }
   }, [video_content]);
+  // useEffect(() => {
+  //   const { slug, next_content } = router?.query;
+  //   const getIdList = getCookie("id_list") ?? "";
+  //   if (!!getIdList) {
+  //     const parsedArray = JSON.parse(getIdList) ?? [];
+  //     console.log("coooookies =====>", parsedArray);
+  //     setContentIdList(parsedArray);
+  //   }
+  //   if (!!next_content) {
+  //     // getNextContentId(next_content);
+  //     console.log("coooookies", getNextContentId(next_content));
+  //   }
+  // }, []);
   return (
     <Wrapper>
       {pageLoader ? (
@@ -224,15 +308,22 @@ const ContentDetails = () => {
                           />
                         </Button>
                       )} */}
-                      {!!videoLinkChecker && (
-                        <iframe
+                      {!!video_content && checkWindow() && (
+                        // <iframe
+                        //   width="100%"
+                        //   height="100%"
+                        //   src={videoLinkChecker}
+                        //   title="YouTube Video"
+                        //   frameBorder="0"
+                        //   allowFullScreen
+                        // ></iframe>
+                        <ReactPlayer
+                          url={video_content}
+                          className="react-player"
+                          playing={false}
                           width="100%"
                           height="100%"
-                          src={videoLinkChecker}
-                          title="YouTube Video"
-                          frameBorder="0"
-                          allowFullScreen
-                        ></iframe>
+                        />
                       )}
                     </Box>
                   </Box>
@@ -250,7 +341,7 @@ const ContentDetails = () => {
                     dangerouslySetInnerHTML={{ __html: text_content }}
                   />
                 </Box>
-                {!is_completed && (
+                {!is_completed ? (
                   <Box className="btn_otr">
                     <CustomButtonPrimary
                       variant="contained"
@@ -264,6 +355,28 @@ const ContentDetails = () => {
                       )}
                     </CustomButtonPrimary>
                   </Box>
+                ) : !!router?.query?.next_content ? (
+                  <Box className="btn_otr">
+                    <CustomButtonPrimary
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        router.push(
+                          `/academy/${router?.query?.slug}/${
+                            router?.query?.next_content
+                          }/${getNextContentId(router?.query?.next_content)}`
+                        );
+                      }}
+                    >
+                      {/* {loader ? (
+                        <ButtonLoader />
+                      ) : ( */}
+                      <Typography>Continue</Typography>
+                      {/* )} */}
+                    </CustomButtonPrimary>
+                  </Box>
+                ) : (
+                  <></>
                 )}
               </Box>
             </Container>
