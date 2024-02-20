@@ -12,7 +12,7 @@ export const BannerWrapper = styled(Box)`
       height: 100vh;
     }
     &:after {
-      background-color: rgba(0, 0, 0, 0.41);
+      background-color: rgba(0, 0, 0, 0.21);
       top: 0;
       left: 0;
       width: 100%;

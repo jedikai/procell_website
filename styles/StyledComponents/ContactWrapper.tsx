@@ -4,6 +4,93 @@ import { Box } from "@mui/system";
 
 export const ContactWrapper = styled(Box)`
   position: relative;
+  .cnt_grid_sec {
+    .cnt_grid {
+      justify-content: center;
+    }
+  }
+  .rep_user {
+    padding: 15px;
+    border-radius: 10px;
+    background: linear-gradient(
+      117deg,
+      rgba(84, 55, 149, 0.06) 0.74%,
+      rgba(22, 166, 223, 0.06) 113.65%
+    );
+    margin: 0 0 15px;
+    .cnt_image {
+      width: 110px;
+      height: 110px;
+
+      img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+    .cnt_list {
+      padding-left: 15px;
+      @media (max-width: 599px) {
+        width: 100%;
+        padding: 0;
+        margin-top: 10px;
+      }
+      li {
+        &.cnt_item {
+          @media (max-width: 599px) {
+            max-width: 80%;
+            margin: 0 auto 2px !important;
+            justify-content: flex-start;
+          }
+        }
+        @media (max-width: 599px) {
+          justify-content: center;
+        }
+        .icon {
+          font-size: 0;
+          line-height: 0;
+        }
+        &:not(:last-child) {
+          margin: 0 0 2px 0;
+        }
+        svg {
+          @media (max-width: 599px) {
+            width: 15px;
+          }
+        }
+      }
+      .cnt_name {
+        font-size: 24px;
+        font-weight: 600;
+        color: #000;
+      }
+      .cnt_text {
+        p {
+          color: #000;
+          font-weight: 500;
+          font-size: 16px;
+          margin-left: 10px;
+          @media (max-width: 599px) {
+            font-size: 11px;
+          }
+        }
+        a {
+          color: #000;
+          font-weight: 500;
+          font-size: 16px;
+          margin-left: 10px;
+          text-decoration: none;
+          @media (max-width: 599px) {
+            font-size: 11px;
+          }
+
+          &:hover {
+            color: #16a6df;
+          }
+        }
+      }
+    }
+  }
   .blue_leaf {
     position: absolute;
     left: 10%;
@@ -98,13 +185,17 @@ export const ContactWrapper = styled(Box)`
   .sec_title {
     margin-bottom: 30px;
     h4 {
+      font-size: 25px;
       margin-bottom: 25px;
       @media (max-width: 1199px) {
-        font-size: 30px;
+        font-size: 20px;
         margin-bottom: 15px;
       }
       @media (max-width: 899px) {
         font-size: 24px;
+      }
+      @media (max-width: 599px) {
+        font-size: 14px;
       }
     }
     h5 {

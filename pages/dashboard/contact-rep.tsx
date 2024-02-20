@@ -18,7 +18,7 @@ export default function Index() {
         <Box className="cmn_box">
           <ContactRepWrapper>
             <Typography variant="h4" className="main_heading">
-              Contact a rep
+              Contact your rep
             </Typography>
             <Box className="cnt_card_wrap">
               {!isLoading ? (

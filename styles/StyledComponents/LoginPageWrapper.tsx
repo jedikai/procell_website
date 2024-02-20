@@ -96,7 +96,7 @@ export const LoginPageWrapper = styled(Box)`
           &.Mui-checked {
             padding: 9px 6px 8px 6px;
             color: ${primaryColors.text_purple};
-            opacity: 0.7;
+            opacity: 1;
           }
         }
         .MuiSwitch-root {
@@ -109,8 +109,11 @@ export const LoginPageWrapper = styled(Box)`
             background-color: ${primaryColors.text_purple} !important;
             opacity: 1;
           }
-          .MuiSwitch-thumb{
-            color: ${primaryColors.primary};;
+          .MuiSwitch-thumb {
+            background: ${primaryColors.white};
+          }
+          .MuiSwitch-track {
+            background: ${primaryColors.primary} !important;
           }
         }
         .MuiSwitch-track {
@@ -119,6 +122,11 @@ export const LoginPageWrapper = styled(Box)`
           background: ${primaryColors.white};
           border-radius: 36px;
           opacity: 1;
+        }
+        .Mui-checked {
+          + .MuiSwitch-track {
+            background: ${primaryColors.text_purple};
+          }
         }
         .MuiSwitch-thumb {
           width: 16px;

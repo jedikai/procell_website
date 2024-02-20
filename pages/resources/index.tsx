@@ -239,6 +239,7 @@ export default function Index() {
             ? "Practitioner Academy"
             : "Rep Academy"
         }
+        innnerHeaderMainurl={'/academy'}
       />
       <ResourecesWrapper className="cmn_gap">
         <Container fixed>

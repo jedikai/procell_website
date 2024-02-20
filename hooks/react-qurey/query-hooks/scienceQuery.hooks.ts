@@ -8,6 +8,7 @@ import {
   SCIENCE_CATEGORIES_LIST,
   SCIENCE_POPULAR_POST_LIST
 } from "../query-keys/scienceQuery.keys";
+import axiosInstance from "@/api/axiosInstance";
 
 //   <------------------ CATEGORIES LIST ------------------->
 const getScienceCategoriesList = async () => {
@@ -43,6 +44,24 @@ export const useScienceBlogList = (
     onError,
     // enabled: false,
     select: (data) => data?.data ?? []
+  });
+
+const getScienceBlogList_new = async () => {
+  const res = await axiosInstance.get(
+    endpoints.app.science_blog_list_new
+  );
+  return res;
+};
+
+export const useScienceBlogList_new = (
+  onSuccess: any = () => {},
+  onError: any = () => {}
+) =>
+  useQuery([SCIENCE_BLOG_LIST], getScienceBlogList_new, {
+    onSuccess,
+    onError,
+    // enabled: false,
+    select: (data) => data?.data?.data ?? []
   });
 //   <------------------ SCIENCE BLOG LIST SEARCH WISE------------------->
 const getScienceBlogListSearchWise = async (searchedText: any) => {

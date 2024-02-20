@@ -12,6 +12,7 @@ export const LinearProgressWrapper = styled(Box)`
   .progress_bar {
     /* border: 3px solid blue; */
     .container {
+      padding: 0;
       background-color: #efefef;
       border-radius: 50px;
       > div {

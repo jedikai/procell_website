@@ -1,6 +1,7 @@
 import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import CommonAccordion from "@/components/CommonAccordion/CommonAccordion";
 import { useMyOrderListList } from "@/hooks/react-qurey/query-hooks/myOrdersQuery.hooks";
+import useNotiStack from "@/hooks/useNotistack";
 import DashboardWrapper from "@/layout/DashboardWrapper/DashboardWrapper";
 import Wrapper from "@/layout/wrapper/Wrapper";
 import { MyOrdersWrapper } from "@/styles/StyledComponents/MyOrderWrapper";
@@ -24,6 +25,8 @@ export default function MyOrders() {
     /* Optional options */
     threshold: 0
   });
+
+  const { toastSuccess, toastError } = useNotiStack();
 
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState("?sortby=name");
@@ -87,6 +90,19 @@ export default function MyOrders() {
   const handleSortadta = (event: SelectChangeEvent | any) => {
     setValue(event.target.value);
     filterList({ type: "sort", value: event.target.value });
+  };
+
+  const copyToClickBoard = async (item:string) => {
+    await navigator.clipboard.writeText(item).then(
+      () => {
+        toastSuccess("Content copied to clipboard");
+        /* Resolved - text copied to clipboard successfully */
+      },
+      () => {
+        console.error("Failed to copy");
+        /* Rejected - text failed to copy to the clipboard */
+      }
+    );
   };
 
   useEffect(() => {
@@ -248,7 +264,7 @@ export default function MyOrders() {
                               {data?.name}
                             </Typography>
                           </Typography>
-                          <Button>
+                          <Button onClick={() => copyToClickBoard(data?.name)}>
                             <Typography variant="caption">
                               <CopyIcon />
                             </Typography>

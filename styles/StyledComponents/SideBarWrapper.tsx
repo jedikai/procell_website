@@ -120,7 +120,7 @@ export const SideBarWrapper = styled(Box)`
   }
   .sidebar_btm {
     padding-top: 26px;
-    max-height: 470px;
+
     padding-right: 5px;
     overflow-y: auto;
     &::-webkit-scrollbar {

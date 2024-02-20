@@ -16,8 +16,8 @@ function index() {
   return (
     <Wrapper>
       <InnerHeader
-        innerHeaderTitle="Clinical studies"
-        innerHeaderRediractedPage="Clinical studies"
+        innerHeaderTitle="Clinical Studies"
+        innerHeaderRediractedPage="Clinical Studies"
         bannerImage={assest.innerHeaderbackground}
         innerHeaderMainPage="Home"
       />

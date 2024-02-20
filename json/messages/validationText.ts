@@ -4,6 +4,7 @@ export default {
     zipCode: "Zip code is required",
     language: "Preffered language is required",
     company: "Company is required",
+    source: "Message is required",
     country: "Country is required",
     state: "State is required",
     city: "City is required",

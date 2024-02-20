@@ -1,3 +1,4 @@
+import { primaryColors } from "@/themes/_muiPalette";
 import styled from "@emotion/styled";
 import Box from "@mui/material/Box";
 
@@ -7,6 +8,7 @@ export const SelectVerifyWrapper = styled(Box)`
     font-weight: 500;
     text-align: center;
     margin: 0 0 25px;
+    color: ${primaryColors.black};
   }
   .btn_holder {
     display: flex;

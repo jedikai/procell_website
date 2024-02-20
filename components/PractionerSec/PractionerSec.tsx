@@ -5,7 +5,7 @@
 /* eslint-disable import/order */
 /* eslint-disable mui-path-imports/mui-path-imports */
 import Container from "@mui/material/Container";
-import React, { memo, useCallback, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import CommonAccordion from "../CommonAccordion/CommonAccordion";
 
 import {
@@ -194,7 +194,6 @@ const AccordionEachRow = (props: any) => {
       return "";
     }
   };
-
   return (
     <CommonAccordion
       indexNumber={_moduleIndex}
@@ -266,12 +265,23 @@ const AccordionEachRow = (props: any) => {
 };
 
 export default memo(function PractionerSec({ academyContentData }: any) {
-  const [expanded, setExpanded] = React.useState<string | false>("panel1");
+  const [expanded, setExpanded] = React.useState<string | false>("");
 
   const handleChanges =
     (panel: string) => (event: React.SyntheticEvent, newExpanded: boolean) => {
       setExpanded(newExpanded ? panel : false);
     };
+
+  useEffect(() => {
+    if (!!academyContentData && academyContentData?.length > 0) {
+      academyContentData?.map((_i: any, index: number) => {
+        let moduleCompletedValue = parseInt(_i?.completed ?? 0);
+        if (moduleCompletedValue > 0 && moduleCompletedValue < 100) {
+          setExpanded(`panel${index + 1}`);
+        }
+      });
+    }
+  }, []);
 
   return (
     <PractionerSecWrapper>

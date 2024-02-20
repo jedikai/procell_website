@@ -22,7 +22,6 @@ export default function Index() {
         innerHeaderRediractedPage="Acadamy"
         innerHeaderTitle="Academy"
         innerHeaderMainPage="Home"
-        innnerHeaderMainurl="Home"
       />
       <TrainingAcademyWrapper className="cmn_gap">
         {!isLoading && !!academyInfo ? (

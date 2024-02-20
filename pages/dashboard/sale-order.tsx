@@ -11,9 +11,11 @@ import DashboardWrapper from "@/layout/DashboardWrapper/DashboardWrapper";
 import Wrapper from "@/layout/wrapper/Wrapper";
 import { QuotationWrapper } from "@/styles/StyledComponents/QuotationWrapper";
 import CustomSelect from "@/ui/Filter/CustomSelect";
+import DownloadIcon from "@/ui/Icons/DownloadIcon";
 import DropDownIcon from "@/ui/Icons/DropdownIcon";
 import {
   Box,
+  Chip,
   IconButton,
   MenuItem,
   SelectChangeEvent,
@@ -72,8 +74,8 @@ function Index() {
   };
   function formatDateString(inputDate: string): string {
     const date = new Date(inputDate);
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
     const year = String(date.getFullYear()).slice(2);
 
     return `${month}/${day}/${year}`;
@@ -174,8 +176,39 @@ function Index() {
                                 </Typography>
                               </TableCell>
                               <TableCell align="center">
-                                <Typography variant="body1" style={{ color: '#848484' }}>
+                                <Typography
+                                  variant="body1"
+                                  style={{ color: "#848484" }}
+                                >
                                   ${row?.amount_total}
+                                </Typography>
+                              </TableCell>
+                              <TableCell align="center">
+                                <Typography
+                                  variant="body1"
+                                  style={{ color: "#848484" }}
+                                >
+                                  {/* {loading ? (
+                                    <Chip
+                                      icon={
+                                        <CircularProgress
+                                          size={20}
+                                          thickness={4}
+                                        />
+                                      }
+                                      label="Downloading invoice"
+                                      className="invoice_chip"
+                                    />
+                                  ) : ( */}
+                                    <Chip
+                                      icon={<DownloadIcon />}
+                                      label="Download"
+                                      className="invoice_chip"
+                                      // onClick={() => {
+                                      //   downloadPdf(props?.id);
+                                      // }}
+                                    />
+                                  {/* )} */}
                                 </Typography>
                               </TableCell>
 

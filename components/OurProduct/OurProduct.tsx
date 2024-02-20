@@ -1,18 +1,17 @@
 /* eslint-disable react/no-array-index-key */
+import { useFeaturedProductList } from "@/hooks/react-qurey/query-hooks/productQuery.hooks";
 import { ourProductsection } from "@/interface/ourproduct.interfaces";
 import assest from "@/json/assest";
-import { ourproductList } from "@/json/mock/ourproductLits.mock";
 import { OurProductWrapper } from "@/styles/StyledComponents/OurProductWrapper";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import Image from "next/image";
+import { memo } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import OurProductSlider from "../OurProductSlider/OurProductSlider";
-import { useFeaturedProductList } from "@/hooks/react-qurey/query-hooks/productQuery.hooks";
-import { memo } from "react";
 
 function OurProduct({
   producttitle,

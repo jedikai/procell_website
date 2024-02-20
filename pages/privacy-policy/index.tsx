@@ -13,7 +13,7 @@ function index() {
     <Wrapper>
       <InnerHeader
         innerHeaderTitle="Privacy policy"
-        innerHeaderRediractedPage="Privacy policy"
+        innerHeaderRediractedPage="Privacy Policy"
         bannerImage={assest.innerHeaderbackground} innerHeaderMainPage="Home"     />
       <PrivacyWrapper className="cmn_gap">
         <Container fixed>

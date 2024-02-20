@@ -9,15 +9,15 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 
+import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
+import { useGetHelpCeoSubmit } from "@/hooks/react-qurey/query-hooks/getHelpQuery.hooks";
+import useNotiStack from "@/hooks/useNotistack";
+import validationText from "@/json/messages/validationText";
+import { yupResolver } from "@hookform/resolvers/yup";
 import Typography from "@mui/material/Typography";
 import Image from "next/image";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import validationText from "@/json/messages/validationText";
 import { useForm } from "react-hook-form";
-import useNotiStack from "@/hooks/useNotistack";
-import { useGetHelpCeoSubmit } from "@/hooks/react-qurey/query-hooks/getHelpQuery.hooks";
-import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
+import * as yup from "yup";
 
 type Inputs = {
   email: string;
@@ -35,9 +35,13 @@ const validationSchema = yup.object().shape({
   fullName: yup
     .string()
     .required(validationText.error.fullName)
-    .test('no-leading-space', 'Full name should not start with a blank space', (value) => {
-      return !value || !value.startsWith(' ');
-    }),
+    .test(
+      "no-leading-space",
+      "Full name should not start with a blank space",
+      (value) => {
+        return !value || !value.startsWith(" ");
+      }
+    ),
   callBackPhoneNumber: yup
     .string()
     .required(validationText.error.phone)
@@ -111,7 +115,7 @@ export default function Index() {
     <Wrapper>
       <InnerHeader
         innerHeaderTitle="Contact the ceo"
-        innerHeaderRediractedPage="Contact the ceo"
+        innerHeaderRediractedPage="Contact the CEO"
         bannerImage={assest.innerHeaderbackground}
         innerHeaderMainPage="Home"
       />
@@ -131,7 +135,7 @@ export default function Index() {
               spacing={{ xl: 4, lg: 2, md: 2, xs: 4 }}
               alignItems="center"
             >
-              <Grid item xl={5} lg={6} md={6} xs={12}>
+              <Grid item xl={5} lg={6} md={6} xs={12} className="left_grid">
                 <figure>
                   <Image
                     src={assest?.contactCeoImage}
@@ -170,7 +174,8 @@ export default function Index() {
                         placeholder="Call back number"
                         {...register("callBackPhoneNumber")}
                         onKeyDown={(e: any) =>
-                          exceptThisSymbols.includes(e.key) && e.preventDefault()
+                          exceptThisSymbols.includes(e.key) &&
+                          e.preventDefault()
                         }
                       />
                     </Box>
@@ -183,7 +188,7 @@ export default function Index() {
                     </Box>
                     <Box className="form_group">
                       <InputFieldCommon
-                        placeholder="Do you have any older number?"
+                        placeholder="Do you have an older number?"
                         {...register("salesOrder")}
                       />
                     </Box>
@@ -227,7 +232,7 @@ export default function Index() {
                           variant="contained"
                           color="primary"
                           type="submit"
-                        // form="contact_form"
+                          // form="contact_form"
                         >
                           <Typography>Submit</Typography>
                         </CustomButtonPrimary>
@@ -235,8 +240,8 @@ export default function Index() {
                         <CustomButtonPrimary
                           variant="contained"
                           color="primary"
-                        // type="submit"
-                        // form="contact_form"
+                          // type="submit"
+                          // form="contact_form"
                         >
                           <ButtonLoader />
                         </CustomButtonPrimary>

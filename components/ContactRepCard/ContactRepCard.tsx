@@ -30,16 +30,18 @@ export default function ContactRepCard({
         <Grid item lg={7.5} md={12} sm={12} xs={12}>
           <Box className="cnt_riight">
             <Box className="cnt_top">
-              <Typography variant="body1" className="heading">
-                {title}
-              </Typography>
-              <Typography variant="body1" className="desg">
+              {!!title && title != "N/A" && (
+                <Typography variant="body1" className="heading">
+                  {title}
+                </Typography>
+              )}
+              {!!desg && desg != "N/A" && <Typography variant="body1" className="desg">
                 {desg}
-              </Typography>
+              </Typography>}
             </Box>
             <Box className="cnt_btm">
               <List disablePadding className="cnt_list">
-                <ListItem disablePadding>
+                {!!email && email != "N/A" && <ListItem disablePadding>
                   <i className="icon">
                     <MailIcon />
                   </i>
@@ -48,8 +50,8 @@ export default function ContactRepCard({
 
                     <Link href={`mailto:${emailUrl}`}>{email}</Link>
                   </Typography>
-                </ListItem>
-                <ListItem disablePadding>
+                </ListItem>}
+                {!!phone && phone != "N/A" && <ListItem disablePadding>
                   <i className="icon">
                     <CallIcon />
                   </i>
@@ -58,7 +60,7 @@ export default function ContactRepCard({
 
                     {<Link href={`tel:${phoneUrl}`}>{phone}</Link>}
                   </Typography>
-                </ListItem>
+                </ListItem>}
               </List>
             </Box>
           </Box>

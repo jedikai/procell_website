@@ -1,17 +1,7 @@
 /* eslint-disable react/no-array-index-key */
 import { ReviewSliderWrapper } from "@/styles/StyledComponents/ReviewSliderWrapper";
-import { primaryColors } from "@/themes/_muiPalette";
-import GreenStarIcon from "@/ui/Icons/GreenStarIcon";
-import StarIcon from "@/ui/Icons/StarIconBig";
-import styled from "@emotion/styled";
-import Rating from "@mui/material/Rating";
-import Typography from "@mui/material/Typography";
-import { Box, Container, Stack } from "@mui/system";
-import Head from "next/head";
-import Link from "next/link";
-import Script from "next/script";
-import React, { FC, memo, useEffect, useState } from "react";
-import Slider from "react-slick";
+import { Box, Container } from "@mui/system";
+import React, { memo } from "react";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 

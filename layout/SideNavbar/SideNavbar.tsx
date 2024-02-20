@@ -154,19 +154,19 @@ export default function SideNavbar() {
       ),
       pathLink: "/dashboard/manage-communications"
     },
-    {
-      name: "Quotations",
-      icon: (
-        <QuotationIcon
-          IconColor={
-            router?.pathname === "/dashboard/quotation"
-              ? primaryColors.white
-              : null
-          }
-        />
-      ),
-      pathLink: "/dashboard/quotation"
-    },
+    // {
+    //   name: "Quotations",
+    //   icon: (
+    //     <QuotationIcon
+    //       IconColor={
+    //         router?.pathname === "/dashboard/quotation"
+    //           ? primaryColors.white
+    //           : null
+    //       }
+    //     />
+    //   ),
+    //   pathLink: "/dashboard/quotation"
+    // },
 
     {
       name: "Manage payment methods",
@@ -195,7 +195,7 @@ export default function SideNavbar() {
           }
         />
       ),
-      pathLink: "/dashboard/student-profile"
+      pathLink: "/dashboard/profile"
     },
 
     {
@@ -212,19 +212,19 @@ export default function SideNavbar() {
       pathLink: "/dashboard/my-clients"
     },
 
-    {
-      name: "My Orders",
-      icon: (
-        <OrderIcon
-          IconColor={
-            router?.pathname === "/dashboard/my-orders"
-              ? primaryColors.white
-              : null
-          }
-        />
-      ),
-      pathLink: "/dashboard/my-orders"
-    },
+    // {
+    //   name: "My Orders",
+    //   icon: (
+    //     <OrderIcon
+    //       IconColor={
+    //         router?.pathname === "/dashboard/my-orders"
+    //           ? primaryColors.white
+    //           : null
+    //       }
+    //     />
+    //   ),
+    //   pathLink: "/dashboard/my-orders"
+    // },
 
     // {
     //   name: "Certificates",

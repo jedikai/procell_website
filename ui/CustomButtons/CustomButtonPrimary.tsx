@@ -4,21 +4,19 @@ import Button, { ButtonProps } from "@mui/material/Button";
 
 const CustomButtonWrapper = styled(Button)`
   display: flex;
-  padding: 16px 44px;
+  padding: 14px 44px;
   border-radius: 50px;
   min-width: 194px;
   justify-content: center;
   align-items: center;
-  &.MuiButton-outlined{
-    &:hover{
-      p{
+  &.MuiButton-outlined {
+    &:hover {
+      p {
         color: ${primaryColors.white};
       }
     }
   }
 
-  
-  
   @media (max-width: 599px) {
     padding: 12px 32px;
   }
@@ -44,7 +42,7 @@ const CustomButtonWrapper = styled(Button)`
     }
   }
   p {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     color: ${primaryColors?.white};
     margin: 0 !important;
@@ -75,8 +73,9 @@ const CustomButtonPrimary = ({
 }: CustomButtonprops) => {
   return (
     <CustomButtonWrapper
-      className={`${buttonType === "small" && "smallButton"} ${className || ""
-        }`}
+      className={`${buttonType === "small" && "smallButton"} ${
+        className || ""
+      }`}
       {...others}
     >
       {children}

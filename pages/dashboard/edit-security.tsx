@@ -107,6 +107,7 @@ export default function Index() {
                 <Box className="form_group bottomless-margin">
                   <InputFieldCommon
                     placeholder="Password"
+                    autoComplete='off'
                     isPassword
                     {...register("old_password")}
                     onKeyUp={(e: any) =>
@@ -127,6 +128,7 @@ export default function Index() {
                 <Box className="form_group bottomless-margin">
                   <InputFieldCommon
                     placeholder="New password"
+                    autoComplete='off'
                     isPassword
                     {...register("new_password")}
                     onKeyUp={(e: any) =>
@@ -153,6 +155,7 @@ export default function Index() {
                 <Box className="form_group bottomless-margin">
                   <InputFieldCommon
                     placeholder="Confirm new password"
+                    autoComplete='off'
                     isPassword
                     {...register("confirm_password")}
                     onKeyUp={(e: any) =>

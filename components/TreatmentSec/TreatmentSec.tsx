@@ -190,7 +190,7 @@ export default memo(() => {
                               </ListItem>
                             )}
                             {!!_i?.serum_used && (
-                              <ListItem disablePadding>
+                              <ListItem disablePadding className="drop_item">
                                 <DropIcon />
                                 <Typography variant="body1">
                                   {_i?.serum_used}

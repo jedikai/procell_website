@@ -4,7 +4,8 @@ import InnerHeader from "@/components/InnerHeader/InnerHeader";
 import ScienceCard from "@/components/ScienceCard/ScienceCard";
 import {
   useScienceBlogList,
-  useScienceBlogListSearchWise
+  useScienceBlogListSearchWise,
+  useScienceBlogList_new
 } from "@/hooks/react-qurey/query-hooks/scienceQuery.hooks";
 
 import assest from "@/json/assest";
@@ -28,110 +29,128 @@ export default function index() {
   const [selectedCategoriesId, setSelectedCategoriesId] =
     useState<any>(undefined);
   const debouncedData = useDebounce(searchedText, 300);
-  const onSuccessScienceBlogList = (response: any) => {
-    let filterResponse = [];
-    // if (!!selectedCategoriesId) {
-    //   filterResponse =
-    //     response && response?.length > 0
-    //       ? response?.map((_i: any) => {
-    //           return {
-    //             image: _i?.fimg_url ?? "",
-    //             title: _i?.title?.rendered ?? "",
-    //             link: `/science/science-details/${_i?.id}`
-    //           };
-    //         })
-    //       : [];
-    // } else {
-    //   filterResponse =
-    //     response && response?.length > 0
-    //       ? response?.map((_i: any) => {
-    //           return {
-    //             image:
-    //               _i?.fimg_url ?? "",
-    //             title: _i?.title?.rendered ?? "",
-    //             link: _i?.acf?.blogs_links ?? "",
-    //             desc: _i?.content?.rendered ?? ""
-    //           };
-    //         })
-    //       : [];
-    // }
-    filterResponse =
-      response && response?.length > 0
-        ? response?.map((_i: any) => {
-            return {
-              image: _i?.fimg_url ?? "",
-              title: _i?.title?.rendered ?? "",
-              link: _i?.acf?.blogs_links ?? "",
-              desc: _i?.content?.rendered ?? "",
-              author: _i?.acf?.author_name ?? ""
-            };
-          })
-        : [];
-    setScienceBlogList(filterResponse);
-  };
-  const onErrorScienceBlogList = () => {};
-  const {
-    data: science_blog,
-    isLoading: science_blog_loader,
-    refetch
-  } = useScienceBlogList(
-    selectedCategoriesId,
-    onSuccessScienceBlogList,
-    onErrorScienceBlogList
-  );
-  const onSuccessScienceBlogListSearchWise = (response: any) => {
-    let filterResponse = [];
-    filterResponse =
-      response && response?.length > 0
-        ? response?.map((_i: any) => {
-            return {
-              image: _i?.searched_post_image ?? "",
-              title: _i?.searched_post_title ?? "",
-              link: _i?.searched_post_external_link ?? "",
-              desc: _i?.searched_post_excerpt_content ?? "",
-              author: _i?.searched_post_author_name ?? ""
-            };
-          })
-        : [];
-    setScienceBlogList(filterResponse);
-  };
-  const onErrorScienceBlogListSearchWise = () => {};
-  const {
-    data: science_blog_search_wise,
-    isLoading: science_blog_loader_search_wise
-  } = useScienceBlogListSearchWise(
-    debouncedData,
-    searchedText?.length > 0,
-    onSuccessScienceBlogListSearchWise,
-    onErrorScienceBlogListSearchWise
-  );
+  // const onSuccessScienceBlogList = (response: any) => {
+  //   let filterResponse = [];
+  //   // if (!!selectedCategoriesId) {
+  //   //   filterResponse =
+  //   //     response && response?.length > 0
+  //   //       ? response?.map((_i: any) => {
+  //   //           return {
+  //   //             image: _i?.fimg_url ?? "",
+  //   //             title: _i?.title?.rendered ?? "",
+  //   //             link: `/science/science-details/${_i?.id}`
+  //   //           };
+  //   //         })
+  //   //       : [];
+  //   // } else {
+  //   //   filterResponse =
+  //   //     response && response?.length > 0
+  //   //       ? response?.map((_i: any) => {
+  //   //           return {
+  //   //             image:
+  //   //               _i?.fimg_url ?? "",
+  //   //             title: _i?.title?.rendered ?? "",
+  //   //             link: _i?.acf?.blogs_links ?? "",
+  //   //             desc: _i?.content?.rendered ?? ""
+  //   //           };
+  //   //         })
+  //   //       : [];
+  //   // }
+  //   filterResponse =
+  //     response && response?.length > 0
+  //       ? response?.map((_i: any) => {
+  //           return {
+  //             image: _i?.fimg_url ?? "",
+  //             title: _i?.title?.rendered ?? "",
+  //             link: _i?.acf?.blogs_links ?? "",
+  //             desc: _i?.content?.rendered ?? "",
+  //             author: _i?.acf?.author_name ?? ""
+  //           };
+  //         })
+  //       : [];
+  //   setScienceBlogList(filterResponse);
+  // };
+  // const onErrorScienceBlogList = () => {};
+  // const {
+  //   data: science_blog,
+  //   isLoading: science_blog_loader,
+  //   refetch
+  // } = useScienceBlogList(
+  //   selectedCategoriesId,
+  //   onSuccessScienceBlogList,
+  //   onErrorScienceBlogList
+  // );
+  const { data: new_scienceList, isLoading: new_scienceListLoading } =
+    useScienceBlogList_new((response: any) => {
+      console.log("response", response);
+
+      const filterResponse =
+        response && response?.length > 0
+          ? response?.map((_i: any) => {
+              return {
+                image: _i?.image_url ?? "",
+                title: _i?.name ?? "",
+                link: _i?.redirect_url ?? "",
+                desc: _i?.description ?? "",
+                author: _i?.author ?? ""
+              };
+            })
+          : [];
+      setScienceBlogList(filterResponse);
+    });
+  // const onSuccessScienceBlogListSearchWise = (response: any) => {
+  //   let filterResponse = [];
+  //   filterResponse =
+  //     response && response?.length > 0
+  //       ? response?.map((_i: any) => {
+  //           return {
+  //             image: _i?.searched_post_image ?? "",
+  //             title: _i?.searched_post_title ?? "",
+  //             link: _i?.searched_post_external_link ?? "",
+  //             desc: _i?.searched_post_excerpt_content ?? "",
+  //             author: _i?.searched_post_author_name ?? ""
+  //           };
+  //         })
+  //       : [];
+  //   setScienceBlogList(filterResponse);
+  // };
+  // const onErrorScienceBlogListSearchWise = () => {};
+  // const {
+  //   data: science_blog_search_wise,
+  //   isLoading: science_blog_loader_search_wise
+  // } = useScienceBlogListSearchWise(
+  //   debouncedData,
+  //   searchedText?.length > 0,
+  //   onSuccessScienceBlogListSearchWise,
+  //   onErrorScienceBlogListSearchWise
+  // );
 
   const getCategoriesWiseBlog = (id: string | number) =>
     setSelectedCategoriesId(id);
   const getSearchValue = (e: any) => {
     if (e.target.value == "") {
-      refetch();
+      // refetch();
     } else {
       setSearchedText(e.target.value ?? "");
     }
   };
   const loadMoreHandler = () => setLoadMore(loadMore + 5);
-  console.log("scienceBlogList", loadMore);
+  console.log("scienceBlogList", new_scienceList);
 
   return (
     <Wrapper>
       <InnerHeader
-        innerHeaderTitle="The science"
-        innerHeaderRediractedPage="The science"
+        innerHeaderTitle="The Science"
+        innerHeaderRediractedPage="The Science"
         bannerImage={assest.innerHeaderbackground}
         innerHeaderMainPage="Home"
       />
       <Box className="science_outr cmn_gap eclispe_effct">
-        {!(
-          (science_blog_loader && science_blog_loader_search_wise)
+        {!new_scienceListLoading ? (
+          // !(
+          //   (science_blog_loader && science_blog_loader_search_wise)
           // &&
           // isLoading
-        ) ? (
           <>
             <Container fixed>
               <Grid
@@ -141,12 +160,13 @@ export default function index() {
                 justifyContent="center"
               >
                 <Grid item xs={12} md={11}>
-                  <Box className="search_comp_wrapper">
+                  {/* <Box className="search_comp_wrapper">
                     <SearchComponent getSearchValue={getSearchValue} />
-                  </Box>
-                  {!(
-                    science_blog_loader || science_blog_loader_search_wise
-                  ) && (
+                  </Box> */}
+                  {!new_scienceListLoading && (
+                    // !(
+                    //   science_blog_loader || science_blog_loader_search_wise
+                    // )
                     <>
                       <Grid
                         container
@@ -154,19 +174,20 @@ export default function index() {
                         rowSpacing={{ lg: 7, md: 5, xs: 4 }}
                       >
                         {scienceBlogList && scienceBlogList?.length > 0 ? (
-                          scienceBlogList
-                            ?.slice(0, loadMore)
-                            .map((data: any, index: number) => (
-                              <Grid item xs={12} md={4} key={index + 1}>
-                                <ScienceCard
-                                  image={data?.image}
-                                  title={data?.title}
-                                  link={data?.link}
-                                  desc={data?.desc}
-                                  author={data?.author}
-                                />
-                              </Grid>
-                            ))
+                          // scienceBlogList
+                          //   ?.slice(0, loadMore)
+                          //   .map((data: any, index: number) => (
+                          scienceBlogList?.map((data: any, index: number) => (
+                            <Grid item xs={12} md={4} key={index + 1}>
+                              <ScienceCard
+                                image={data?.image}
+                                title={data?.title}
+                                link={data?.link}
+                                desc={data?.desc}
+                                author={data?.author}
+                              />
+                            </Grid>
+                          ))
                         ) : (
                           <div
                             style={{
@@ -201,7 +222,7 @@ export default function index() {
                           </div>
                         )}
                       </Grid>
-                      {scienceBlogList.length > loadMore && (
+                      {/* {scienceBlogList.length > loadMore && (
                         <Box className="text_center">
                           <CustomButtonPrimary
                             type="button"
@@ -212,7 +233,7 @@ export default function index() {
                             <Typography>Load More</Typography>
                           </CustomButtonPrimary>
                         </Box>
-                      )}
+                      )} */}
                     </>
                   )}
                 </Grid>

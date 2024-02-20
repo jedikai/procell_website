@@ -250,17 +250,21 @@ export const TreatMentSecWrapper = styled(Box)`
     }
 
     .stack_lft {
-      max-width: 80%;
-      flex-basis: 80%;
+      max-width: 70%;
+      flex-basis: 70%;
       padding-right: 60px;
       border-right: 1px solid ${primaryColors.bordershadowcolor};
       @media (max-width: 1199px) {
-        padding-right: 50px;
+        padding-right: 0;
+        border: none;
+        margin: 0 0 15px;
         max-width: 100%;
         flex-basis: 100%;
+        padding-bottom: 20px;
+        border-bottom: 1px solid ${primaryColors.bordershadowcolor};
       }
       @media (max-width: 899px) {
-        padding-right: 40px;
+        padding-right: 0;
         width: 70%;
       }
       @media (max-width: 599px) {
@@ -271,7 +275,7 @@ export const TreatMentSecWrapper = styled(Box)`
       }
     }
     .stack_rgt {
-      width: 20%;
+      width: 30%;
       padding-left: 20px;
       @media (max-width: 1199px) {
         padding-left: 50px;
@@ -290,9 +294,15 @@ export const TreatMentSecWrapper = styled(Box)`
         display: flex !important;
         align-items: center;
         justify-content: center;
+
         li {
           width: auto;
           flex-direction: column;
+          &.drop_item {
+            p {
+              margin-left: 6px;
+            }
+          }
           svg {
             width: 45px;
             height: 45px;
@@ -303,8 +313,15 @@ export const TreatMentSecWrapper = styled(Box)`
             /* @media (max-width: 899px) {
               padding-right: 30px;
             } */
+            @media (max-width: 1199px) {
+              padding-right: 60px;
+            }
+
             @media (max-width: 599px) {
               padding-right: 60px;
+            }
+            @media (max-width: 389px) {
+              padding-right: 20px;
             }
           }
         }

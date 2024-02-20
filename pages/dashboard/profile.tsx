@@ -110,7 +110,8 @@ export default function Profile(): JSX.Element {
     city: "",
     pin: "",
     country: "",
-    state: ""
+    state: "",
+    share: false
   });
   const [edit, setEdit] = React.useState<boolean>(false);
   const [selectedCountryId, setSelectedCountryId] = React.useState("");
@@ -132,7 +133,8 @@ export default function Profile(): JSX.Element {
       city,
       zip,
       state_id,
-      country_id
+      country_id,
+      share
     } = response[0] ?? {};
     setProfileDetails({
       first_name,
@@ -140,11 +142,19 @@ export default function Profile(): JSX.Element {
       phnCode: phone?.split(" ")[0],
       contact: phone?.split(" ")[1],
       mail: email,
-      address: (`${street}`?.includes('false') || `${street}`?.includes('N/a')) ? 'N/A' : street,
-      city: (`${city}`?.includes('false') || `${city}`?.includes('N/a')) ? 'N/A' : city,
-      pin: (`${zip}`?.includes('false') || `${zip}`?.includes('N/a')) ? 'N/A' : zip,
+      address:
+        `${street}`?.includes("false") || `${street}`?.includes("N/a")
+          ? "N/A"
+          : street,
+      city:
+        `${city}`?.includes("false") || `${city}`?.includes("N/a")
+          ? "N/A"
+          : city,
+      pin:
+        `${zip}`?.includes("false") || `${zip}`?.includes("N/a") ? "N/A" : zip,
       country: country_id,
-      state: state_id
+      state: state_id,
+      share
     });
     apiGivenDP.current = image_1920_url;
     setApiGivenrofilePic(image_1920_url);
@@ -325,8 +335,8 @@ export default function Profile(): JSX.Element {
     return changedCountry != prevSelectedCountry
       ? null
       : profileDetails?.state
-        ? { name: profileDetails?.state[1] }
-        : null;
+      ? { name: profileDetails?.state[1] }
+      : null;
   }, [data, changedCountry]);
   const filterCountryOptions = createFilterOptions({
     matchFrom: "start",
@@ -337,7 +347,7 @@ export default function Profile(): JSX.Element {
       ? countryList
       : countryList?.filter((_i: any) => _i?.phone_code == userGivenPhoneCode);
   }, [userGivenPhoneCode, countryList]);
-  console.log("show me value", stateDefaultValue);
+  console.log("show me value", apiGivenrofilePic, profileDetails);
   return (
     <Wrapper>
       <DashboardWrapper>
@@ -421,8 +431,8 @@ export default function Profile(): JSX.Element {
                           item
                           lg={
                             profileDetails &&
-                              profileDetails?.state &&
-                              profileDetails?.state[1]
+                            profileDetails?.state &&
+                            profileDetails?.state[1]
                               ? 6
                               : 12
                           }
@@ -489,9 +499,9 @@ export default function Profile(): JSX.Element {
                           // src={assest?.noProfile_img}
                           src={URL.createObjectURL(
                             profilePic ||
-                            new Blob([JSON.stringify({}, null, 2)], {
-                              type: "application/json"
-                            })
+                              new Blob([JSON.stringify({}, null, 2)], {
+                                type: "application/json"
+                              })
                           )}
                           alt="image"
                           width={147}
@@ -540,7 +550,7 @@ export default function Profile(): JSX.Element {
                               defaultValue={profileDetails?.first_name}
                               {...register("firstName")}
                               onKeyDown={(e: any) =>
-                                [' '].includes(e.key) && e.preventDefault()
+                                [" "].includes(e.key) && e.preventDefault()
                               }
                             />
                             {errors.firstName && (
@@ -556,7 +566,7 @@ export default function Profile(): JSX.Element {
                               defaultValue={profileDetails?.last_name}
                               {...register("lastName")}
                               onKeyDown={(e: any) =>
-                                [' '].includes(e.key) && e.preventDefault()
+                                [" "].includes(e.key) && e.preventDefault()
                               }
                             />
                             {errors.lastName && (
@@ -599,8 +609,9 @@ export default function Profile(): JSX.Element {
                                   <img
                                     loading="lazy"
                                     width="20"
-                                    src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url ?? ""
-                                      }`}
+                                    src={`${process.env.NEXT_APP_BASE_URL}/${
+                                      option?.image_url ?? ""
+                                    }`}
                                     alt=""
                                   />
                                   {" +"}
@@ -638,7 +649,10 @@ export default function Profile(): JSX.Element {
                               fullWidth
                               defaultValue={profileDetails?.contact}
                               {...register("phone")}
-                              onKeyDown={(e: any) => exceptThisSymbols.includes(e.key) && e.preventDefault()}
+                              onKeyDown={(e: any) =>
+                                exceptThisSymbols.includes(e.key) &&
+                                e.preventDefault()
+                              }
                             />
                             {errors.phone && (
                               <div className="profile_error">
@@ -718,8 +732,9 @@ export default function Profile(): JSX.Element {
                                   <img
                                     loading="lazy"
                                     width="20"
-                                    src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url ?? ""
-                                      }`}
+                                    src={`${process.env.NEXT_APP_BASE_URL}/${
+                                      option?.image_url ?? ""
+                                    }`}
                                     alt=""
                                   />
                                   {option?.name}
@@ -836,16 +851,18 @@ export default function Profile(): JSX.Element {
                   flexWrap="wrap"
                   className="btn_stack"
                 >
-                  <CustomButtonPrimary
-                    variant="outlined"
-                    color="info"
-                    onClick={handleChange}
-                    className="gradient_btn"
-                  >
-                    <Typography variant="body1">
-                      {!edit ? "Edit profile" : "Discard changes"}
-                    </Typography>
-                  </CustomButtonPrimary>
+                  {!!profileDetails?.share && (
+                    <CustomButtonPrimary
+                      variant="outlined"
+                      color="info"
+                      onClick={handleChange}
+                      className="gradient_btn"
+                    >
+                      <Typography variant="body1">
+                        {!edit ? "Edit profile" : "Discard changes"}
+                      </Typography>
+                    </CustomButtonPrimary>
+                  )}
                   {!updateLoader ? (
                     edit ? (
                       <CustomButtonPrimary
@@ -869,8 +886,8 @@ export default function Profile(): JSX.Element {
                       variant="contained"
                       color="primary"
 
-                    // onClick={handleAction}
-                    // type="submit"
+                      // onClick={handleAction}
+                      // type="submit"
                     >
                       {/* <Typography variant="caption"> */}
                       <ButtonLoader customClass="transparent_button" />

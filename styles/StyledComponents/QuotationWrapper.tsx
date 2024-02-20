@@ -70,5 +70,21 @@ export const QuotationWrapper = styled(Box)`
         display: none;
       }
     }
+    .invoice_chip {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 11px;
+      border-radius: 6px;
+      background: ${primaryColors?.lightPurple};
+      height: 35px;
+      cursor: pointer;
+      .MuiChip-label {
+        color: ${primaryColors?.text_purple};
+        font-family: Roboto;
+        font-size: 13px;
+        font-weight: 600;
+      }
+    }
   }
 `;
