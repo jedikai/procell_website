@@ -1,11 +1,9 @@
-import axios, { AxiosError, AxiosResponse } from "axios";
-import { parseCookies } from "nookies";
-import { setCookieClient } from "@/lib/functions/storage.lib";
 import {
-  globalCatchError,
   globalCatchSucess,
   globalCatchWarning
 } from "@/lib/functions/_helpers.lib";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { parseCookies } from "nookies";
 import { baseUrlApi, sucessNotificationEndPoints } from "../endpoints";
 // import { refreshAccessToken } from "../functions/user.api";
 import { BaseApiResponse } from "@/interface/common.interface";
@@ -22,7 +20,7 @@ axiosInstance.interceptors.request.use((config) => {
   if (token && !!config.headers) {
     config.headers["x-access-token"] = `${token}`;
   }
-  const sessionId = sessionStorage.getItem("session_id") || "";
+  const sessionId = localStorage.getItem("session_id") || "";
   config.params = config.params || {};
 
   if (sessionId) {

@@ -30,7 +30,7 @@ export function InvoiceCard({ ...props }: any) {
   const [loading, setLoading] = useState<boolean>(false);
   const downloadPdf = async (id: string) => {
     setLoading(true);
-    const sessionId = sessionStorage.getItem("session_id") || "";
+    const sessionId = localStorage.getItem("session_id") || "";
     const pdfDownloadInstance = axios.create({
       baseURL: process.env.NEXT_APP_BASE_URL,
       responseType: "blob",
@@ -170,7 +170,7 @@ export default function Index() {
     return btoa(binary);
   };
   const downloadPdf = async (id: string) => {
-    const sessionId = sessionStorage.getItem("session_id") || "";
+    const sessionId = localStorage.getItem("session_id") || "";
     const pdfDownloadInstance = axios.create({
       baseURL: process.env.NEXT_APP_BASE_URL,
       responseType: "blob",
