@@ -21,10 +21,13 @@ export const endpoints = {
     faq: "faq/all"
   },
   app: {
+    rep_verification_token:'web/get_verification_token',
+    verify_token:'web/verify_reps_token',
     consumer_signup: "web/consumer/signup",
     practitioner_signup: "web/practitioner/invite",
     reset_password: "web/reset_passwd",
     track_user: "web/track_page",
+    verify_certificate: "web/verify_certificate",
     user_login: "web/auth/login",
     country_list: "web/countries",
     state_list: "web/states",
@@ -112,6 +115,8 @@ export const endpoints = {
       "https://dev.wordpress-developer.us/procell-ui/wp-json/wp/v2/new-topics",
     science_blog_list:
       "https://dev.wordpress-developer.us/procell-ui/wp-json/wp/v2/the-sciences",
+    science_blog_list_new:
+      "web/science",
     science_blog_list_search_wise:
       "https://dev.wordpress-developer.us/procell-ui/wp-json/custom-api/",
     science_popular_post_list:

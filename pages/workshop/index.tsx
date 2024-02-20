@@ -17,8 +17,8 @@ export default function Index() {
   return (
     <Wrapper>
       <InnerHeader
-        innerHeaderTitle="Workshop"
-        innerHeaderRediractedPage="Workshop"
+        innerHeaderTitle="Workshops"
+        innerHeaderRediractedPage="Workshops"
         bannerImage={assest.innerHeaderbackground}
         innerHeaderMainPage="Home"
       />

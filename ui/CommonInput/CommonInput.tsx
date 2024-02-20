@@ -41,7 +41,7 @@ const InputWrap = styled(TextField as any)`
     border: 1px solid ${primaryColors?.inputBorder};
     background: ${primaryColors?.white};
     /* box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.06); */
-    min-width: 300px;
+    /* min-width: 300px; */
     @media (max-width: 1199px) {
       min-width: auto;
     }
@@ -166,7 +166,11 @@ const InputFieldCommon = forwardRef<HTMLInputElement, InputFieldCommonProps>(
     },
     ref
   ) => {
-    console.log('value', others?.placeholder ?? 'no placeholder', others?.value ?? 'no value')
+    console.log(
+      "value",
+      others?.placeholder ?? "no placeholder",
+      others?.value ?? "no value"
+    );
     const [showPassword, setShowPassword] = React.useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -188,10 +192,10 @@ const InputFieldCommon = forwardRef<HTMLInputElement, InputFieldCommonProps>(
           style2
             ? "border_none"
             : style3
-              ? "border_round"
-              : isPassword
-                ? "has_password"
-                : ""
+            ? "border_round"
+            : isPassword
+            ? "has_password"
+            : ""
         }
         InputProps={{
           inputRef: ref,

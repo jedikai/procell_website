@@ -5,19 +5,24 @@ import {
   useRecourcesRepById
 } from "@/hooks/react-qurey/query-hooks/recourcesQuery.hooks";
 import assest from "@/json/assest";
-import { resourcePhotosData } from "@/json/mock/resourcephotos.mock";
 import Wrapper from "@/layout/wrapper/Wrapper";
 import { ResourceWrapper } from "@/styles/StyledComponents/ResourcdePhotosWrapper";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
+import DefaultFileIcon from "@/ui/Icons/DefaultFileIcon";
 import DownloasdIcon from "@/ui/Icons/DownloasdIcon";
+import ExcelIcon from "@/ui/Icons/ExcelIcon";
+import JPGIcon from "@/ui/Icons/JPGIcon";
+import MP4Icon from "@/ui/Icons/MP4Icon";
+import PNGIcon from "@/ui/Icons/PNGIcon";
+import PdfIcon from "@/ui/Icons/PdfIcon";
+import PhotoShopIcon from "@/ui/Icons/PhotoShopIcon";
+import PowerPointIcon from "@/ui/Icons/PowerPointIcon";
+import WordDocIcon from "@/ui/Icons/WordDocIcon";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { RequestInit } from "next/dist/server/web/spec-extension/request";
-import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 
@@ -69,6 +74,32 @@ const ResorceDetails = () => {
     link.click();
     document.body.removeChild(link);
   };
+  const fileTypeIconHandler = (mimeType: any) => {
+    const mimeToIconMap: { [key: string]: any } = {
+      "image/jpeg": <JPGIcon IconWidth="60%" IconHeight="60%" />,
+      "image/png": <PNGIcon IconWidth="60%" IconHeight="60%" />,
+      "application/pdf": <PdfIcon IconWidth="60%" IconHeight="60%" />,
+      "application/postscript": (
+        <DefaultFileIcon IconWidth="60%" IconHeight="60%" />
+      ),
+      "video/mp4": <MP4Icon IconWidth="60%" IconHeight="60%" />,
+      "application/vnd.ms-excel": (
+        <ExcelIcon IconWidth="60%" IconHeight="60%" />
+      ),
+      "application/msword": <WordDocIcon IconWidth="60%" IconHeight="60%" />,
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        <WordDocIcon IconWidth="60%" IconHeight="60%" />,
+      "application/vnd.ms-powerpoint": (
+        <PowerPointIcon IconWidth="60%" IconHeight="60%" />
+      ),
+      "image/vnd.adobe.photoshop": (
+        <PhotoShopIcon IconWidth="60%" IconHeight="60%" />
+      )
+    };
+
+    const icon = mimeToIconMap[mimeType.toLowerCase()];
+    return icon ? icon : <DefaultFileIcon IconWidth="60%" IconHeight="60%" />; // Return default icon if MIME type is not found
+  };
   console.log("resources============>", resources, pracRecourcesData);
   return (
     <>
@@ -78,6 +109,7 @@ const ResorceDetails = () => {
           innerHeaderRediractedPage={category ?? ""}
           bannerImage={assest.innerHeaderbackground}
           innerHeaderMainPage="Resources"
+          innnerHeaderMainurl={`/resources?type=${router?.query?.type}`}
         />
         <ResourceWrapper className="cmn_gap">
           <Box className="resource_main">
@@ -103,12 +135,15 @@ const ResorceDetails = () => {
                             >
                               {!!data?.file_url && (
                                 <figure>
-                                  <Image
-                                    src={data?.file_url ?? ""}
+                                  {/* <Image
+                                    src={
+                                      fileTypeIconHandler(data?.mimetype) ?? ""
+                                    }
                                     alt=""
                                     width={70}
                                     height={107}
-                                  />
+                                  /> */}
+                                  {fileTypeIconHandler(data?.mimetype)}
                                 </figure>
                               )}
                               <Box className="right">

@@ -10,6 +10,7 @@ import {
   InvoiceCardWrap,
   InvoiceWrapper
 } from "@/styles/StyledComponents/InvoiceWrapper";
+import CalendarIconFill from "@/ui/Icons/CalendarIconFill";
 import DownloadIcon from "@/ui/Icons/DownloadIcon";
 import Avatar from "@mui/material/Avatar";
 import AvatarGroup from "@mui/material/AvatarGroup";
@@ -57,6 +58,16 @@ export function InvoiceCard({ ...props }: any) {
         console.error("An error occurred:", error);
       });
   };
+
+  const timeFormatter = (date: string | undefined) => {
+    const inputDate = new Date(date ?? "");
+    const formattedDate = inputDate.toLocaleDateString("en-US", {
+      month: "short", // Short month name (e.g., Dec)
+      day: "numeric", // Day of the month (e.g., 9)
+      year: "numeric" // Full year (e.g., 2023)
+    });
+    return formattedDate;
+  };
   console.log("product_images", props?.product_images);
 
   return (
@@ -94,7 +105,9 @@ export function InvoiceCard({ ...props }: any) {
 
         <Box className="product_details">
           <Typography variant="h5">{props?.name}</Typography>
-          <Typography>${props?.amount_paid}</Typography>
+          <Typography variant="body1" className="price">
+            ${(props?.amount_paid).toFixed(2)}
+          </Typography>
         </Box>
       </Box>
       <Box className="rgt_block">
@@ -103,6 +116,13 @@ export function InvoiceCard({ ...props }: any) {
           <Typography variant="caption" className="order_idText">
             {props?.sale_order}
           </Typography>
+        </Typography>
+        <Typography variant="body1" className="date">
+          <i className="ico">
+            <CalendarIconFill IconWidth="13" IconHeight="13" />
+          </i>
+
+          {timeFormatter(props?.invoice_date)}
         </Typography>
         <List disablePadding>
           <ListItem disablePadding>

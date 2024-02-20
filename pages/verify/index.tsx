@@ -15,10 +15,10 @@ export default function Index() {
     <Wrapper>
       <InnerHeader
         bannerImage={assest.innerHeaderbackground}
-        innerHeaderRediractedPage="Select Verify"
+        innerHeaderRediractedPage="Verify"
         innerHeaderTitle="Verify"
         innerHeaderMainPage="Home"
-        innnerHeaderMainurl="Home"
+        // innnerHeaderMainurl="Home"
       />
 
       <Box className="cmn_gap">
@@ -27,7 +27,7 @@ export default function Index() {
             <VerifyBox>
               <SelectVerifyWrapper>
                 <Typography variant="body1" className="select_text">
-                  Please select below:
+                  Please Select Below:
                 </Typography>
                 <Box className="btn_holder">
                   <CustomButtonPrimary
@@ -42,7 +42,7 @@ export default function Index() {
                     color="primary"
                     onClick={() => router.push("/verify/verify-certificate")}
                   >
-                    <Typography variant="body1">Verify certificate </Typography>
+                    <Typography variant="body1">Verify Certificate </Typography>
                   </CustomButtonPrimary>
                 </Box>
               </SelectVerifyWrapper>

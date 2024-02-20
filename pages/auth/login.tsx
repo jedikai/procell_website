@@ -151,9 +151,9 @@ const Login = () => {
                       Sign in to{" "}
                       <Typography variant="caption">Procell</Typography>
                     </Typography>
-                    <Typography variant="body1">
+                    {/* <Typography variant="body1">
                       Enter your details to get sign in to your account
-                    </Typography>
+                    </Typography> */}
                     <Box className="input_wrap">
                       <InputFieldCommon
                         placeholder="Email"

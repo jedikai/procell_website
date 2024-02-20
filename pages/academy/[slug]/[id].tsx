@@ -258,7 +258,8 @@ const ContentDetails = () => {
                 ? "Practitioner Academy"
                 : "Rep Academy"
             }
-            innnerHeaderMainurl="training-academy"
+            // innnerHeaderMainurl="training-academy"
+            innnerHeaderMainurl={`/academy/${router?.query?.slug}`}
           />
           <MicroChannelWrapper className="cmn_gap">
             <Container fixed>

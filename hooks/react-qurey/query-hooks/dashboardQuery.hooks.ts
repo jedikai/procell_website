@@ -26,6 +26,7 @@ export const useProfileDetails = (
     onSuccess,
     onError,
     enabled,
+    retry: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -119,7 +120,7 @@ export const useInvoiceDownload = (
 ) =>
   useQuery([GET_INVOICE_DOWNLOAD, id], () => getInvoiceDownload(id), {
     onSuccess,
-    onError,
+    onError
     // select: (data) => data?.data?.data ?? []
   });
 
@@ -149,8 +150,6 @@ const changePassword = async (body: object) => {
 
 export const useChangePassword = () => useMutation(changePassword);
 
-
-
 const getMannageCommunicationData = async () => {
   const res = await axiosInstance.get(
     endpoints.app.get_manage_communication_data
@@ -168,9 +167,13 @@ export const useMannageCommunicationData = (
     select: (data) => data?.data?.data ?? []
   });
 
-  const updateMannageCommunication = async (body: object) => {
-    const res = await axiosInstance.post(endpoints.app.get_manage_communication_data, body);
-    return res;
-  };
-  
-  export const useUpdateMannageCommunication = () => useMutation(updateMannageCommunication);
+const updateMannageCommunication = async (body: object) => {
+  const res = await axiosInstance.post(
+    endpoints.app.get_manage_communication_data,
+    body
+  );
+  return res;
+};
+
+export const useUpdateMannageCommunication = () =>
+  useMutation(updateMannageCommunication);

@@ -22,8 +22,38 @@ export const InvoiceCardWrap = styled(Stack)`
     > figure {
       margin-right: 19px;
     }
+
     @media (max-width: 1199px) {
       margin-bottom: 15px;
+    }
+    figure {
+      width: 92px;
+      height: 101px;
+      background-color: ${primaryColors.sliderBackColor};
+      justify-content: center;
+      display: flex;
+      align-items: center;
+      margin-right: 19px;
+    }
+    .product_details {
+      max-width: 193px;
+      h5 {
+        color: ${primaryColors?.black};
+        font-family: Roboto;
+        font-size: 14px;
+        font-weight: 500;
+        text-transform: capitalize;
+        margin-bottom: 10px;
+      }
+      p {
+        color: ${primaryColors?.darkblack};
+        font-size: 15px;
+        font-weight: 800;
+        text-transform: capitalize;
+      }
+      .price {
+        margin: 0 0 5px !important;
+      }
     }
     .MuiAvatarGroup-root {
       margin-right: 25px;
@@ -43,45 +73,8 @@ export const InvoiceCardWrap = styled(Stack)`
         margin-right: -16px;
         border: 1px solid ${primaryColors?.primary};
       }
-      figure {
-        width: 92px;
-        height: 101px;
-        background-color: ${primaryColors.sliderBackColor};
-        justify-content: center;
-        display: flex;
-        align-items: center;
-        margin-right: 19px;
-      }
-      .product_details {
-        max-width: 193px;
-        h5 {
-          color: ${primaryColors?.black};
-          font-family: Roboto;
-          font-size: 14px;
-          font-weight: 500;
-          text-transform: capitalize;
-          margin-bottom: 10px;
-        }
-        p {
-          color: ${primaryColors?.darkblack};
-          font-size: 15px;
-          font-weight: 800;
-          text-transform: capitalize;
-        }
-      }
     }
-    .order_id {
-      margin-bottom: 7px;
-      font-size: 13px;
-      line-height: 1.2;
-      .order_idText {
-        font-family: Roboto;
-        color: ${primaryColors.mainFontColor};
-        font-size: inherit;
-        font-weight: 600;
-        line-height: inherit;
-      }
-    }
+
     .invoice_chip {
       display: flex;
       align-items: center;
@@ -116,6 +109,33 @@ export const InvoiceCardWrap = styled(Stack)`
   }
 
   .rgt_block {
+    .order_id {
+      margin-bottom: 10px;
+      font-size: 13px;
+      line-height: 1.2;
+      .order_idText {
+        font-family: Roboto;
+        color: ${primaryColors.mainFontColor};
+        font-size: inherit;
+        font-weight: 600;
+        line-height: inherit;
+      }
+    }
+
+    .date {
+      display: flex;
+      align-items: center;
+      line-height: 1;
+      justify-content: flex-end;
+      @media (max-width: 1199px) {
+        justify-content: flex-start;
+      }
+      .ico {
+        font-size: 0;
+        line-height: 0;
+        margin-right: 5px;
+      }
+    }
     p {
       color: ${primaryColors.mainFontColor};
       font-size: 13px;

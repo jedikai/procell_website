@@ -5,6 +5,7 @@
 /* eslint-disable mui-path-imports/mui-path-imports */
 
 import { useTreatmentVideoData } from "@/hooks/react-qurey/query-hooks/storySecQuery.hooks";
+import assest from "@/json/assest";
 import { TreatmentWrapper } from "@/styles/StyledComponents/TreatmentWrapper";
 import PlayIcon from "@/ui/Icons/PlayIcon";
 import { Box, Typography } from "@mui/material";
@@ -15,9 +16,6 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick-theme.css";
 import "slick-carousel/slick/slick.css";
 import Fancybox from "../Fancybox/Fancybox";
-import ButtonLoaderSecondary from "../ButtonLoader/ButtonLoaderSecondary";
-import assest from "@/json/assest";
-import ReactPlayer from "react-player";
 
 export default memo(() => {
   const [nav1, setNav1] = useState();

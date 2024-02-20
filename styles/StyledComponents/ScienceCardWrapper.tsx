@@ -11,7 +11,7 @@ export const ScienceCardWrapper = styled(Box)`
       img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
       }
     }
     h4 {
@@ -27,7 +27,13 @@ export const ScienceCardWrapper = styled(Box)`
       }
     }
     a {
-      color: ${primaryColors.text_purple};
+      color: ${primaryColors.primary};
+      text-decoration: underline;
+      h4 {
+        color: ${primaryColors.primary};
+      }
+      &:hover {
+      }
       svg {
         margin-left: 5px;
         transition: all 0.4s;

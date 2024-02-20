@@ -14,6 +14,7 @@ export default {
   skin_img2: "/assets/images/skin_img2.png",
   skin_img3: "/assets/images/skin_img3.png",
   banner_vdo: "/assets/videos/banner_video.mp4",
+  banner_vdo_new: "/assets/videos/Website_Featured_Video.mp4",
   blurPng: "/assets/images/pngwing.png",
   heal_banner: "/assets/images/heal_banner.png",
   ourProductimgOne: "/assets/images/ourproductimg1.png",

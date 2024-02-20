@@ -20,7 +20,10 @@ export default function ScienceCard({
         <figure>
           <img src={image} alt="" width={360} height={370} />
         </figure>
-        <Typography variant="h4">{title}</Typography>
+        <Link href={link} target="_blank">
+          <Typography variant="h4">{title}</Typography>
+        </Link>
+
         <Typography
           variant="body1"
           className="line-clam-3"
@@ -30,11 +33,11 @@ export default function ScienceCard({
           variant="h4"
           style={{ textAlign: "right", marginBottom: "0px" }}
         >
-         <i>-{author}</i> 
+          <i>-{author}</i>
         </Typography>
-        <Link href={link} target="_blank">
+        {/* <Link href={link} target="_blank">
           Know more <KnowMoreIcon />{" "}
-        </Link>
+        </Link> */}
       </Box>
     </ScienceCardWrapper>
   );

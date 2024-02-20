@@ -137,7 +137,10 @@ export default React.memo((props: Props) => {
   };
   const { data, isLoading, refetch, isFetched } = useProfileDetails(
     onSuccessProfileDetails,
-    () => {},
+    (error: any) => {
+      console.log("eeeeeeeeeeeeeeeeeeeeee", error);
+      setAuthenticUser(false)
+    },
     // true
     userLoggedIn
   );
@@ -282,7 +285,9 @@ export default React.memo((props: Props) => {
         }
         // if (getUserDetails && getUserDetails?.cred)
         if (localStorage.getItem("session_id")) {
-          setAuthenticUser(true);
+          if (!!getUserDetails) {
+            setAuthenticUser(true);
+          }
           setSessionId(getUserDetails?.cred ?? "");
         }
         console.log("getUserDetails", typeof getUserDetails, getUserDetails);

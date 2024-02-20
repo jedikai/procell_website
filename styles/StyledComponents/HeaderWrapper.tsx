@@ -114,6 +114,9 @@ export const HeaderWrap = styled(Box)`
   }
   .navbar {
     margin-left: auto;
+    @media (max-width: 899px) {
+      display: none;
+    }
     a {
       margin-right: 30px;
       display: inline-block;

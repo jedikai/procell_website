@@ -4,7 +4,6 @@ import OurProduct from "@/components/OurProduct/OurProduct";
 import ReviewSlider from "@/components/ReviewSlider/ReviewSlider";
 import SkinAgeSec from "@/components/SkinAgeSec/SkinAgeSec";
 import StorySec from "@/components/StorySec/StorySec";
-import Weoffers from "@/components/WeOffers/Weoffers";
 
 import TreatmentSec from "@/components/TreatmentSec/TreatmentSec";
 import TreatmentSecUpper from "@/components/TreatmentSecUpper/TreatmentSecUpper";
@@ -14,7 +13,6 @@ import Wrapper from "@/layout/wrapper/Wrapper";
 import Typography from "@mui/material/Typography";
 import Head from "next/head";
 import { useEffect, useRef, useState } from "react";
-import Script from "next/script";
 
 interface TrustPilotWindow extends Window {
   Trustpilot: {

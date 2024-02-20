@@ -40,7 +40,9 @@ const Footer = () => {
           <List className="social-list">
             {social_links.map((item, i: number) => (
               <ListItem key={i + 1}>
-                <Link href={item.path} target="_blank">{item.logo}</Link>
+                <Link href={item.path} target="_blank">
+                  {item.logo}
+                </Link>
               </ListItem>
             ))}
           </List>
@@ -51,7 +53,7 @@ const Footer = () => {
           <Box className="footer_btm">
             <Typography variant="body1" className="copy">
               {" "}
-              Copyright © 2023 - All Rights Reserved. |
+              Copyright © 2024 - All Rights Reserved. |
               <Link href="/privacy-policy">Privacy Policy</Link>
             </Typography>
             <Stack

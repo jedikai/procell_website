@@ -19,6 +19,7 @@ import Grid from "@mui/material/Grid";
 import IconButton from "@mui/material/IconButton";
 import MenuItem from "@mui/material/MenuItem";
 
+import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
 import useNotiStack from "@/hooks/useNotistack";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Typography from "@mui/material/Typography";
@@ -26,7 +27,6 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
 
 type Inputs = {
   email: string;
@@ -139,7 +139,7 @@ export default function Index() {
     <Wrapper>
       <InnerHeader
         innerHeaderTitle="Get Help"
-        innerHeaderRediractedPage="Get help"
+        innerHeaderRediractedPage="Get Help"
         bannerImage={assest.innerHeaderbackground}
         innerHeaderMainPage="Home"
       />
@@ -159,7 +159,7 @@ export default function Index() {
               spacing={{ xl: 4, lg: 2, md: 2, xs: 4 }}
               alignItems="center"
             >
-              <Grid item xl={5} lg={6} md={6} xs={12}>
+              <Grid item xl={5} lg={6} md={6} xs={12} className="left_grid">
                 <figure>
                   <Image
                     src={assest?.getHelpImage}
@@ -200,7 +200,8 @@ export default function Index() {
                         placeholder="Call back number"
                         {...register("callBackPhoneNumber")}
                         onKeyDown={(e: any) =>
-                          exceptThisSymbols.includes(e.key) && e.preventDefault()
+                          exceptThisSymbols.includes(e.key) &&
+                          e.preventDefault()
                         }
                       />
                     </Box>
@@ -285,7 +286,7 @@ export default function Index() {
                           variant="contained"
                           color="primary"
                           type="submit"
-                        // form="contact_form"
+                          // form="contact_form"
                         >
                           <Typography>Submit</Typography>
                         </CustomButtonPrimary>
@@ -293,8 +294,8 @@ export default function Index() {
                         <CustomButtonPrimary
                           variant="contained"
                           color="primary"
-                        // type="submit"
-                        // form="contact_form"
+                          // type="submit"
+                          // form="contact_form"
                         >
                           <ButtonLoader />
                         </CustomButtonPrimary>

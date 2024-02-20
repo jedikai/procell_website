@@ -53,6 +53,9 @@ export default function CustomApp({
   store.dispatch(checkLoggedInServer({ hasToken, user }));
   // const router = useRouter();
 
+  const [isSessionIdStored, setIsSessionIdStored] = React.useState(false);
+  const [render, setRender] = React.useState(false);
+  const [showTracker, setTracker] = React.useState(false);
   // const [loadScript, setLoadScript] = React.useState(false);
   // const [trackerIsCalled, setTrackerIsCalled] = React.useState(false);
   // const chatWidgetScript = useMemo(() => {
@@ -93,10 +96,51 @@ export default function CustomApp({
           const { session_id }: any = response ? response?.data?.data : {};
           console.log("onSuccessGetSessionId", session_id);
           localStorage.setItem("session_id", session_id);
+          setIsSessionIdStored(!!session_id);
         });
+      }
+      // console.log("issue", 1);
+    } else {
+      const isSessionIDexisted = !!sessionStorage.getItem("session_id");
+      if (!!isSessionIDexisted) {
+        setRender(true);
+        // alert("no dependecies else");
+      } else {
+        // console.log("issue", 2);
       }
     }
   }, []);
+  useEffect(() => {
+    if (isSessionIdStored) {
+      const isSessionIDexisted = sessionStorage.getItem("session_id");
+      if (!!isSessionIDexisted) {
+        setRender(true);
+        // alert("dependecies if");
+      } else {
+        axiosInstance.get(endpoints.app.create_session_id).then((response) => {
+          const { session_id }: any = response ? response?.data?.data : {};
+          console.log("onSuccessGetSessionId", session_id);
+          sessionStorage.setItem("session_id", session_id);
+          setIsSessionIdStored(!!session_id);
+        });
+        // console.log("issue", 3);
+      }
+    } else {
+      const isSessionIDexisted = !!sessionStorage.getItem("session_id");
+      if (!!isSessionIDexisted) {
+        setRender(true);
+        // alert("dependecies else");
+      } else {
+        axiosInstance.get(endpoints.app.create_session_id).then((response) => {
+          const { session_id }: any = response ? response?.data?.data : {};
+          console.log("onSuccessGetSessionId", session_id);
+          sessionStorage.setItem("session_id", session_id);
+          setIsSessionIdStored(!!session_id);
+        });
+        // console.log("issue", 4);
+      }
+    }
+  }, [isSessionIdStored]);
   // useEffect(() => {
   //   if (window != undefined) {
   //     const origin =
@@ -134,9 +178,12 @@ export default function CustomApp({
   //     }
   //   }
   // }, [router,trackerIsCalled]);
-// console.log('router.asPath.split("/").at(-1)',router.asPath.split("/"));
-
-
+  // console.log('router.asPath.split("/").at(-1)',router.asPath.split("/"));
+  useEffect(() => {
+    if (window != undefined) {
+      setTracker(true);
+    }
+  }, []);
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
@@ -145,12 +192,16 @@ export default function CustomApp({
             <MuiThemeProvider>
               <CssBaseline />
               <ToastifyProvider>
-                <>
-                  {/* {chatWidgetScript} */}
-                  <EventListeners />
-                  <TrackUser/>
-                  <Component {...pageProps} />
-                </>
+                {render ? (
+                  <>
+                    {/* {chatWidgetScript} */}
+                    <EventListeners />
+                    {showTracker && <TrackUser />}
+                    <Component {...pageProps} />
+                  </>
+                ) : (
+                  <></>
+                )}
               </ToastifyProvider>
             </MuiThemeProvider>
           </CacheProvider>

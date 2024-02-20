@@ -99,10 +99,13 @@ export const VerifyStepsWrapper = styled(Box)`
     margin-bottom: 0;
     color: ${primaryColors.black};
     @media (max-width: 599px) {
-      font-size: 12px;
+      font-size: 15px;
     }
     a {
       color: ${primaryColors.colorACA6F1};
+      &:hover {
+        color: ${primaryColors.color51bff0};
+      }
     }
   }
 
