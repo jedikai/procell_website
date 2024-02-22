@@ -4,7 +4,7 @@ import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
 import validationText from "@/json/messages/validationText";
 import LoginWrapper from "@/layout/wrapper/LoginWrapper";
-import { getCookie, setCookieClient } from "@/lib/functions/storage.lib";
+import { setCookieClient } from "@/lib/functions/storage.lib";
 import { LoginPageWrapper } from "@/styles/StyledComponents/LoginPageWrapper";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
@@ -76,7 +76,7 @@ const Login = () => {
           email,
           cred: data?.data?.data?.sid
         });
-        sessionStorage.setItem("session_id", data?.data?.data?.sid);
+        localStorage.setItem("session_id", data?.data?.data?.sid);
         // if (remember_me) {
         if (checked) {
           localStorage.setItem(

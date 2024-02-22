@@ -13,14 +13,10 @@ import { userData } from "@/types/common.type";
 import ToastifyProvider from "@/ui/toastify/ToastifyProvider";
 import { CacheProvider, EmotionCache } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
-import { log } from "console";
 import type { AppContext, AppProps } from "next/app";
 import App from "next/app";
-import Head from "next/head";
-import { useRouter } from "next/router";
-import Script from "next/script";
 import nookies from "nookies";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect } from "react";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import { Provider } from "react-redux";
 
@@ -94,12 +90,12 @@ export default function CustomApp({
       !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
     console.log("APP_isUserLoggedIn", isUserLoggedIn);
     if (!isUserLoggedIn) {
-      let isSessionIdAvailable = !!sessionStorage.getItem("session_id");
+      let isSessionIdAvailable = !!localStorage.getItem("session_id");
       if (!isSessionIdAvailable) {
         axiosInstance.get(endpoints.app.create_session_id).then((response) => {
           const { session_id }: any = response ? response?.data?.data : {};
           console.log("onSuccessGetSessionId", session_id);
-          sessionStorage.setItem("session_id", session_id);
+          localStorage.setItem("session_id", session_id);
           setIsSessionIdStored(!!session_id);
         });
       }

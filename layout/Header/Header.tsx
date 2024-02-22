@@ -20,8 +20,7 @@ import assest from "@/json/assest";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 
 import {
-  useCartList,
-  useCartListWithAuthCred
+  useCartList
 } from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
 import { useProfileDetails } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
 import { useLogout } from "@/hooks/react-qurey/query-hooks/logoutQuery.hooks";
@@ -44,7 +43,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
-import Head from "next/head";
 
 // const CustomButton = dynamic(() => import("@/ui/Buttons/CustomButton"));
 
@@ -286,7 +284,7 @@ export default React.memo((props: Props) => {
           // getUserDetails = JSON.parse(getCookie("userDetails") ?? "");
         }
         // if (getUserDetails && getUserDetails?.cred)
-        if (sessionStorage.getItem("session_id")) {
+        if (localStorage.getItem("session_id")) {
           if (!!getUserDetails) {
             setAuthenticUser(true);
           }
