@@ -1,4 +1,4 @@
-FROM 063681706505.dkr.ecr.eu-west-1.amazonaws.com/node:16.13.1-alpine
+FROM 239650706937.dkr.ecr.eu-east-1.amazonaws.com/node:18-alpine
 
 # create destination directory
 RUN mkdir -p /usr/src/procell_website
