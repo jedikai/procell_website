@@ -7,6 +7,10 @@ config:
       arrivalRate: 1
       rampTo: 5
       name: Warm up phase
+    - duration: 60
+      arrivalRate: 5
+      rampTo: 25
+      name: Spike phase
   # Load & configure a couple of useful plugins
   # https://docs.art/reference/extensions
   plugins:
@@ -14,11 +18,11 @@ config:
     apdex: {}
     metrics-by-endpoint: {}
   apdex:
-    threshold: 100
+    threshold: 200
   ensure:
       thresholds:
-        - http.response_time.p99: 100
-        - http.response_time.p95: 75
+        - http.response_time.p99: 250
+        - http.response_time.p95: 200
 scenarios:
   - flow:
       - loop:
@@ -44,4 +48,4 @@ scenarios:
             url: "/faq/"
         - get:
             url: "/results/"
-        count: 10
+        count: 25
