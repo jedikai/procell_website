@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Entering load test for staging
+      - npm install -g artillery@latest
+  build:
+    commands:
+      - echo Run load test if not production
+      - ./load-test.sh
+  post_build:
+    commands:
+      - echo 'PostBuild Phase : Show reports'
+
+artifacts:
+  files:
+    - 'artillery-report.json'
