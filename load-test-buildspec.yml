@@ -11,7 +11,7 @@ phases:
       - ./load-test.sh
   post_build:
     commands:
-      - echo 'PostBuild Phase : Show reports'
+      - echo Show reports
 
 artifacts:
   files:
