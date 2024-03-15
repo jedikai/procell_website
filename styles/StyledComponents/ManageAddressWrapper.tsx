@@ -52,6 +52,16 @@ export const ManageAddressWrapper = styled(Box)`
         rgba(22, 166, 223, 0.12) 113.65%
       );
       padding: 32px 25px;
+      .btn_wrap {
+        margin-top: 15px;
+        button {
+          padding: 10px 15px;
+          min-width: auto;
+          p {
+            font-size: 12px;
+          }
+        }
+      }
       .address_left {
         width: 60%;
         @media (max-width: 599px) {

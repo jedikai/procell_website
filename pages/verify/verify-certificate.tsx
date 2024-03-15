@@ -146,7 +146,7 @@ export default function Index() {
                 ) : step === 2 ? (
                   <Box className="verify_cer_2">
                     <Typography variant="body1" className="verify_text">
-                      Certified procell therapies practitioner
+                      Certified Procell Therapies practitioner
                     </Typography>
                     {!!certificateData &&
                       certificateData?.length > 0 &&

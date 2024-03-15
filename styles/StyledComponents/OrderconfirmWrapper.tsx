@@ -4,6 +4,16 @@ import styled from "@emotion/styled";
 import { Box } from "@mui/material";
 
 export const OrderconfirmWrapper = styled(Box)`
+  .error_icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    background: linear-gradient(279deg, #c2a6f4 -7.77%, #f6fdff 109.39%);
+  }
   padding: 72px 0 108px 0;
   @media (max-width: 899px) {
     padding: 50px 0;
@@ -31,7 +41,6 @@ export const OrderconfirmWrapper = styled(Box)`
       }
       img {
         width: 100%;
-     
       }
     }
     h4 {
@@ -111,7 +120,7 @@ export const OrderconfirmWrapper = styled(Box)`
     }
     .orderdetailsStatusWrap {
       padding-top: 30px;
-     
+
       p {
         color: ${primaryColors.footer_text};
         font-size: 16px;
@@ -133,11 +142,10 @@ export const OrderconfirmWrapper = styled(Box)`
           color: inherit;
           margin-left: 5px;
         }
-        :last-child{
+        :last-child {
           margin-bottom: 0;
         }
       }
-     
     }
   }
 
@@ -181,7 +189,7 @@ export const OrderconfirmWrapper = styled(Box)`
         @media (max-width: 599px) {
           margin-bottom: 15px;
         }
-        
+
         figure {
           width: 84px;
           height: 84px;
@@ -198,15 +206,14 @@ export const OrderconfirmWrapper = styled(Box)`
             width: 60px;
             height: 60px;
           }
-          img{ 
-            
+          img {
             @media (max-width: 899px) {
-          height: 60px;
-      }
-      @media (max-width: 599px) {
-        width: 40px;
-        height: 40px;
-      }
+              height: 60px;
+            }
+            @media (max-width: 599px) {
+              width: 40px;
+              height: 40px;
+            }
           }
         }
         .ProductDetailWrap {
@@ -218,7 +225,6 @@ export const OrderconfirmWrapper = styled(Box)`
           flex-wrap: wrap;
           @media (max-width: 899px) {
             width: calc(100% - 70px);
-            
           }
           @media (max-width: 599px) {
             width: calc(100% - 60px);
@@ -232,9 +238,9 @@ export const OrderconfirmWrapper = styled(Box)`
             text-transform: capitalize;
             margin: 0;
             @media (max-width: 599px) {
-            width: 100%;
-            margin-bottom: 5px;
-          }
+              width: 100%;
+              margin-bottom: 5px;
+            }
           }
           .productprice {
             color: ${primaryColors.darkblack};
@@ -251,11 +257,10 @@ export const OrderconfirmWrapper = styled(Box)`
       margin-top: 33px;
       @media (max-width: 899px) {
         margin-top: 25px;
-            
-          }
-          @media (max-width: 599px) {
-            margin-top: 20px;
-          }
+      }
+      @media (max-width: 599px) {
+        margin-top: 20px;
+      }
       .orderPriceWrap {
         display: flex;
         align-items: center;
@@ -263,11 +268,10 @@ export const OrderconfirmWrapper = styled(Box)`
         margin-bottom: 24px;
         @media (max-width: 899px) {
           margin-bottom: 20px;
-            
-          }
-          @media (max-width: 599px) {
-            margin-bottom: 15px;
-          }
+        }
+        @media (max-width: 599px) {
+          margin-bottom: 15px;
+        }
         .product_Price {
           color: ${primaryColors.footer_text};
           line-height: 1;
@@ -291,10 +295,10 @@ export const OrderconfirmWrapper = styled(Box)`
     display: flex;
     justify-content: center;
     align-items: center;
-    button{
+    button {
       max-width: 194px;
-     
-      p{
+
+      p {
         font-size: 14px;
         font-weight: 600;
         white-space: nowrap;
@@ -302,7 +306,7 @@ export const OrderconfirmWrapper = styled(Box)`
       }
     }
     @media (max-width: 599px) {
-            margin-top: 20px;
-          }
+      margin-top: 20px;
+    }
   }
 `;

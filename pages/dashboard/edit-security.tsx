@@ -8,13 +8,11 @@ import Wrapper from "@/layout/wrapper/Wrapper";
 import { EditSettingWrapper } from "@/styles/StyledComponents/EditSettingWrapper";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
-import InfoIcon from "@/ui/Icons/InfoIcon";
-import WarningIcon from "@/ui/Icons/WarningIcon";
-import MuiModalWrapper from "@/ui/Modal/MuiModalWrapper";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { List, ListItem } from "@mui/material";
+import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { Box } from "@mui/system";
+import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -52,7 +50,7 @@ export default function Index() {
     confirm: ""
   });
   const { toastSuccess, toastError } = useNotiStack();
-  const { mutate: changePassword,isLoading } = useChangePassword();
+  const { mutate: changePassword, isLoading } = useChangePassword();
   const {
     register,
     handleSubmit,
@@ -107,7 +105,7 @@ export default function Index() {
                 <Box className="form_group bottomless-margin">
                   <InputFieldCommon
                     placeholder="Password"
-                    autoComplete='off'
+                    autoComplete="off"
                     isPassword
                     {...register("old_password")}
                     onKeyUp={(e: any) =>
@@ -128,7 +126,7 @@ export default function Index() {
                 <Box className="form_group bottomless-margin">
                   <InputFieldCommon
                     placeholder="New password"
-                    autoComplete='off'
+                    autoComplete="off"
                     isPassword
                     {...register("new_password")}
                     onKeyUp={(e: any) =>
@@ -155,7 +153,7 @@ export default function Index() {
                 <Box className="form_group bottomless-margin">
                   <InputFieldCommon
                     placeholder="Confirm new password"
-                    autoComplete='off'
+                    autoComplete="off"
                     isPassword
                     {...register("confirm_password")}
                     onKeyUp={(e: any) =>
@@ -177,99 +175,34 @@ export default function Index() {
                       <div className="profile_error">Passwords must match.</div>
                     )} */}
                 </Box>
-                <Box className="form_group">
-                  {!isLoading?<CustomButtonPrimary
-                    variant="contained"
-                    color="primary"
-                    type="submit"
-                    form="change_password"
-                  >
-                    <Typography>Change password</Typography>
-                  </CustomButtonPrimary>:
-                  <CustomButtonPrimary
-                    variant="contained"
-                    color="primary"
-                  >
-                    <ButtonLoader/>
-                  </CustomButtonPrimary>}
-                </Box>
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center"
+                  flexWrap="wrap"
+                >
+                  <Box className="form_group forgot_group">
+                    {!isLoading ? (
+                      <CustomButtonPrimary
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                        form="change_password"
+                      >
+                        <Typography>Change password</Typography>
+                      </CustomButtonPrimary>
+                    ) : (
+                      <CustomButtonPrimary variant="contained" color="primary">
+                        <ButtonLoader />
+                      </CustomButtonPrimary>
+                    )}
+                  </Box>
+                  <Link href="/auth/forgetpassword">
+                    Forgot password?
+                  </Link>
+                </Stack>
               </form>
             </Box>
-            {/* <Box className="each_block">
-              <Typography variant="h4">
-                Two-factor authentication
-                <Typography variant="caption">
-                  <InfoIcon />
-                </Typography>
-              </Typography>
-              <Typography className="auth_para">
-                <Typography variant="caption">
-                  <WarningIcon />
-                </Typography>
-                Two-factor authentication not enabled
-              </Typography>
-              <CustomButtonPrimary variant="contained" color="primary">
-                <Typography>Enable now</Typography>
-              </CustomButtonPrimary>
-            </Box> */}
-
-            {/* <Box className="each_block">
-              <Typography variant="h4">
-                Delete Account
-                
-              </Typography>
-
-              <CustomButtonPrimary
-                variant="contained"
-                color="primary"
-                onClick={handleopen}
-              >
-                <Typography>Delete now</Typography>
-              </CustomButtonPrimary>
-              <MuiModalWrapper
-                open={modalopen}
-                onClose={handleModalclose}
-                title=""
-              >
-                <Box className="DeteteNow">
-                  <Typography variant="h3">
-                    Are you sure you want to do this?
-                  </Typography>
-                  <Typography variant="body1">
-                    Disable your account by entering your details below
-                  </Typography>
-
-                  <List disablePadding className="form_group">
-                    <ListItem disablePadding>
-                      <InputFieldCommon placeholder="Enter your email" />
-                    </ListItem>
-                    <ListItem disablePadding>
-                      <InputFieldCommon
-                        placeholder="Enter your password"
-                        isPassword
-                      />
-                    </ListItem>
-                  </List>
-
-                  <List disablePadding className="btn_wrapper">
-                    <ListItem disablePadding>
-                      <CustomButtonPrimary variant="contained" color="primary" className="deletebtn">
-                        <Typography variant="body1">Delete</Typography>
-                      </CustomButtonPrimary>
-                    </ListItem>
-                    <ListItem disablePadding>
-                      <CustomButtonPrimary
-                        variant="outlined"
-                        color="info"
-                        className="gradient_btn"
-                      >
-                        <Typography variant="body1">Cancel</Typography>
-                      </CustomButtonPrimary>
-                    </ListItem>
-                  </List>
-                </Box>
-              </MuiModalWrapper>
-            </Box> */}
           </EditSettingWrapper>
         </Box>
       </DashboardWrapper>

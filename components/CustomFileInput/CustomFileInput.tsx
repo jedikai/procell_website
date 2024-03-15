@@ -21,7 +21,7 @@ export default function CustomFileInput({ getProofFile }: any) {
         <CustomFileInputWrapper >
             <UploadIcon />
             <Typography variant='h3'>{selectedName || "Click box to upload"}</Typography>
-            <Typography variant='body1'>Maximun file size 10mb</Typography>
+            <Typography variant='body1'>Maximum file size 10mb</Typography>
             <input type='file' onChange={handleFileChange} />
         </CustomFileInputWrapper>
     )

@@ -33,13 +33,7 @@ export default function index() {
   const [loader, setLoader] = useState(false);
   const [token, setToken] = useState("");
   const [userGivenKey, setUserGivenKey] = useState("");
-  const [procellRepData, setprocellRepData] = useState<any>({
-    ip: "136.232.69.38",
-    timestamp: "1708425395.219047",
-    user: "Daniel Schwartz",
-    phone: "855-577-6235",
-    email: "daniel.schwartz@procelltherapies.com"
-  });
+  const [procellRepData, setprocellRepData] = useState<any>({});
   const [isVerificationSuccessfull, setIsVerificationSuccessfull] =
     useState(true);
 
@@ -233,7 +227,7 @@ export default function index() {
         </Container>
       </Box>
       <MuiModalWrapper
-        open={true}
+        open={openModal}
         onClose={handleCloseModal}
         title=""
         className="verify_modal"
@@ -264,7 +258,7 @@ export default function index() {
             >
               <Box className="cnt_image">
                 <img
-                  src={procellRepData?.image ?? assest.avatarIcon}
+                  src={procellRepData?.image_url ?? assest.avatarIcon}
                   alt=""
                   width={248}
                   height={264}
@@ -275,18 +269,6 @@ export default function index() {
                   <ListItem disablePadding>
                     <Typography variant="body1" className="cnt_text cnt_name">
                       {procellRepData?.user}
-                    </Typography>
-                  </ListItem>
-                )}
-                {!!procellRepData?.email && (
-                  <ListItem disablePadding className="cnt_item">
-                    <i className="icon">
-                      <MailIcon />
-                    </i>
-                    <Typography variant="body1" className="cnt_text">
-                      <Link href={`mailto:${procellRepData?.email}`}>
-                        {procellRepData?.email}
-                      </Link>
                     </Typography>
                   </ListItem>
                 )}
@@ -304,6 +286,19 @@ export default function index() {
                     </Typography>
                   </ListItem>
                 )}
+                {!!procellRepData?.email && (
+                  <ListItem disablePadding className="cnt_item">
+                    <i className="icon">
+                      <MailIcon />
+                    </i>
+                    <Typography variant="body1" className="cnt_text">
+                      <Link href={`mailto:${procellRepData?.email}`}>
+                        {procellRepData?.email}
+                      </Link>
+                    </Typography>
+                  </ListItem>
+                )}
+                
               </List>
             </Stack>
           )}

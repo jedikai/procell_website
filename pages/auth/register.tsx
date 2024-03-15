@@ -160,9 +160,9 @@ const register = () => {
         console.log("onSuccess", response);
         const { status, data } = response;
         if (status == 200) {
-          router.push("/auth/login");
+          router.push("/login");
         } else {
-          toastError(data ? data?.message : "Something went wrong.");
+          toastSuccess(data ? data?.message : "Something went wrong.");
         }
       },
       onError: (error: any) => {
@@ -244,7 +244,7 @@ const register = () => {
                     </Box>
                     <Typography variant="body1" className="form_bottom">
                       Already have an account?{" "}
-                      <Link href="/auth/login">Login Now</Link>
+                      <Link href="/login">Login Now</Link>
                     </Typography>
                   </Box>
                 </form>

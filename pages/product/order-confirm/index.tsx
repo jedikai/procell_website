@@ -5,10 +5,10 @@ import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSeconda
 import { useOrderConfirm } from "@/hooks/react-qurey/query-hooks/paymentQuery.hooks";
 import { useAppSelector } from "@/hooks/useAppSelector";
 import assest from "@/json/assest";
-import { confirmproductList } from "@/json/mock/orderConfirm.mock";
 import Wrapper from "@/layout/wrapper/Wrapper";
 import { OrderconfirmWrapper } from "@/styles/StyledComponents/OrderconfirmWrapper";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
+import FaliureIcon from "@/ui/Icons/FaliureIcon";
 import SpinnerLoaderIcon from "@/ui/Icons/SpinnerLoaderIcon";
 import {
   Alert,
@@ -23,7 +23,7 @@ import Container from "@mui/system/Container/Container";
 import Image from "next/image";
 import { useRouter } from "next/router";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 function Index() {
   const router = useRouter();
@@ -65,11 +65,10 @@ function Index() {
         amount_delivery: `${amount_delivery}`
       });
       setEnable(false);
-      setSeverity(message_color ?? '');
-
+      setSeverity(message_color ?? "");
     },
     (error: any) => {
-      let redirectionLink = error?.response?.data?.data?.redirect ?? "";
+      const redirectionLink = error?.response?.data?.data?.redirect ?? "";
       router.push(redirectionLink);
     },
     enable
@@ -84,59 +83,66 @@ function Index() {
         <Backdrop
           sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
           open={isLoading}
-        // onClick={handleClose}
+          // onClick={handleClose}
         >
           <div style={{ display: "flex", flexDirection: "column" }}>
             <SpinnerLoaderIcon width={150} height={150} fill="#56cfff" />
-            {/* <h1 style={{ color: 'white' }}>Please wait we are proccesing your request.</h1> */}
           </div>
         </Backdrop>
         <OrderconfirmWrapper>
           <Box className="confirmstatus">
-            <Box className="icon_wrap">
-              <Image
-                src={assest.success_modal_img}
-                alt="success"
-                width={123}
-                height={127}
-              />
-            </Box>
-            <Typography variant="h4">Order confirmed</Typography>
-          </Box>
-          <Box className="userdetails">
-            <Image
-              className="pinkWingGradinetbox"
-              src={assest.pinkWindGradinet}
-              alt={"pinkgradient"}
-              width={504}
-              height={589}
-            />
-            {!!userName && (
-              <Typography variant="body1" className=" userName">
-                {userName ?? ""},
-              </Typography>
-            )}
-            <Typography variant="body1" className="description">
-              Lorem ipsum dolor sit amet consectetur. Tristique lectus magna
-              morbi adipiscing. Ultrices in fringilla sapien iaculis mattis. Sed
-              nisl donec turpis blandit praesent. Adipiscing eget nibh arcu
-              dignissim in eu nec. At eleifend leo erat integer quis ultricies.
-              Platea cum ut sed id dis malesuada. Bibendum lobortis netus
-              sollicitudin nullam morbi nec eleifend. Dignissim ornare eget
-              tortor lectus varius ultricies habitasse in ipsum. Erat cras.
-            </Typography>
-
-            {orderPrices?.name && (
-              <Box className="orderdetailsStatusWrap">
-                <Typography variant="body1">
-                  Order ID:
-                  <Typography variant="caption">
-                    {orderPrices?.name ?? ""}
-                  </Typography>
-                </Typography>
+            {severity == "success" && (
+              <Box className="icon_wrap">
+                <Image
+                  src={assest.success_modal_img}
+                  alt="success"
+                  width={123}
+                  height={127}
+                />
               </Box>
             )}
+            {severity == "error" && (
+              <Box className="icon_wrap">
+                <i className="error_icon">
+                  <FaliureIcon IconColor="#e76767" />
+                </i>
+              </Box>
+            )}
+            <Typography variant="h4">
+              Order {severity == "success" ? "confirmed" : "failed"}
+            </Typography>
           </Box>
+          {severity != "error" && (
+            <Box className="userdetails">
+              <Image
+                className="pinkWingGradinetbox"
+                src={assest.pinkWindGradinet}
+                alt={"pinkgradient"}
+                width={504}
+                height={589}
+              />
+              {!!userName && (
+                <Typography variant="body1" className=" userName">
+                  {userName ?? ""},
+                </Typography>
+              )}
+              <Typography variant="body1" className="description">
+                Your online payment has been authorized. Thank you for your
+                order.
+              </Typography>
+
+              {orderPrices?.name && (
+                <Box className="orderdetailsStatusWrap">
+                  <Typography variant="body1">
+                    Order ID:
+                    <Typography variant="caption">
+                      {orderPrices?.name ?? ""}
+                    </Typography>
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          )}
           <Box className="confirmProductDetials">
             {data && data?.message && !!severity && (
               <Alert
@@ -198,7 +204,7 @@ function Index() {
                     </Typography>
                   </ListItem>
                 )}
-                {orderPrices?.amount_tax && (
+                {orderPrices?.amount_delivery && (
                   <ListItem disablePadding className="orderPriceWrap">
                     <Typography variant="body1" className="product_Price">
                       shipping
@@ -207,7 +213,7 @@ function Index() {
                       variant="body1"
                       className="product_priceSection"
                     >
-                      ${orderPrices?.amount_tax}
+                      ${orderPrices?.amount_delivery}
                     </Typography>
                   </ListItem>
                 )}

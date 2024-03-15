@@ -84,8 +84,16 @@ export const useSalesList = (
   useQuery([GET_SALES_LIST, page, type], () => getSalesList(page, type), {
     onSuccess,
     onError,
+    enabled: false,
     select: (data) => data?.data?.data ?? []
   });
+
+  const orderListSearch = async (body: object) => {
+    const res = await axiosInstance.post(endpoints.app.sales_list_serach, body);
+    return res;
+  };
+  
+  export const useOrderListSearch = () => useMutation(orderListSearch);
 // <------------------------------ INVOICE SECTION APIS ------------------------------>
 const getInvoiceList = async (page: number, type: string) => {
   const res = await axiosInstance.get(

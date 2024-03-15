@@ -8,8 +8,10 @@ import LoginWrapper from "@/layout/wrapper/LoginWrapper";
 import { LoginPageWrapper } from "@/styles/StyledComponents/LoginPageWrapper";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
+import RadioCheckedIcon from "@/ui/Icons/RadioCheckedIcon";
+import RadioUncheckedIcon from "@/ui/Icons/RadioUncheckedIcon";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Autocomplete from "@mui/material/Autocomplete";
+import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormLabel from "@mui/material/FormLabel";
@@ -22,11 +24,10 @@ import { Box } from "@mui/system";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import validationText from "../../json/messages/validationText";
-import { getCookie } from "@/lib/functions/storage.lib";
 
 type Inputs = {
   email: string;
@@ -79,7 +80,7 @@ const Registerpage = () => {
   const [render, setRender] = useState(true);
   const [isUserHadTherapies, setIsUserHadTherapies] = useState<boolean>(true);
   const [selectedValues, setSelectedValues] = useState({
-    phnCode: null,
+    phnCode: null
   });
   const [userGivenPhoneCode, setUserGivenPhoneCode] = useState("");
   const {
@@ -120,7 +121,7 @@ const Registerpage = () => {
     consumerSignUp(formData, {
       onSuccess: (response) => {
         const { status, data } = response;
-        router.push("/auth/login");
+        router.push("/login");
         // if (status == 200) {
         //   console.log("onSuccess", response);
         //   router.push("/auth/login");
@@ -144,6 +145,12 @@ const Registerpage = () => {
       : countryList?.filter((_i: any) => _i?.phone_code == userGivenPhoneCode);
   }, [userGivenPhoneCode, countryList]);
 
+  const filterPhnCdCountryOptions = createFilterOptions({
+    matchFrom: "any",
+    stringify: (option: any) =>
+      `${option.phone_code} ${option.name.toLowerCase()}`
+  });
+
   // useEffect(() => {
   //   if (typeof window !== "undefined") {
   //     const userLoginStatus: boolean =
@@ -160,232 +167,246 @@ const Registerpage = () => {
   return (
     <>
       {render ? (
-        <>
-          <LoginWrapper title="welcome TO PROCELL">
-            <LoginPageWrapper>
-              <Box className="wrapper">
-                <Link href="/">
-                  <Image
-                    src={assest.logo_img}
-                    alt="procell"
-                    width={143}
-                    height={54}
-                  />
-                </Link>
-                <form onSubmit={handleSubmit(onFormSubmit)}>
-                  <Box className="form_body form_body2">
-                    <Typography variant="h4">REGISTER NOW</Typography>
+        <LoginWrapper title="welcome TO PROCELL">
+          <LoginPageWrapper>
+            <Box className="wrapper">
+              <Link href="/">
+                <Image
+                  src={assest.logo_img}
+                  alt="procell"
+                  width={143}
+                  height={54}
+                />
+              </Link>
+              <form onSubmit={handleSubmit(onFormSubmit)}>
+                <Box className="form_body form_body2">
+                  <Typography variant="h4">REGISTER NOW</Typography>
 
-                    <Box className="input_wrap">
-                      <InputFieldCommon
-                        placeholder="Email"
-                        style2
-                        {...register("email")}
-                      />
-                      {errors.email && (
-                        <div className="error">{errors.email.message}</div>
-                      )}
-                      <InputFieldCommon
-                        placeholder="First Name"
-                        style2
-                        {...register("firstName")}
-                        onKeyDown={(e: any) =>
-                          [' '].includes(e.key) && e.preventDefault()
-                        }
-                      />
-                      {errors.firstName && (
-                        <div className="error">{errors.firstName.message}</div>
-                      )}
-                      <InputFieldCommon
-                        placeholder="Last Name"
-                        style2
-                        {...register("lastName")}
-                        onKeyDown={(e: any) =>
-                          [' '].includes(e.key) && e.preventDefault()
-                        }
-                      />
-                      {errors.lastName && (
-                        <div className="error">{errors.lastName.message}</div>
-                      )}
-                      <Stack className="phone_num_wrap">
-                        <div>
-                          <Autocomplete
-                            id="phonecode-select-demo"
-                            className="autocomplete_div"
-                            sx={{ width: 300 }}
-                            // filterOptions={filterOptions}
-                            onChange={(event: any, newValue: any | null) => {
-                              console.log("country", newValue);
-                              // setSelectedCountryId(
-                              //   newValue ? newValue?.id : ""
-                              // );
-                              setValue(
-                                "phnCode",
-                                newValue ? newValue?.phone_code : ""
-                              );
-                              setSelectedValues({
-                                ...selectedValues,
-                                phnCode: newValue
-                              });
-                            }}
-                            options={filterPhoneCodes ?? []}
-                            disabled={countryLoader}
-                            autoHighlight
-                            // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
-                            getOptionLabel={(option: any) =>
-                              ` +${option?.phone_code}`
-                            }
-                            renderOption={(props, option) => (
-                              <Box
-                                component="li"
-                                sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                                {...props}
-                              >
-                                <img
-                                  loading="lazy"
-                                  width="20"
-                                  src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
-                                  alt=""
-                                />
-                                {" +"}
-                                {option.phone_code}
-                              </Box>
-                            )}
-                            renderInput={(params) => {
-                              setUserGivenPhoneCode(
-                                `${params?.inputProps?.value ?? ""}`
-                              );
-                              return (
-                                <TextField
-                                  {...params}
-                                  // onChange={(e) =>
-                                  //   setUserGivenPhoneCode(e.target.value)
-                                  // }
-                                  // {...register("country")}
-                                  // label="Choose a country"
-                                  placeholder="Phone code"
-                                  inputProps={{
-                                    ...params.inputProps
-                                    // autoComplete: "new-password" // disable autocomplete and autofill
-                                  }}
-                                />
-                              );
-                            }}
-                          />
-                          {errors.phnCode && !selectedValues.phnCode && (
-                            <div
-                              className="phnCode_error"
-                              style={{ marginLeft: "10px" }}
-                            >
-                              {errors.phnCode.message}
-                            </div>
-                          )}
-                        </div>
-                        <div style={{ width: "100%" }}>
-                          <InputFieldCommon
-                            placeholder="Phone Number"
-                            style2
-                            type="number"
-                            {...register("phone")}
-                            onKeyDown={(e: any) => exceptThisSymbols.includes(e.key) && e.preventDefault()}
-                          />
-                          {errors.phone && (
-                            <div className="error">{errors.phone.message}</div>
-                          )}
-                        </div>
-                      </Stack>
-
-                      <InputFieldCommon
-                        placeholder="Password"
-                        style2
-                        isPassword
-                        type="number"
-                        {...register("password")}
-                      />
-                      {errors.password && (
-                        <div className="error">{errors.password.message}</div>
-                      )}
-                      <InputFieldCommon
-                        placeholder="Confirm Password"
-                        isPassword
-                        style2
-                        {...register("confirmPassword")}
-                      />
-                      {errors.confirmPassword && (
-                        <div className="error">
-                          {errors.confirmPassword.message}
-                        </div>
-                      )}
-                    </Box>
-                    <Box className="radio_btn_grp">
-                      <FormControl>
-                        <FormLabel id="demo-row-radio-buttons-group-label">
-                          Have you received a procell therapies treatment
-                          before?
-                        </FormLabel>
-                        <RadioGroup
-                          className="checkbox_wrapper checkbox-one"
-                          defaultValue="true"
-                        >
-                          <FormControlLabel
-                            value="true"
-                            control={<Radio />}
-                            label="Yes, I have"
-                            onChange={() => setIsUserHadTherapies(true)}
-                          // {...register("consent")}
-                          />
-                          <FormControlLabel
-                            value="false"
-                            control={<Radio />}
-                            label="No, I have not"
-                            onChange={() => setIsUserHadTherapies(false)}
-                          // {...register("consent")}
-                          />
-                        </RadioGroup>
-                      </FormControl>
-                    </Box>
-
-                    {isUserHadTherapies && (
-                      <Box className="form_group_textarea text-area-one">
-                        <InputFieldCommon
-                          placeholder="Please let us know the practitioner information here"
-                          multiline
-                          rows={3}
-                          maxRows={4}
-                          style3
-                          {...register("practitioner_info")}
-                        />
-                      </Box>
+                  <Box className="input_wrap">
+                    <InputFieldCommon
+                      placeholder="Email"
+                      style2
+                      {...register("email")}
+                    />
+                    {errors.email && (
+                      <div className="error">{errors.email.message}</div>
                     )}
-                    <Box className="btn_wrapper">
-                      {!isLoading ? (
-                        <CustomButtonPrimary
-                          variant="contained"
-                          color="primary"
-                          type="submit"
-                        >
-                          <Typography variant="body1">Sign Up</Typography>
-                        </CustomButtonPrimary>
-                      ) : (
-                        <CustomButtonPrimary
-                          variant="contained"
-                          color="primary"
-                        >
-                          <ButtonLoader />
-                        </CustomButtonPrimary>
-                      )}
-                    </Box>
+                    <InputFieldCommon
+                      placeholder="First Name"
+                      style2
+                      {...register("firstName")}
+                      onKeyDown={(e: any) =>
+                        [" "].includes(e.key) && e.preventDefault()
+                      }
+                    />
+                    {errors.firstName && (
+                      <div className="error">{errors.firstName.message}</div>
+                    )}
+                    <InputFieldCommon
+                      placeholder="Last Name"
+                      style2
+                      {...register("lastName")}
+                      onKeyDown={(e: any) =>
+                        [" "].includes(e.key) && e.preventDefault()
+                      }
+                    />
+                    {errors.lastName && (
+                      <div className="error">{errors.lastName.message}</div>
+                    )}
+                    <Stack className="phone_num_wrap">
+                      <div className="autocomplete_wrap">
+                        <Autocomplete
+                          id="phonecode-select-demo"
+                          className="autocomplete_div"
+                          sx={{ width: 300 }}
+                          // filterOptions={filterOptions}
+                          filterOptions={filterPhnCdCountryOptions}
+                          onChange={(event: any, newValue: any | null) => {
+                            console.log("country", newValue);
+                            // setSelectedCountryId(
+                            //   newValue ? newValue?.id : ""
+                            // );
+                            setValue(
+                              "phnCode",
+                              newValue ? newValue?.phone_code : ""
+                            );
+                            setSelectedValues({
+                              ...selectedValues,
+                              phnCode: newValue
+                            });
+                          }}
+                          // options={filterPhoneCodes ?? []}
+                          options={countryList ?? []}
+                          disabled={countryLoader}
+                          autoHighlight
+                          // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
+                          getOptionLabel={(option: any) =>
+                            ` +${option?.phone_code} ${option.name}`
+                          }
+                          renderOption={(props, option) => (
+                            <Box
+                              component="li"
+                              sx={{
+                                "& > img": {
+                                  mr: 2,
+                                  flexShrink: 0
+                                }
+                              }}
+                              {...props}
+                            >
+                              <img
+                                loading="lazy"
+                                width="20"
+                                src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
+                                alt=""
+                              />
+                              {" +"}
+                              {option.phone_code} {option.name}
+                            </Box>
+                          )}
+                          renderInput={(params) => {
+                            setUserGivenPhoneCode(
+                              `${params?.inputProps?.value ?? ""}`
+                            );
+                            return (
+                              <TextField
+                                {...params}
+                                // onChange={(e) =>
+                                //   setUserGivenPhoneCode(e.target.value)
+                                // }
+                                // {...register("country")}
+                                // label="Choose a country"
+                                placeholder="Phone code"
+                                inputProps={{
+                                  ...params.inputProps
+                                  // autoComplete: "new-password" // disable autocomplete and autofill
+                                }}
+                              />
+                            );
+                          }}
+                        />
+                        {errors.phnCode && !selectedValues.phnCode && (
+                          <div
+                            className="phnCode_error"
+                            style={{ marginLeft: "10px" }}
+                          >
+                            {errors.phnCode.message}
+                          </div>
+                        )}
+                      </div>
+                      <div className="autocomplete_right">
+                        <InputFieldCommon
+                          placeholder="Phone Number"
+                          style2
+                          type="number"
+                          {...register("phone")}
+                          onKeyDown={(e: any) =>
+                            exceptThisSymbols.includes(e.key) &&
+                            e.preventDefault()
+                          }
+                        />
+                        {errors.phone && (
+                          <div className="error">{errors.phone.message}</div>
+                        )}
+                      </div>
+                    </Stack>
 
-                    <Typography variant="body1" className="form_bottom">
-                      Already have an account?{" "}
-                      <Link href="/auth/login">Login Now</Link>
-                    </Typography>
+                    <InputFieldCommon
+                      placeholder="Password"
+                      style2
+                      isPassword
+                      type="number"
+                      {...register("password")}
+                    />
+                    {errors.password && (
+                      <div className="error">{errors.password.message}</div>
+                    )}
+                    <InputFieldCommon
+                      placeholder="Confirm Password"
+                      isPassword
+                      style2
+                      {...register("confirmPassword")}
+                    />
+                    {errors.confirmPassword && (
+                      <div className="error">
+                        {errors.confirmPassword.message}
+                      </div>
+                    )}
                   </Box>
-                </form>
-              </Box>
-            </LoginPageWrapper>
-          </LoginWrapper>
-        </>
+                  <Box className="radio_btn_grp">
+                    <FormControl>
+                      <FormLabel id="demo-row-radio-buttons-group-label">
+                        Have you received a procell therapies treatment before?
+                      </FormLabel>
+                      <RadioGroup
+                        className="checkbox_wrapper "
+                        defaultValue="true"
+                      >
+                        <FormControlLabel
+                          value="true"
+                          control={
+                            <Radio
+                              icon={<RadioUncheckedIcon />}
+                              checkedIcon={<RadioCheckedIcon />}
+                            />
+                          }
+                          label="Yes, I have"
+                          onChange={() => setIsUserHadTherapies(true)}
+                          // {...register("consent")}
+                        />
+                        <FormControlLabel
+                          value="false"
+                          control={
+                            <Radio
+                              icon={<RadioUncheckedIcon />}
+                              checkedIcon={<RadioCheckedIcon />}
+                            />
+                          }
+                          label="No, I have not"
+                          onChange={() => setIsUserHadTherapies(false)}
+                          // {...register("consent")}
+                        />
+                      </RadioGroup>
+                    </FormControl>
+                  </Box>
+
+                  {isUserHadTherapies && (
+                    <Box className="form_group_textarea text-area-one">
+                      <InputFieldCommon
+                        placeholder="Please let us know the practitioner information here"
+                        multiline
+                        rows={3}
+                        maxRows={4}
+                        style3
+                        {...register("practitioner_info")}
+                      />
+                    </Box>
+                  )}
+                  <Box className="btn_wrapper">
+                    {!isLoading ? (
+                      <CustomButtonPrimary
+                        variant="contained"
+                        color="primary"
+                        type="submit"
+                      >
+                        <Typography variant="body1">Sign Up</Typography>
+                      </CustomButtonPrimary>
+                    ) : (
+                      <CustomButtonPrimary variant="contained" color="primary">
+                        <ButtonLoader />
+                      </CustomButtonPrimary>
+                    )}
+                  </Box>
+
+                  <Typography variant="body1" className="form_bottom">
+                    Already have an account?{" "}
+                    <Link href="/auth/login">Login Now</Link>
+                  </Typography>
+                </Box>
+              </form>
+            </Box>
+          </LoginPageWrapper>
+        </LoginWrapper>
       ) : (
         <></>
       )}

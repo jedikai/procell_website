@@ -31,47 +31,52 @@ export default function Index() {
             <Box className="sec_title">
               <Typography variant="h4">
                 If you are a licensed practitioner, you are welcome to join us
-                for a FREE live presentation of Procell Microchanneling!
+                for our FREE Procell virtual workshops!
               </Typography>
             </Box>
-            {!isLoading ? workshopList && workshopList?.length > 0 ? (
-              <Box className="workshp_body">
-                {workshopList?.map((data: any) => (
-                  <WorkshopCard {...data} key={data?.title} />
-                ))}
-              </Box>
-            ) : (<div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyItems: "center",
-                width: "100%"
-              }}
-            >
-              {/* <MyLottieAnimation play /> */}
-              <Lottie
-                loop
-                animationData={animationURL}
-                play
-                style={{
-                  width: "50%",
-                  height: "100%",
-                  marginLeft: "auto",
-                  marginRight: "auto"
-                }}
-              />
-              <Typography
-                variant="body1"
-                className="no_found"
-                style={{
-                  marginLeft: "auto",
-                  marginRight: "auto"
-                }}
-              >
-                There is no workshop.
-              </Typography>
-            </div>
-            ) : <></>}
+            {!isLoading ? (
+              workshopList && workshopList?.length > 0 ? (
+                <Box className="workshp_body">
+                  {workshopList?.map((data: any) => (
+                    <WorkshopCard {...data} key={data?.title} />
+                  ))}
+                </Box>
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyItems: "center",
+                    width: "100%"
+                  }}
+                >
+                  {/* <MyLottieAnimation play /> */}
+                  <Lottie
+                    loop
+                    animationData={animationURL}
+                    play
+                    style={{
+                      width: "50%",
+                      height: "100%",
+                      marginLeft: "auto",
+                      marginRight: "auto"
+                    }}
+                  />
+                  <Typography
+                    variant="body1"
+                    className="no_found"
+                    style={{
+                      marginLeft: "auto",
+                      marginRight: "auto"
+                    }}
+                  >
+                    There is no workshop.
+                  </Typography>
+                </div>
+              )
+            ) : (
+              <></>
+            )}
           </Container>
         </Box>
       </WorkshopWrapper>

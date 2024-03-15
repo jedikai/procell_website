@@ -1,9 +1,11 @@
+import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
 import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import {
   useAddressList,
   useCreateAddress,
   useDeleteAddress,
-  useEditAddress
+  useEditAddress,
+  useMarkAsDefaultAddress
 } from "@/hooks/react-qurey/query-hooks/checkoutQuery.hooks";
 import {
   useCountryList,
@@ -11,7 +13,6 @@ import {
 } from "@/hooks/react-qurey/query-hooks/contactUsQuery.hook";
 import { DELIVERY_ADDRESS_LIST } from "@/hooks/react-qurey/query-keys/checkoutQuery.keys";
 import useNotiStack from "@/hooks/useNotistack";
-import assest from "@/json/assest";
 import validationText from "@/json/messages/validationText";
 import DashboardWrapper from "@/layout/DashboardWrapper/DashboardWrapper";
 import Wrapper from "@/layout/wrapper/Wrapper";
@@ -38,8 +39,7 @@ import Chip from "@mui/material/Chip";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useQueryClient } from "react-query";
 import * as yup from "yup";
@@ -79,7 +79,10 @@ const validationSchema = yup.object().shape({
     }),
   address: yup.string().required(validationText.error.address),
   city: yup.string().required(validationText.error.city),
-  zip: yup.string().required(validationText.error.zipCode),
+  zip: yup
+    .string()
+    .required(validationText.error.zipCode)
+    .max(8, "ZIP code must contain valid six character code."),
   country: yup.string().required(validationText.error.country),
   state: yup.string().required(validationText.error.state)
 });
@@ -110,6 +113,7 @@ export default function ManageAdress() {
     setSelecetedAddressData
   ] = useState<any>({});
   const [selectedCountryId, setSelectedCountryId] = useState("");
+  const [btnLoader, setBtnLoader] = useState(false);
   const [userGivenPhoneCode, setUserGivenPhoneCode] = useState("");
   const [selectedValues, setSelectedValues] = useState({
     phnCode: null,
@@ -117,7 +121,11 @@ export default function ManageAdress() {
     state: null
   });
 
-  const { data, isLoading } = useAddressList((response: any) => {
+  const {
+    data: addressListData,
+    isLoading,
+    refetch
+  } = useAddressList((response: any) => {
     console.log("response", response);
     const { shipping_address } = response ?? {};
     setAddressList(shipping_address ?? []);
@@ -131,6 +139,8 @@ export default function ManageAdress() {
   const { mutate: editAddress, isLoading: editLoader } = useEditAddress();
   const { mutate: createAddress, isLoading: createLoader } = useCreateAddress();
   const { mutate: deleteAddress, isLoading: deleteLoader } = useDeleteAddress();
+  const { mutate: markAsDefault, isLoading: markAsDefaultLoader } =
+    useMarkAsDefaultAddress();
 
   const {
     register,
@@ -143,6 +153,7 @@ export default function ManageAdress() {
     resolver: yupResolver(validationSchema)
   });
   const onFormSubmit = (data: Inputs): void => {
+    setBtnLoader(true);
     console.log("onFormSubmit", data);
     const {
       firstName,
@@ -186,9 +197,11 @@ export default function ManageAdress() {
           });
           toastSuccess(data?.data?.message ?? "Address updated successfully.");
           addNewAddressHandler();
+          setBtnLoader(false);
         },
         onError: (data: any) => {
           toastError(data?.data?.message ?? "Something went wrong.");
+          setBtnLoader(false);
         }
       });
     } else {
@@ -200,9 +213,11 @@ export default function ManageAdress() {
             data?.response?.data?.message ?? "Address created successfully."
           );
           addNewAddressHandler();
+          setBtnLoader(false);
         },
         onError: (data: any) => {
           toastError(data?.response?.data?.message ?? "Something went wrong.");
+          setBtnLoader(false);
         }
       });
     }
@@ -262,17 +277,68 @@ export default function ManageAdress() {
       ? countryList
       : countryList?.filter((_i: any) => _i?.phone_code == userGivenPhoneCode);
   }, [userGivenPhoneCode, countryList]);
+  const addressFormatter = useCallback(
+    (data: any) => {
+      let { street, city, state_id, country_id, zip } = data ?? {};
+      return `${!!street && street != "false" ? `${street}, ` : ""}${
+        !!city && city != "false" ? `${city}, ` : ""
+      }${
+        !!state_id && !!state_id[1] && state_id[1] != "false"
+          ? `${state_id[1]}, `
+          : ""
+      }${
+        !!country_id && !!country_id[1] && country_id[1] != "false"
+          ? `${country_id[1]}, `
+          : ""
+      }${!!zip && zip != "false" ? `${zip}, ` : ""}`;
+    },
+    [addressListData]
+  );
+  const filterPhnCdCountryOptions = createFilterOptions({
+    matchFrom: "any",
+    stringify: (option: any) =>
+      `${option.phone_code} ${option.name.toLowerCase()}`
+  });
+  const markAsDefaultAddress = (id: any) => {
+    if (!!id) {
+      const formData: FormData = new FormData();
+      formData.append("address_id", `${id}`);
+      markAsDefault(formData, {
+        onSuccess: (response: any) => {
+          toastSuccess(
+            response?.data?.message ?? "Address is marked as default."
+          );
+          refetch();
+        },
+        onError: (error: any) => {
+          console.log("eeeeeeeeeeeeeeeeeror", error);
+
+          toastError(
+            error?.response?.data?.message ??
+              "Something went wrong, please try again later."
+          );
+        }
+      });
+    }
+  };
+  useEffect(() => {
+    if (!!id && addressListData?.billing_address?.id == id) {
+      setValue("email", email);
+    }
+  }, [id]);
   return (
     <>
       <Wrapper>
         <DashboardWrapper>
-          {!isLoading && !!data ? (
+          {!isLoading && !!addressListData ? (
             <>
               {isAddAddress ? (
                 <Box className="cmn_box">
                   <CheckOutAddressWrap>
                     <Box className="title_block">
-                      <Typography variant="h4">Add New Address</Typography>
+                      <Typography variant="h4">
+                        {!!id ? "Edit Address" : "Add New Address"}
+                      </Typography>
                     </Box>
                     <Box className="form_wrapper">
                       <form
@@ -329,6 +395,9 @@ export default function ManageAdress() {
                               placeholder="Email"
                               style3
                               {...register("email")}
+                              disabled={
+                                id == addressListData?.billing_address?.id
+                              }
                             />
                             {errors?.email && (
                               <div className="profile_error">
@@ -350,6 +419,7 @@ export default function ManageAdress() {
                                     className="autocomplete_div"
                                     sx={{ width: 300 }}
                                     // value={selectedValues?.phnCode}
+                                    filterOptions={filterPhnCdCountryOptions}
                                     defaultValue={
                                       !!phone
                                         ? {
@@ -377,12 +447,15 @@ export default function ManageAdress() {
                                         phnCode: newValue
                                       });
                                     }}
-                                    options={filterPhoneCodes ?? []}
+                                    // options={filterPhoneCodes ?? []}
+                                    options={countryList ?? []}
                                     disabled={countryLoader}
                                     autoHighlight
                                     // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
                                     getOptionLabel={(option: any) =>
-                                      ` +${option?.phone_code}`
+                                      `${option?.phone_code} ${
+                                        option.name ?? ""
+                                      }`
                                     }
                                     renderOption={(props, option) => (
                                       <Box
@@ -395,13 +468,11 @@ export default function ManageAdress() {
                                         <img
                                           loading="lazy"
                                           width="20"
-                                          src={`${
-                                            process.env.NEXT_APP_BASE_URL
-                                          }/${option?.image_url ?? ""}`}
+                                          src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
                                           alt=""
                                         />
                                         {" +"}
-                                        {option.phone_code}
+                                        {option.phone_code} {option.name ?? ""}
                                       </Box>
                                     )}
                                     renderInput={(params) => {
@@ -459,7 +530,7 @@ export default function ManageAdress() {
                           <Grid item lg={12} xs={12}>
                             <InputFieldCommon
                               placeholder="Street and number"
-                              defaultValue={street ?? ""}
+                              defaultValue={!!street ? street : ""}
                               style3
                               multiline
                               rows={4}
@@ -474,7 +545,7 @@ export default function ManageAdress() {
                           </Grid>
                           <Grid item lg={12} xs={12}>
                             <InputFieldCommon
-                              defaultValue={street2 ?? ""}
+                              defaultValue={!!street2 ? street2 : ""}
                               placeholder="Street 2"
                               style3
                               rows={4}
@@ -625,7 +696,7 @@ export default function ManageAdress() {
                           <Grid item lg={6} md={6} xs={12}>
                             <InputFieldCommon
                               placeholder="City"
-                              defaultValue={city ?? ""}
+                              defaultValue={!!city ? city : ""}
                               style3
                               {...register("city")}
                             />
@@ -638,7 +709,7 @@ export default function ManageAdress() {
                           <Grid item lg={6} md={6} xs={12}>
                             <InputFieldCommon
                               placeholder="ZIP code"
-                              defaultValue={zip ?? ""}
+                              defaultValue={!!zip ? zip : ""}
                               style3
                               {...register("zip")}
                             />
@@ -657,14 +728,23 @@ export default function ManageAdress() {
                         className="form_submit"
                         sx={{ marginTop: "30px" }}
                       >
-                        <CustomButtonPrimary
-                          variant="contained"
-                          color="primary"
-                          type="submit"
-                          form="form-add-address"
-                        >
-                          <Typography>{!!id ? "Update" : "Save"}</Typography>
-                        </CustomButtonPrimary>
+                        {btnLoader ? (
+                          <CustomButtonPrimary
+                            variant="contained"
+                            color="primary"
+                          >
+                            <ButtonLoader />
+                          </CustomButtonPrimary>
+                        ) : (
+                          <CustomButtonPrimary
+                            variant="contained"
+                            color="primary"
+                            type="submit"
+                            form="form-add-address"
+                          >
+                            <Typography>{!!id ? "Update" : "Save"}</Typography>
+                          </CustomButtonPrimary>
+                        )}
                         <CustomButtonPrimary
                           variant="outlined"
                           color="info"
@@ -735,45 +815,67 @@ export default function ManageAdress() {
                                     variant="body1"
                                     className="name_text"
                                   >
-                                    {data?.name}
+                                    {data?.name ?? ""}
                                   </Typography>
-                                  {(!!data?.is_selected ||
-                                    data?.is_selected == "true") && (
+                                  {(!!data?.default_shipping ||
+                                    data?.default_shipping == "true") && (
                                     <Chip label="Default" />
                                   )}
                                 </Box>
                               </Box>
-                              <Box className="action_right">
-                                <Button
-                                  type="button"
-                                  onClick={() => editAddressHandler(data)}
-                                >
-                                  <EditPenIconTwo
-                                    IconWidth="18"
-                                    IconHeight="18"
-                                  />
-                                </Button>
-                                {!data?.is_selected && (
+                              {!!data?.allow_edit &&
+                              data?.id !=
+                                addressListData?.billing_address?.id ? (
+                                <Box className="action_right">
                                   <Button
                                     type="button"
-                                    onClick={() => {
-                                      getSelectedAddressId(`${data?.id ?? ""}`);
-                                      modalOpenHandler();
-                                    }}
+                                    onClick={() => editAddressHandler(data)}
                                   >
-                                    <DeleteIconTwo
-                                      IconWidth="13"
-                                      IconHeight="15"
+                                    <EditPenIconTwo
+                                      IconWidth="18"
+                                      IconHeight="18"
                                     />
                                   </Button>
-                                )}
-                              </Box>
+                                  {!data?.is_selected && (
+                                    <Button
+                                      type="button"
+                                      onClick={() => {
+                                        getSelectedAddressId(
+                                          `${data?.id ?? ""}`
+                                        );
+                                        modalOpenHandler();
+                                      }}
+                                    >
+                                      <DeleteIconTwo
+                                        IconWidth="13"
+                                        IconHeight="15"
+                                      />
+                                    </Button>
+                                  )}
+                                </Box>
+                              ) : addressListData?.billing_address
+                                  ?.allow_edit ? (
+                                <Box className="action_right">
+                                  <Button
+                                    type="button"
+                                    onClick={() => editAddressHandler(data)}
+                                  >
+                                    <EditPenIconTwo
+                                      IconWidth="18"
+                                      IconHeight="18"
+                                    />
+                                  </Button>
+                                </Box>
+                              ) : (
+                                <></>
+                              )}
                               <Box className="address_btm_block">
                                 <Typography
                                   variant="body1"
                                   className="btm_text"
                                 >
-                                  {`${data?.street ?? ""},${
+                                  {addressFormatter(data)}
+                                  {/* {`${data?.street ?? ""},${
                                     data?.city ? ` ${data?.city}` : ""
                                   },${
                                     data?.state_id && data?.state_id[1]
@@ -783,9 +885,27 @@ export default function ManageAdress() {
                                     data?.country_id && data?.country_id[1]
                                       ? ` ${data?.country_id[1]}`
                                       : ""
-                                  },${data?.zip ? ` ${data?.zip}` : ""}`}
+                                  },${data?.zip ? ` ${data?.zip}` : ""}`} */}
                                 </Typography>
                               </Box>
+                              {!(
+                                !!data?.default_shipping ||
+                                data?.default_shipping == "true"
+                              ) && (
+                                <Box className="btn_wrap">
+                                  <CustomButtonPrimary
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() =>
+                                      markAsDefaultAddress(data?.id)
+                                    }
+                                  >
+                                    <Typography variant="body1">
+                                      Mark as Default
+                                    </Typography>
+                                  </CustomButtonPrimary>
+                                </Box>
+                              )}
                             </Stack>
                           </Grid>
                         ))}

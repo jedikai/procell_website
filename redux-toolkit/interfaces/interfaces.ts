@@ -16,4 +16,6 @@ export interface userProfileImageInterface {
   AuthorizedNetCred: { login_id: string; client_key: string };
   userName: string;
   productVariantId: string | number;
+  userAcademyAccessbility: boolean | string;
+  userCreationDate: string;
 }

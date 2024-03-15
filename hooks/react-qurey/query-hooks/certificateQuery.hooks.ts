@@ -16,5 +16,5 @@ export const useCertificateList = (
     onSuccess,
     onError,
     enabled: false,
-    select: (data) => data?.data?.data ?? []
+    select: (data) => data?.data ?? {}
   });

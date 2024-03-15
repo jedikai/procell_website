@@ -9,10 +9,10 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Typography from "@mui/material/Typography";
 import { Box } from "@mui/system";
-import { memo } from "react";
+import { memo, useMemo } from "react";
 
 export default memo(function WorkshopCard(props: workshopProps | any) {
-  const {name,workshop_url,date} = props;
+  const { name, workshop_url, date } = props;
 
   // const { date, time, title }: any = props;
 
@@ -71,6 +71,78 @@ export default memo(function WorkshopCard(props: workshopProps | any) {
   // Create the output date string
   const outputDateStr = `${month} ${day}${daySuffix}, ${year}`;
 
+  function convertUTCToLocalTime(utcTime: string): {
+    formatedDate: string;
+    time: string;
+  } {
+    // Convert UTC time string to Date object
+    // const utcDate = new Date(utcTime + " UTC");
+
+    // // Convert UTC time to local time
+    // const localDate = new Date(
+    //   utcDate.getTime() + utcDate.getTimezoneOffset() * 60000
+    // );
+
+    var local:any = new Date(date);
+    var offset = local.getTimezoneOffset();
+    var localDate = new Date(local.getTime() - offset * 60000);
+    // Format the date
+    const options: Intl.DateTimeFormatOptions = {
+      month: "long",
+      day: "numeric",
+      year: "numeric"
+    };
+    const formattedDate = localDate.toLocaleDateString("en-US", options);
+
+    // Format the time
+    const time = localDate.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "numeric",
+      hour12: true
+    });
+
+    return { formatedDate: formattedDate, time: time };
+  }
+
+  const milliseconds = Date.parse(date);
+  const localTime = new Date(milliseconds);
+  function formatDateAndTime(timestamp: any) {
+    const date = new Date(timestamp);
+
+    // Format date
+    const options: any = { month: "long", day: "numeric", year: "numeric" };
+    const formattedDate = date.toLocaleDateString("en-US", options);
+
+    // Format time
+    const time = date.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+
+    return { formatedDate: formattedDate, time: time };
+  }
+
+  const getformattedTime = useMemo(() => {
+    const { time } = convertUTCToLocalTime(date);
+    // const { time } = formatDateAndTime(localTime);
+    return time;
+  }, [date]);
+  const getformattedDate = useMemo(() => {
+    const { formatedDate } = convertUTCToLocalTime(date);
+    // const { formatedDate } = formatDateAndTime(localTime);
+    console.log("_date", formatedDate);
+
+    return formatedDate;
+  }, [date]);
+
+  const _localTime = (date:any) => {
+    var local:any = new Date(date);
+    var offset = local.getTimezoneOffset();
+    var utc = new Date(local.getTime() - offset * 60000);
+    return utc
+  };
+  console.log("localTime", _localTime(date), date);
+
   return (
     <WorkshopCardWrapper className={name === "TBD" ? "disabled" : ""}>
       <i className="icon">
@@ -80,7 +152,7 @@ export default memo(function WorkshopCard(props: workshopProps | any) {
         <Typography variant="h5">
           {/* {title} */}
           {name}
-          </Typography>
+        </Typography>
         <List disablePadding>
           <ListItem disablePadding>
             <CalenderIcon
@@ -93,7 +165,7 @@ export default memo(function WorkshopCard(props: workshopProps | any) {
               IconHeight="13"
             />
             {/* {date} */}
-            {outputDateStr}
+            {getformattedDate}
           </ListItem>
           <ListItem disablePadding>
             <ClockIcon
@@ -103,8 +175,7 @@ export default memo(function WorkshopCard(props: workshopProps | any) {
                   : primaryColors?.black
               }
             />
-            {/* {time} */}
-            {timeFormatter(new Date(date))}
+            {getformattedTime}
           </ListItem>
         </List>
         <Box className="btn_otr">
@@ -120,4 +191,4 @@ export default memo(function WorkshopCard(props: workshopProps | any) {
       </Box>
     </WorkshopCardWrapper>
   );
-})
+});
