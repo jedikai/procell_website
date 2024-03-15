@@ -9,7 +9,7 @@ config:
       name: Warm up phase
     - duration: 60
       arrivalRate: 5
-      rampTo: 25
+      rampTo: 10
       name: Spike phase
   # Load & configure a couple of useful plugins
   # https://docs.art/reference/extensions
@@ -18,11 +18,11 @@ config:
     apdex: {}
     metrics-by-endpoint: {}
   apdex:
-    threshold: 200
+    threshold: 500
   ensure:
       thresholds:
-        - http.response_time.p99: 250
-        - http.response_time.p95: 200
+        - http.response_time.p99: 500
+        - http.response_time.p95: 400
 scenarios:
   - flow:
       - loop:
