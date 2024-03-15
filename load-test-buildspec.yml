@@ -9,9 +9,6 @@ phases:
     commands:
       - echo Run load test if not production
       - ./load-test.sh
-  post_build:
-    commands:
-      - echo Show reports
 
 artifacts:
   files:
