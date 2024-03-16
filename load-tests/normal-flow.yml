@@ -9,8 +9,7 @@ config:
       name: Warm up phase
     - duration: 60
       arrivalRate: 5
-      rampTo: 10
-      name: Spike phase
+      name: Sustained Spike phase
   # Load & configure a couple of useful plugins
   # https://docs.art/reference/extensions
   plugins:
