@@ -15,7 +15,6 @@ import { ContactWrapper } from "@/styles/StyledComponents/ContactWrapper";
 import { primaryColors } from "@/themes/_muiPalette";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
-import CustomRadio from "@/ui/CustomRadio/CustomRadio";
 import CallIcon from "@/ui/Icons/CallIcon";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
@@ -39,17 +38,26 @@ type Inputs = {
   phone: string;
   country: string;
   state: string;
-  company: string;
+  company?: string;
   zipCode: string;
   source: string;
   refference: string;
   type: boolean;
   proof_of_conversation: any;
+  url?: string;
+  social_media?: string;
 };
 
 const exceptThisSymbols = ["e", "E", "+", "-", "."];
 const phoneRegExp = /^[0-9]{10}$/;
 const regex = /^[0-9]+$/;
+
+const socialMediaList = [
+  { name: "Facebook" },
+  { name: "Instagram" },
+  { name: "TikTok" },
+  { name: "Twitter" }
+];
 // <------------------ REGISTRATION FORM VALIDATION SCHEMA ------------------>
 
 export default function Index() {
@@ -62,7 +70,8 @@ export default function Index() {
     phnCode: null,
     language: null,
     country: null,
-    state: null
+    state: null,
+    social_media: null
   });
   const validationSchema = yup.object().shape({
     email: yup
@@ -105,17 +114,21 @@ export default function Index() {
     country: yup.string().required(validationText.error.country),
     ...(consent === "professional"
       ? {
-        language: yup.string().required(validationText.error.language),
-        // country: yup.string().required(validationText.error.country),
-        // state: yup.string().required(validationText.error.state),
-        company: yup.string().required(validationText.error.company)
-      }
+          language: yup.string().required(validationText.error.language),
+          // country: yup.string().required(validationText.error.country),
+          // state: yup.string().required(validationText.error.state),
+          // company: yup.string().required(validationText.error.company)
+          source: yup.string().required(validationText.error.source),
+          url: yup.string().required(validationText.error.url),
+          social_media: yup.string().required(validationText.error.social_media)
+        }
       : {
-        zipCode: yup
-          .string()
-          .required(validationText.error.zipCode)
-          .matches(/^\d+$/, "ZIP code must contain only numbers")
-      })
+          zipCode: yup
+            .string()
+            .required(validationText.error.zipCode)
+            // .matches(/^\d+$/, "ZIP code must contain only numbers")
+            .max(8, "ZIP code must contain valid six character code.")
+        })
   });
   const radioChekcList = [
     {
@@ -159,7 +172,9 @@ export default function Index() {
       source,
       refference,
       proof_of_conversation,
-      type
+      type,
+      url,
+      social_media
     } = data;
     const formData: any = new FormData();
     if (consent == "professional") {
@@ -179,6 +194,8 @@ export default function Index() {
         formData.append("state_id", state ?? "");
       }
       formData.append("partner_name", company);
+      formData.append("social_media",social_media?.toLocaleLowerCase());
+      formData.append("social_media_url", url);
     }
 
     if (consent == "consumer") {
@@ -200,7 +217,8 @@ export default function Index() {
           phnCode: null,
           language: null,
           country: null,
-          state: null
+          state: null,
+          social_media: null
         });
         toastSuccess(data?.data?.message);
       },
@@ -234,7 +252,16 @@ export default function Index() {
       : countryList?.filter((_i: any) => _i?.phone_code == userGivenPhoneCode);
   }, [userGivenPhoneCode, countryList]);
 
-  const getProofFile = useCallback((data: any) => setValue('proof_of_conversation', data), [])
+  const getProofFile = useCallback(
+    (data: any) => setValue("proof_of_conversation", data),
+    []
+  );
+
+  const filterPhnCdCountryOptions = createFilterOptions({
+    matchFrom: "any",
+    stringify: (option: any) =>
+      `${option.phone_code} ${option.name.toLowerCase()}`
+  });
 
   console.log("countryList===========>", errors);
 
@@ -242,7 +269,7 @@ export default function Index() {
     <Wrapper>
       <InnerHeader
         innerHeaderTitle="Contact us"
-        innerHeaderRediractedPage="Contact us"
+        innerHeaderRediractedPage="Contact Us"
         bannerImage={assest.innerHeaderbackground}
         innerHeaderMainPage="Home"
       />
@@ -277,7 +304,7 @@ export default function Index() {
               spacing={{ xl: 4, lg: 2, md: 2, xs: 4 }}
               alignItems="flex-end"
             >
-              <Grid item xl={5} lg={6} md={6} xs={12}>
+              <Grid item xl={5} lg={6} md={6} xs={12} className="left_grid">
                 <figure>
                   <Image
                     src={assest?.contact_image}
@@ -289,7 +316,7 @@ export default function Index() {
               </Grid>
               <Grid item xl={7} lg={5} md={6} xs={12}>
                 <Box className="contact_form">
-                  <Box className="sec_title">
+                  {/* <Box className="sec_title">
                     <Typography variant="h4">
                       Please share your information below
                     </Typography>
@@ -298,14 +325,14 @@ export default function Index() {
                       Give us a call at:
                       <Link href="tel:855.577.6235">855.577.6235</Link>
                     </Typography>
-                  </Box>
+                  </Box> */}
                   <form onSubmit={handleSubmit(onFormSubmit)} id="contact_form">
                     <Box className="form_group">
                       <InputFieldCommon
                         placeholder="First name"
                         {...register("firstName")}
                         onKeyDown={(e: any) =>
-                          [' '].includes(e.key) && e.preventDefault()
+                          [" "].includes(e.key) && e.preventDefault()
                         }
                       />
                       {errors.firstName && (
@@ -319,7 +346,7 @@ export default function Index() {
                         placeholder="Last name"
                         {...register("lastName")}
                         onKeyDown={(e: any) =>
-                          [' '].includes(e.key) && e.preventDefault()
+                          [" "].includes(e.key) && e.preventDefault()
                         }
                       />
                       {errors.lastName && (
@@ -339,6 +366,7 @@ export default function Index() {
                             className="autocomplete_div"
                             sx={{ width: 300 }}
                             // filterOptions={filterPhoneOptions}
+                            filterOptions={filterPhnCdCountryOptions}
                             value={selectedValues?.phnCode}
                             onChange={(event: any, newValue: any | null) => {
                               console.log("country", newValue);
@@ -354,12 +382,14 @@ export default function Index() {
                                 phnCode: newValue
                               });
                             }}
-                            options={filterPhoneCodes ?? []}
+                            options={countryList ?? []}
+                            // options={filterPhoneCodes ?? []}
+                            // options={recomendedCountryList ?? []}
                             disabled={countryLoader}
                             autoHighlight
                             // getOptionLabel={(option: any) => option?.id}
                             getOptionLabel={(option: any) =>
-                              ` +${option?.phone_code}`
+                              ` +${option?.phone_code} ${option.name}`
                             }
                             renderOption={(props, option) => (
                               <Box
@@ -374,7 +404,7 @@ export default function Index() {
                                   alt=""
                                 />
                                 {" +"}
-                                {option.phone_code}
+                                {option.phone_code} {option.name}
                               </Box>
                             )}
                             renderInput={(params) => {
@@ -406,10 +436,13 @@ export default function Index() {
                             placeholder="Phone number"
                             type="number"
                             {...register("phone")}
-                            onKeyDown={(e: any) => exceptThisSymbols.includes(e.key) && e.preventDefault()}
-                          // {...register("phone", {
-                          //   max: 3
-                          // })}
+                            onKeyDown={(e: any) =>
+                              exceptThisSymbols.includes(e.key) &&
+                              e.preventDefault()
+                            }
+                            // {...register("phone", {
+                            //   max: 3
+                            // })}
                           />
                           {errors.phone && (
                             <div className="profile_error">
@@ -478,7 +511,7 @@ export default function Index() {
                                 {...params}
                                 // {...register("country")}
                                 // label="Choose a country"
-                                placeholder="Preffered Language"
+                                placeholder="Preferred Language"
                                 inputProps={{
                                   ...params.inputProps,
                                   autoComplete: "new-password" // disable autocomplete and autofill
@@ -752,6 +785,11 @@ export default function Index() {
                         style3
                         {...register("source")}
                       />
+                      {errors.source && (
+                        <div className="profile_error">
+                          {errors.source.message}
+                        </div>
+                      )}
                     </Box>
                     <Box className="form_group_textarea">
                       <InputFieldCommon
@@ -763,16 +801,82 @@ export default function Index() {
                         {...register("refference")}
                       />
                     </Box>
+                    {/* <--------------------- Client Changes ----------------> */}
+                    <Box className="form_group">
+                      <div
+                        className="space_between"
+                        style={{ alignItems: "flex-start" }}
+                      >
+                        <Box className="form_group_inner">
+                          <Autocomplete
+                            id="country-select-demo"
+                            className="autocomplete_div"
+                            sx={{ width: 300 }}
+                            onChange={(event: any, newValue: any | null) => {
+                              setValue(
+                                "social_media",
+                                newValue ? newValue?.name : ""
+                              );
+                              setSelectedValues({
+                                ...selectedValues,
+                                social_media: newValue?.name
+                              });
+                            }}
+                            options={socialMediaList ?? []}
+                            autoHighlight
+                            getOptionLabel={(option: any) => option.name}
+                            renderOption={(props, option) => (
+                              <Box
+                                component="li"
+                                sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                                {...props}
+                              >
+                                {option.name}
+                              </Box>
+                            )}
+                            renderInput={(params) => (
+                              <TextField
+                                {...params}
+                                // {...register("country")}
+                                // label="Choose a country"
+                                placeholder="Select Platform"
+                                inputProps={{
+                                  ...params.inputProps,
+                                  autoComplete: "new-password" // disable autocomplete and autofill
+                                }}
+                              />
+                            )}
+                          />
+                          {errors.social_media &&
+                            !selectedValues.social_media && (
+                              <div className="profile_error">
+                                {errors.social_media.message}
+                              </div>
+                            )}
+                        </Box>
+                        <Box className="form_group_inner">
+                          <InputFieldCommon
+                            placeholder="Enter url"
+                            {...register("url")}
+                          />
+                          {errors.url && (
+                            <div className="profile_error">
+                              {errors.url.message}
+                            </div>
+                          )}
+                        </Box>
+                      </div>
+                    </Box>
                   </form>
 
-                  <Box className="form_btm_sec">
-                    <Box className="option_sec">
+                  <Box className="form_btm_sec" style={{ marginTop: "10px" }}>
+                    {/* <Box className="option_sec">
                       <CustomRadio
                         defaultValue="professional"
                         radioList={radioChekcList}
                         onChange={(e) => consentHandler(e.target.value)}
                       />
-                    </Box>
+                    </Box> */}
                     {!isLoading ? (
                       <CustomButtonPrimary
                         variant="contained"

@@ -18,6 +18,7 @@ import Typography from "@mui/material/Typography";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import Link from "next/link";
 
 type Inputs = {
   email: string;
@@ -226,7 +227,7 @@ export default function Index() {
                       *Your issue will go straight to the CEO's desk.
                     </Typography>
 
-                    <Box className="submit_btn_holder">
+                    <Box className="submit_btn_holder form_btm_sec">
                       {!isLoading ? (
                         <CustomButtonPrimary
                           variant="contained"
@@ -246,6 +247,14 @@ export default function Index() {
                           <ButtonLoader />
                         </CustomButtonPrimary>
                       )}
+                      <Typography>
+                        Protected by reCAPTCHA, &nbsp;
+                        <Link href="/privacy-policy">
+                          Privacy Policy
+                        </Link> &{" "}
+                        <Link href="/terms-of-service">Terms of Service</Link>
+                        &nbsp; apply.
+                      </Typography>
                     </Box>
                   </form>
                 </Box>

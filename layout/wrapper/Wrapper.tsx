@@ -24,7 +24,8 @@ const Wrapper = (props: wrapperProps) => {
   };
   const router = useRouter();
 
-  const routerText = router.pathname.split("");
+  // const routerText = router.pathname.split("");
+  const routerText = router?.asPath.split("");
 
   routerText.shift();
   const favText = routerText.join("").toString().toUpperCase();

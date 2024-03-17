@@ -6,6 +6,12 @@ export const EditSettingWrapper = styled(Box)`
   .each_block {
     padding: 30px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    .forgot_group {
+      margin-bottom: 0;
+      @media (max-width: 599px) {
+        margin-bottom: 15px;
+      }
+    }
     &:first-child {
       padding-top: 0;
     }

@@ -78,6 +78,7 @@ const PaymentCardDetailsCard = ({
     clientKey: "",
     id: ""
   });
+  const [authorizeCredsExists, setAuthorizeCredsExists] = useState(false);
   const [paymentTransactionInfo, setPaymentTransactionInfo] = useState<any>({});
   const [cardListData, setCardListData] = useState<any>([]);
   const [verificationError, setVerificationError] = useState({
@@ -138,6 +139,7 @@ const PaymentCardDetailsCard = ({
         id: id,
         state: state
       });
+      setAuthorizeCredsExists(true);
       console.log(
         "show me decryption",
         decryptData(
@@ -270,6 +272,7 @@ const PaymentCardDetailsCard = ({
     }));
     setCardListData(filterSavedCardList);
     setIsNewCardAdded(!isNewCardAdded);
+    setSelectedCardId("");
   };
   const proceedPaymentHandler = () => {
     if (typeof window !== "undefined") {
@@ -287,7 +290,7 @@ const PaymentCardDetailsCard = ({
           proceedPayment();
         }
       } else {
-        router.push("/auth/login");
+        router.push("/login");
       }
     }
   };
@@ -357,7 +360,7 @@ const PaymentCardDetailsCard = ({
                     cardCode: "",
                     date: ""
                   });
-                  refetch();
+                  // refetch();
                   console.log("authorizePayment response", response);
                   router.push("/product/order-confirm");
                 },
@@ -403,7 +406,7 @@ const PaymentCardDetailsCard = ({
           errMsgs = { ...errMsgs, cardCode: text };
         }
       });
-      console.log("errMsgs", errMsgs, errorList);
+      console.warn("errMsgs", errMsgs, errorList);
       setVerificationError(errMsgs);
       setVerificationLoader(false);
       toastError("Card is Invalid.");
@@ -452,7 +455,7 @@ const PaymentCardDetailsCard = ({
     setCardListData(fiteredData);
     setIsNewCardAdded(!checked);
     if (checked) {
-      let userSelectedCardInfo = cardListData?.filter(
+      let userSelectedCardInfo = fiteredData?.filter(
         (_i: any) => _i?.checked == true
       );
       setSelectedCardId(userSelectedCardInfo[0]?.id);
@@ -484,8 +487,9 @@ const PaymentCardDetailsCard = ({
     // );
   };
   useEffect(() => {
-    if (!!showPaymentSection) {
+    if (!!showPaymentSection && !authorizeCredsExists) {
       refetch();
+      console.log("authorizationCred========>", "calleddddd");
     }
   }, [showPaymentSection]);
 
@@ -502,6 +506,24 @@ const PaymentCardDetailsCard = ({
     }
   }, [cardData, selectedCardId]);
   console.log("authorizationCred", authorizationCred);
+  // console.warn(
+  //   "authorizationCred========>",
+  //   !!showPaymentSection && !authorizeCredsExists,
+  //   !!showPaymentSection,
+  //   !authorizeCredsExists
+  // );
+  // console.log(
+  //   "authorizationCred========>",
+  //   !!showPaymentSection && !authorizeCredsExists,
+  //   !!showPaymentSection,
+  //   !authorizeCredsExists
+  // );
+  // console.error(
+  //   "authorizationCred========>",
+  //   !!showPaymentSection && !authorizeCredsExists,
+  //   !!showPaymentSection,
+  //   !authorizeCredsExists
+  // );
   return (
     <>
       {shipping != null && (
@@ -570,7 +592,7 @@ const PaymentCardDetailsCard = ({
               </Stack>
               <Box className="inputField_wrapper cardetails_fieldcmn">
                 <InputFieldCommon
-                  placeholder="Card zipcode"
+                  placeholder="Card zip code"
                   name="cardZipCode"
                   value={cardData.cardZipCode}
                   onChange={getUserGivenCarddetails}
@@ -633,19 +655,42 @@ const PaymentCardDetailsCard = ({
                 <ListItem>
                   <Stack direction="row" justifyContent="space-between">
                     <Typography variant="body1">subtotal</Typography>
-                    <Typography variant="caption">${subtotal}</Typography>
+                    <Typography variant="caption">
+                      {/* ${subtotal} */}$
+                      {!!subtotal
+                        ? typeof subtotal == "string"
+                          ? parseFloat(subtotal).toFixed(2)
+                          : subtotal.toFixed(2)
+                        : "-"}
+                    </Typography>
                   </Stack>
                 </ListItem>
                 <ListItem>
                   <Stack direction="row" justifyContent="space-between">
                     <Typography variant="body1">shipping</Typography>
-                    <Typography variant="caption">${shipping}</Typography>
+                    <Typography variant="caption">
+                      $
+                      {!!shipping
+                        ? typeof shipping == "string"
+                          ? parseFloat(shipping).toFixed(2)
+                          : shipping.toFixed(2)
+                        : "-"}
+                    </Typography>
                   </Stack>
                 </ListItem>
                 <ListItem>
                   <Stack direction="row" justifyContent="space-between">
                     <Typography variant="body1">Total ( tax incl.)</Typography>
-                    {<Typography variant="caption">${totalAmount}</Typography>}
+                    {
+                      <Typography variant="caption">
+                        {/* ${totalAmount} */}$
+                        {!!totalAmount
+                          ? typeof totalAmount == "string"
+                            ? parseFloat(totalAmount).toFixed(2)
+                            : totalAmount.toFixed(2)
+                          : "-"}
+                      </Typography>
+                    }
                   </Stack>
                 </ListItem>
               </List>

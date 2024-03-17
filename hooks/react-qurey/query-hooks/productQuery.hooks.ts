@@ -6,12 +6,13 @@ import { PRODUCT_DETAILS, PRODUCT_LIST } from "../query-keys/productQuery.keys";
 const getProductList = async (
   pageIndex: number,
   sort: string,
-  category: string
+  category: string,
+  search: string
 ) => {
   const res = await axiosInstance.get(
     `${endpoints.app.product_list}/page/${pageIndex}${sort ? `?${sort}` : ""}${
       category ? `${sort ? "&" : "?"}${category}` : ""
-    }`
+    }${!!search ? `${sort || category ? "&" : "?"}search=${search}` : ""}`
   );
   return res;
 };
@@ -20,15 +21,18 @@ export const useProductList = (
   page: number,
   sort: string,
   category: string,
+  search: string,
   onSuccess: any = () => {},
-  onError: any = () => {}
+  onError: any = () => {},
+  enabled: boolean = false
 ) =>
   useQuery(
-    [PRODUCT_LIST, page, sort, category],
-    () => getProductList(page, sort, category),
+    [PRODUCT_LIST, page, sort, category, search],
+    () => getProductList(page, sort, category, search),
     {
       onSuccess,
       onError,
+      enabled,
       select: (data) => data?.data?.data ?? [],
       keepPreviousData: true
     }

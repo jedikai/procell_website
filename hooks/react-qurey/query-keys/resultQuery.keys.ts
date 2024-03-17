@@ -1,1 +1,2 @@
 export const RESULT_LIST = "RESULT_LIST";
+export const INSTAGRAM_TOKEN = "INSTAGRAM_TOKEN";

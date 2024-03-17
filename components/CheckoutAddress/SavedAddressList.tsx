@@ -1,18 +1,40 @@
 import { CartItemsWrapper } from "@/styles/StyledComponents/CartItemWrapper";
-import { Checkbox, FormControlLabel } from "@mui/material";
+import {
+  Box,
+  Checkbox,
+  Chip,
+  FormControlLabel,
+  Typography
+} from "@mui/material";
 import { memo, useCallback, useState } from "react";
 import AddressModal from "./AddressModal";
+import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
+import { useMarkAsDefaultAddress } from "@/hooks/react-qurey/query-hooks/checkoutQuery.hooks";
+import { useQueryClient } from "react-query";
+import useNotiStack from "@/hooks/useNotistack";
+import { DELIVERY_ADDRESS_LIST } from "@/hooks/react-qurey/query-keys/checkoutQuery.keys";
 
 const SavedAddressList = ({
   checkoutAddress,
   type = "billing",
-  getSelectedAddressId = () => { }
+  getSelectedAddressId = () => {}
 }: any) => {
+  const queryClient = useQueryClient();
+  const { toastSuccess, toastError } = useNotiStack();
+
   const [checkList, setCheckList] = useState(
-    checkoutAddress ? checkoutAddress?.map((_i: any) => !!_i?.is_selected) : []
+    // checkoutAddress ? checkoutAddress?.map((_i: any) => !!_i?.is_selected) : []
+    checkoutAddress
+      ? checkoutAddress?.map((_i: any) => !!_i?.default_shipping)
+      : []
   );
   const [selectedAddress, setSelectedAddress] = useState({});
   const [openmod, setopenmod] = useState(false);
+  const [modalType, setModalType] = useState("");
+
+  const { mutate: markAsDefault, isLoading: markAsDefaultLoader } =
+    useMarkAsDefaultAddress();
+
   const handleClose = useCallback(() => {
     setopenmod(!openmod);
   }, [openmod]);
@@ -26,11 +48,34 @@ const SavedAddressList = ({
         return false;
       })
     );
-    getSelectedAddressId(id)
+    getSelectedAddressId(id);
   };
   const selectedAddressHandler = (data: any) => {
     setSelectedAddress(data);
     handleClose();
+  };
+
+  const markAsDefaultAddress = (id: any) => {
+    if (!!id) {
+      const formData: FormData = new FormData();
+      formData.append("address_id", `${id}`);
+      markAsDefault(formData, {
+        onSuccess: (response: any) => {
+          queryClient.invalidateQueries(DELIVERY_ADDRESS_LIST);
+          toastSuccess(
+            response?.data?.message ?? "Address is marked as default."
+          );
+        },
+        onError: (error: any) => {
+          console.log("eeeeeeeeeeeeeeeeeror", error);
+
+          toastError(
+            error?.response?.data?.message ??
+              "Something went wrong, please try again later."
+          );
+        }
+      });
+    }
   };
 
   return (
@@ -41,6 +86,7 @@ const SavedAddressList = ({
             <div className="flex-wrap">
               {type == "shipping" && (
                 <FormControlLabel
+                className="check_control"
                   onChange={(e) => checkHandler(e, idx, _i?.id)}
                   control={<Checkbox checked={checkList[idx]} />}
                   // control={<Checkbox checked={!!_i?.is_selected} />}
@@ -48,6 +94,26 @@ const SavedAddressList = ({
                 />
               )}
               {type == "shipping" && (
+                <>
+                  {!(
+                    !!_i?.default_shipping || _i?.default_shipping == "true"
+                  ) ? (
+                    <Box className="btn_wrap">
+                      <CustomButtonPrimary
+                        variant="contained"
+                        color="primary"
+                        onClick={() => markAsDefaultAddress(_i?.id)}
+                      >
+                        <Typography variant="body1">Mark as Default</Typography>
+                      </CustomButtonPrimary>
+                    </Box>
+                  ) : (
+                    <Chip label="Default" />
+                  )}
+                </>
+              )}
+              {/* {type == "shipping" && ( */}
+              {!!_i?.allow_edit && (
                 <>
                   {/* {checkoutAddress?.length > 1 && ( */}
                   <div className="checkout-actions">
@@ -70,52 +136,53 @@ const SavedAddressList = ({
                 </>
               )}
             </div>
-            {_i?.name && <h3>{_i?.name}</h3>}
-            {_i?.email && (
+            {!!_i?.name && <h3>{!!_i?.name ? _i?.name : ""}</h3>}
+            {!!_i?.email && (
               <p>
                 <b>Email : </b>
-                {_i?.email}
+                {!!_i?.email ? _i?.email : ""}
               </p>
             )}
-            {_i?.phone && (
+            {!!_i?.phone && (
               <p>
                 <b>Phone number : </b>
-                {_i?.phone?.split(" ")?.length == 1
+                {_i?.phone}
+                {/* {_i?.phone?.split(" ")?.length == 1
                   ? _i?.phone?.split(" ")[0]
-                  : _i?.phone?.split(" ")[1]}
+                  : _i?.phone?.split(" ")[1]} */}
               </p>
             )}
-            {_i?.street && (
+            {!!_i?.street && (
               <p>
                 <b>Street 1 : </b>
-                {_i?.street}
+                {!!_i?.street ? _i?.street : ""}
               </p>
             )}
-            {_i?.street2 && (
+            {!!_i?.street2 && (
               <p>
                 <b>Street 2 : </b>
-                {_i?.street2}
+                {!!_i?.street2 ? _i?.street2 : ""}
               </p>
             )}
-            {_i?.city && (
+            {!!_i?.city && (
               <p>
                 <b>City : </b>
-                {_i?.city}
+                {!!_i?.city ? _i?.city : ""}
               </p>
             )}
-            {_i?.zip && (
+            {!!_i?.zip && (
               <p>
                 <b>Zip code : </b>
-                {_i?.zip}
+                {!!_i?.zip ? _i?.zip : ""}
               </p>
             )}
-            {_i?.country_id && _i?.country_id[1] && (
+            {!!_i?.country_id && _i?.country_id[1] && (
               <p>
                 <b>Country : </b>
                 {_i?.country_id[1]}
               </p>
             )}
-            {_i?.state_id && _i?.state_id[1] && (
+            {!!_i?.state_id && _i?.state_id[1] && (
               <p>
                 <b>State/Province : </b>
                 {_i?.state_id[1]}
@@ -127,7 +194,7 @@ const SavedAddressList = ({
       <AddressModal
         open={openmod}
         handleClose={handleClose}
-        type={"Shipping address"}
+        type={type == "shipping" ? "Shipping address" : "Billing address"}
         selectedAddress={selectedAddress}
       />
     </>

@@ -94,3 +94,12 @@ const deleteAddress = async (body: object) => {
 };
 
 export const useDeleteAddress = () => useMutation(deleteAddress);
+
+// <------------------------------ MARK AS DEFAULT ADDRESS APIS ------------------------------>
+
+const markAsDefaultAddress = async (body: object) => {
+  const res = await axiosInstance.post(endpoints.app.mark_as_default_address, body);
+  return res;
+};
+
+export const useMarkAsDefaultAddress = () => useMutation(markAsDefaultAddress);

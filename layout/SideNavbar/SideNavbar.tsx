@@ -3,6 +3,7 @@
 /* eslint-disable react/jsx-curly-brace-presence */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
+import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
 import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import {
   useProfileDetails,
@@ -14,6 +15,7 @@ import { useAppSelector } from "@/hooks/useAppSelector";
 import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
 import {
+  getUserCreationDate,
   refreshProfileImg,
   updatedProfileImg
 } from "@/reduxtoolkit/slices/userProfle.slice";
@@ -43,10 +45,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
-import React, { useEffect } from "react";
+import React, { memo, useEffect } from "react";
 import { useQueryClient } from "react-query";
 
-export default function SideNavbar() {
+export default memo(function SideNavbar() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
@@ -71,27 +73,40 @@ export default function SideNavbar() {
       icon: (
         <CertificateIcon
           IconColor={
-            router?.pathname === "/dashboard/student-certfictes"
+            router?.pathname === "/dashboard/certificates"
               ? primaryColors.white
               : null
           }
         />
       ),
-      pathLink: "/dashboard/student-certfictes"
+      pathLink: "/dashboard/certificates"
     },
     {
-      name: "Sales orders",
+      name: "Orders",
       icon: (
         <SaleIcon
           IconColor={
-            router?.pathname === "/dashboard/sale-order"
+            router?.pathname === "/dashboard/orders"
               ? primaryColors.white
               : null
           }
         />
       ),
-      pathLink: "/dashboard/sale-order"
+      pathLink: "/dashboard/orders"
     },
+    // {
+    //   name: "Sales orders",
+    //   icon: (
+    //     <SaleIcon
+    //       IconColor={
+    //         router?.pathname === "/dashboard/sale-order"
+    //           ? primaryColors.white
+    //           : null
+    //       }
+    //     />
+    //   ),
+    //   pathLink: "/dashboard/sale-order"
+    // },
 
     // {
     //   name: "Purchase order",
@@ -115,19 +130,19 @@ export default function SideNavbar() {
     //   ),
     //   pathLink: "#"
     // },
-    {
-      name: "Invoices & Bills",
-      icon: (
-        <BillIcon
-          IconColor={
-            router?.pathname === "/dashboard/invoice"
-              ? primaryColors.white
-              : null
-          }
-        />
-      ),
-      pathLink: "/dashboard/invoice"
-    },
+    // {
+    //   name: "Invoices & Bills",
+    //   icon: (
+    //     <BillIcon
+    //       IconColor={
+    //         router?.pathname === "/dashboard/invoice"
+    //           ? primaryColors.white
+    //           : null
+    //       }
+    //     />
+    //   ),
+    //   pathLink: "/dashboard/invoice"
+    // },
     {
       name: "Edit Security Settings",
       icon: (
@@ -169,7 +184,7 @@ export default function SideNavbar() {
     // },
 
     {
-      name: "Manage payment methods",
+      name: "Manage Payment Methods",
       icon: (
         <PaymentIcon
           IconColor={
@@ -253,7 +268,7 @@ export default function SideNavbar() {
       pathLink: "/dashboard/manage-address"
     },
     {
-      name: "Contact a Rep",
+      name: "Contact your Rep",
       icon: (
         <CertificateIcon
           IconColor={
@@ -303,6 +318,8 @@ export default function SideNavbar() {
     joining_date: null,
     dp: null
   });
+  const [logoutLoader, setLogoutLoader] = React.useState(false);
+
   const onProfileDetailsSuccess = (response: any) => {
     console.log("first", response);
 
@@ -334,7 +351,7 @@ export default function SideNavbar() {
           !(
             _i?.name == "Certificates" ||
             _i?.name == "Profile" ||
-            _i?.name == "Contact a Rep" ||
+            _i?.name == "Contact your Rep" ||
             _i?.name == "My Clients"
           )
       );
@@ -351,11 +368,12 @@ export default function SideNavbar() {
     });
     console.log("sidebarnav", response[0]);
     dispatch(updatedProfileImg(image_1920_url));
+    dispatch(getUserCreationDate(`${create_date}`));
   };
   const onProfileDetailsError = (response: any) => {
     console.log("error", response);
     toastError("Your profile is not authorized, please log in.");
-    router.push("/auth/login");
+    router.push("/login");
   };
 
   const {
@@ -366,22 +384,27 @@ export default function SideNavbar() {
   const { mutate: updateProfile, isLoading: updateLoader } = useUpdateProfile();
   const { mutate: logout } = useLogout();
   const handleLogin = () => {
+    setLogoutLoader(true);
     if (typeof window !== "undefined") {
       // localStorage.removeItem("userName");
       // router.push("/auth/login");
 
       // if (typeof window !== "undefined") {
-      // localStorage.removeItem("userDetails");
+      localStorage.removeItem("userDetails");
       destroyCookie(null, "userDetails", { path: "/" });
       // router.push("/auth/login");
       destroyCookie(null, "userDetails", { path: "/" });
+      // destroyCookie(null, "session_id", { path: "/" });
       logout(
         {},
         {
           onSuccess: () => {
-            // localStorage.removeItem("userDetails");
+            localStorage.removeItem("userDetails");
             destroyCookie(null, "userDetails", { path: "/" });
-            router.push("/auth/login");
+            destroyCookie(null, "session_id", { path: "/" });
+            destroyCookie(null, "access_token", { path: "/" });
+            router.push("/login");
+            setLogoutLoader(false);
           },
           onError: () => {}
         }
@@ -405,6 +428,7 @@ export default function SideNavbar() {
       //     userDetailsCookie ? JSON.parse(userDetailsCookie) : null
       //   );
       setRenderedSec(!renderedSec);
+      refetch();
       // }
     }
   }, []);
@@ -585,14 +609,24 @@ export default function SideNavbar() {
 
           <List disablePadding className="btn_wrapper">
             <ListItem disablePadding>
-              <CustomButtonPrimary
-                variant="contained"
-                color="primary"
-                className="deletebtn"
-                onClick={handleLogin}
-              >
-                <Typography variant="body1">Yes</Typography>
-              </CustomButtonPrimary>
+              {logoutLoader ? (
+                <CustomButtonPrimary
+                  variant="contained"
+                  color="primary"
+                  className="deletebtn"
+                >
+                  <ButtonLoader />
+                </CustomButtonPrimary>
+              ) : (
+                <CustomButtonPrimary
+                  variant="contained"
+                  color="primary"
+                  className="deletebtn"
+                  onClick={handleLogin}
+                >
+                  <Typography variant="body1">Yes</Typography>
+                </CustomButtonPrimary>
+              )}
             </ListItem>
             <ListItem disablePadding>
               <CustomButtonPrimary
@@ -609,4 +643,4 @@ export default function SideNavbar() {
       </MuiModalWrapper>
     </SideBarWrapper>
   );
-}
+});

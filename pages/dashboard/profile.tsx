@@ -72,7 +72,7 @@ const validationSchema = yup.object().shape({
   phone: yup
     .string()
     .required(validationText.error.phone)
-    .matches(/^\d+$/, validationText.error.valid_phone_number)
+    // .matches(/^\d+$/, validationText.error.valid_phone_number)
     .test("isValid", validationText.error.phone_number_range, (value) => {
       console.log(value);
       if (value && value?.length >= 8 && value?.length <= 16) {
@@ -83,7 +83,10 @@ const validationSchema = yup.object().shape({
     }),
   address: yup.string().required(validationText.error.address),
   city: yup.string().required(validationText.error.city),
-  zipCode: yup.string().required(validationText.error.zipCode),
+  zipCode: yup
+    .string()
+    .required(validationText.error.zipCode)
+    .max(8, "ZIP code must contain valid six character code."),
   country: yup.string().required(validationText.error.country)
   // state: yup.string().required(validationText.error.state)
 });
@@ -144,14 +147,11 @@ export default function Profile(): JSX.Element {
       mail: email,
       address:
         `${street}`?.includes("false") || `${street}`?.includes("N/a")
-          ? "N/A"
+          ? ""
           : street,
       city:
-        `${city}`?.includes("false") || `${city}`?.includes("N/a")
-          ? "N/A"
-          : city,
-      pin:
-        `${zip}`?.includes("false") || `${zip}`?.includes("N/a") ? "N/A" : zip,
+        `${city}`?.includes("false") || `${city}`?.includes("N/a") ? "" : city,
+      pin: `${zip}`?.includes("false") || `${zip}`?.includes("N/a") ? "" : zip,
       country: country_id,
       state: state_id,
       share
@@ -347,6 +347,11 @@ export default function Profile(): JSX.Element {
       ? countryList
       : countryList?.filter((_i: any) => _i?.phone_code == userGivenPhoneCode);
   }, [userGivenPhoneCode, countryList]);
+  const filterPhnCdCountryOptions = createFilterOptions({
+    matchFrom: "any",
+    stringify: (option: any) =>
+      `${option.phone_code} ${option.name.toLowerCase()}`
+  });
   console.log("show me value", apiGivenrofilePic, profileDetails);
   return (
     <Wrapper>
@@ -391,7 +396,8 @@ export default function Profile(): JSX.Element {
                           <InputFieldCommon
                             placeholder="Phone code"
                             fullWidth
-                            value={`+${profileDetails?.phnCode}`}
+                            // value={`+${profileDetails?.phnCode}`}
+                            value={`${profileDetails?.phnCode}`}
                             disabled
                           />
                         </Grid>
@@ -549,9 +555,9 @@ export default function Profile(): JSX.Element {
                               fullWidth
                               defaultValue={profileDetails?.first_name}
                               {...register("firstName")}
-                              onKeyDown={(e: any) =>
-                                [" "].includes(e.key) && e.preventDefault()
-                              }
+                              // onKeyDown={(e: any) =>
+                              //   [" "].includes(e.key) && e.preventDefault()
+                              // }
                             />
                             {errors.firstName && (
                               <div className="profile_error">
@@ -565,9 +571,9 @@ export default function Profile(): JSX.Element {
                               fullWidth
                               defaultValue={profileDetails?.last_name}
                               {...register("lastName")}
-                              onKeyDown={(e: any) =>
-                                [" "].includes(e.key) && e.preventDefault()
-                              }
+                              // onKeyDown={(e: any) =>
+                              //   [" "].includes(e.key) && e.preventDefault()
+                              // }
                             />
                             {errors.lastName && (
                               <div className="profile_error">
@@ -580,6 +586,7 @@ export default function Profile(): JSX.Element {
                               id="phonecode-select-demo"
                               className="autocomplete_div"
                               sx={{ width: 300 }}
+                              filterOptions={filterPhnCdCountryOptions}
                               defaultValue={{
                                 phone_code: profileDetails?.phnCode
                               }}
@@ -593,14 +600,15 @@ export default function Profile(): JSX.Element {
                                   newValue ? newValue?.phone_code : ""
                                 );
                               }}
-                              options={filterPhoneCodes ?? []}
+                              // options={filterPhoneCodes ?? []}
+                              options={countryList ?? []}
                               disabled={countryLoader}
                               autoHighlight
                               // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
                               getOptionLabel={(option: any) =>
-                                ` +${option?.phone_code}`
+                                `${option?.phone_code} ${option.name ?? ""}`
                               }
-                              renderOption={(props: any, option: any) => (
+                              renderOption={(props, option) => (
                                 <Box
                                   component="li"
                                   sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
@@ -609,13 +617,11 @@ export default function Profile(): JSX.Element {
                                   <img
                                     loading="lazy"
                                     width="20"
-                                    src={`${process.env.NEXT_APP_BASE_URL}/${
-                                      option?.image_url ?? ""
-                                    }`}
+                                    src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
                                     alt=""
                                   />
                                   {" +"}
-                                  {option?.phone_code}
+                                  {option?.phone_code} {option?.name ?? ""}
                                 </Box>
                               )}
                               renderInput={(params) => {
@@ -645,7 +651,7 @@ export default function Profile(): JSX.Element {
                           <Grid item lg={6} xs={12}>
                             <InputFieldCommon
                               placeholder="Phone number"
-                              type="number"
+                              // type="number"
                               fullWidth
                               defaultValue={profileDetails?.contact}
                               {...register("phone")}
