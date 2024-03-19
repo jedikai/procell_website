@@ -8,16 +8,20 @@ WORKDIR /usr/src/procell_website
 RUN apk update && apk upgrade
 RUN apk --no-cache add curl
 
+# Install PM2 globally
+RUN npm install pm2 -g
+
 # copy the app, note .dockerignore
 COPY . .
+COPY ecosystem.config.js .
 RUN npm install --force
 
 # build necessary, even if no static files are needed,
 # since it builds the server as well
 RUN npm run build
 
-# expose 3000 on container
+# expose 14047 on container
 EXPOSE 14047
 
 # start the app
-CMD [ "npm", "start" ]
+CMD ["pm2-runtime", "start", "ecosystem.config.js"]
