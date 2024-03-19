@@ -27,6 +27,7 @@ module.exports = {
   }, {
     name: 'Nginx',
     script: 'nginx',
+    args: '-g \'daemon off;\'',
     instances: 1,
     autorestart: false,
     watch: false,
