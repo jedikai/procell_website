@@ -7,4 +7,4 @@ Resources:
         TaskDefinition: "<TASK_DEFINITION>"
         LoadBalancerInfo: 
           ContainerName: "procell-website-$MODE"
-          ContainerPort: 14047
+          ContainerPort: 3000

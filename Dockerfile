@@ -19,8 +19,8 @@ RUN npm install --force
 # since it builds the server as well
 RUN npm run build
 
-# expose 14047 on container
-COPY nginx.conf /etc/nginx/nginx.conf
+# expose 3000 on container
+COPY nginx.conf /etc/nginx/conf.d/app.conf
 EXPOSE 3000
 
 # Copy the startup script into the container
