@@ -21,7 +21,7 @@ RUN npm run build
 
 # expose 3000 on container
 RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx.conf /etc/nginx/conf.d/app.conf
+COPY nginx.conf /etc/nginx/http.d/app.conf
 EXPOSE 3000
 
 # Copy the startup script into the container
