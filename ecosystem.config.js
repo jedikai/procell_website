@@ -24,13 +24,5 @@ module.exports = {
     env: {
       PORT: 14048
     }
-  }, {
-    name: 'Nginx',
-    script: 'nginx',
-    args: '-g \'daemon off;\'',
-    instances: 1,
-    autorestart: false,
-    watch: false,
-    max_memory_restart: '2G'
   }]
 };
