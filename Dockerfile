@@ -20,7 +20,6 @@ RUN npm install --force
 RUN npm run build
 
 # expose 3000 on container
-RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/http.d/app.conf
 EXPOSE 3000
 
