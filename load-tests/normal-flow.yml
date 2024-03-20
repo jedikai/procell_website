@@ -7,9 +7,13 @@ config:
       arrivalRate: 1
       rampTo: 5
       name: Warm up phase
-    - duration: 60
+    - duration: 120
       arrivalRate: 5
-      name: Sustained Spike phase
+      rampTo: 25
+      name: Ramp to spike phase
+    - duration: 120
+      arrivalRate: 25
+      name: Sustained spike phase
   # Load & configure a couple of useful plugins
   # https://docs.art/reference/extensions
   plugins:
@@ -47,4 +51,4 @@ scenarios:
             url: "/faq/"
         - get:
             url: "/results/"
-        count: 25
+        count: 2
