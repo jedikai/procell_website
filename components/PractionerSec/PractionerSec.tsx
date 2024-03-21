@@ -31,6 +31,7 @@ import YoutubeIconPurple from "@/ui/Icons/YoutubeIconPurple";
 import { useRouter } from "next/router";
 import CircularProgressBar from "../CircularProgressBar/CircularProgressBar";
 import TrainingButton from "../TrainingButton/TrainingButton";
+import useNotiStack from "@/hooks/useNotistack";
 
 const AccordionEachItemProgress = ({
   image,
@@ -71,6 +72,7 @@ const ShowData = ({
 
 const AccordionEachRow = (props: any) => {
   const router = useRouter();
+  const { toastSuccess, toastError } = useNotiStack();
   const {
     index: _moduleIndex,
     handleChange,
@@ -241,6 +243,8 @@ const AccordionEachRow = (props: any) => {
                         item?.id ?? ""
                       }${getNextContentId(item?.id)}`
                     );
+                  } else {
+                    toastError("Please complete the previous content.");
                   }
                 }}
               >

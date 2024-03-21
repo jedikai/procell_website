@@ -30,6 +30,9 @@ export const DashboardStyle = styled(Box)`
       background-position: center;
       background-repeat: no-repeat;
       pointer-events: none;
+      @media (max-width: 1199px) {
+        right: 0;
+      }
     }
   }
   .dashboard_body {

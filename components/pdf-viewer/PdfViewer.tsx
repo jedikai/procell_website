@@ -5,7 +5,7 @@ import { Box, CircularProgress } from "@mui/material";
 // pdfjs.GlobalWorkerOptions.workerSrc = workerSrc;
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/legacy/build/pdf.worker.min.js`;
 
-const PdfViewer = ({ pdfUrl }: any) => {
+const PdfViewer = ({ pdfUrl, style = {} }: any) => {
   const [loading, setLoading] = useState(true);
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
@@ -17,15 +17,19 @@ const PdfViewer = ({ pdfUrl }: any) => {
     <>
       <div
         className="pdf_outer_scrollable"
-        style={{
-          margin: "auto",
-          width: "100%",
-          padding: "0px 10px 0px 10px",
-          overflowY: "scroll",
-          overflowX: "hidden",
-          height: "620px",
-          textAlign: "center"
-        }}
+        style={
+          Object.keys(style).length > 0
+            ? style
+            : {
+                margin: "auto",
+                width: "100%",
+                padding: "0px 10px 0px 10px",
+                overflowY: "scroll",
+                overflowX: "hidden",
+                height: "620px",
+                textAlign: "center"
+              }
+        }
       >
         <Document
           // options={{ workerSrc: "/pdf.worker.js" }}

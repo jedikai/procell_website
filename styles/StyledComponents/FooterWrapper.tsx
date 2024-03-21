@@ -48,7 +48,7 @@ export const FooterWrap = styled(Box)`
         font-weight: 400;
         font-size: 15px;
         color: ${primaryColors.footer_text};
-        text-transform: capitalize;
+        /* text-transform: capitalize; */
 
         @media (max-width: 599px) {
           font-size: 16px;

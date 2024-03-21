@@ -4,7 +4,8 @@ import { useMutation, useQuery } from "react-query";
 import {
   GET_COUNTRY_LIST,
   GET_LANGUAGE_LIST,
-  GET_STATE_LIST
+  GET_STATE_LIST,
+  PRACTTITIONER_MAP
 } from "../query-keys/contactUsQuery.keys";
 
 const getCountryList = async (body: object) => {
@@ -43,9 +44,7 @@ export const useStateList = (
   });
 
 const getLanguageList = async () => {
-  const res = await axiosInstance.get(
-    `${endpoints.app.language}`
-  );
+  const res = await axiosInstance.get(`${endpoints.app.language}`);
   return res;
 };
 
@@ -53,7 +52,7 @@ export const useLanguageList = (
   onSuccess: any = () => {},
   onError: any = () => {}
 ) =>
-  useQuery([GET_LANGUAGE_LIST],getLanguageList, {
+  useQuery([GET_LANGUAGE_LIST], getLanguageList, {
     onSuccess,
     onError,
     select: (data) => data?.data?.data ?? []
@@ -65,3 +64,20 @@ const contactUsPost = async (body: object) => {
 };
 
 export const useContactUs = () => useMutation(contactUsPost);
+
+const getPractitionersMap = async () => {
+  const res = await axiosInstance.get(`${endpoints.app.practitioners_map}`);
+  return res;
+};
+
+export const usePractitionersMap = (
+  enabled: boolean = false,
+  onSuccess: any = () => {},
+  onError: any = () => {}
+) =>
+  useQuery([PRACTTITIONER_MAP], getPractitionersMap, {
+    onSuccess,
+    onError,
+    enabled,
+    select: (data) => data?.data ?? {}
+  });

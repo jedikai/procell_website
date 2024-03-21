@@ -55,7 +55,7 @@ export default function ProductRgt(props: productProps) {
   };
   const renderDesc = useMemo(
     () =>
-      typeof window !== "undefined" ? (
+      typeof window !== "undefined" && !!para ? (
         <Typography variant="body1">{parse(`${para}`)}</Typography>
       ) : (
         <></>
@@ -92,14 +92,18 @@ export default function ProductRgt(props: productProps) {
   return (
     <ProductRgtWrap>
       <Box className="pro_rgt_outr">
-        <Typography variant="h2">{heading}</Typography>
-        <Box className="price">
-          <Typography variant="body1">$ {price}</Typography>
-        </Box>
-        <Box className="product_para">
-          {renderDesc}
-          {/* <Typography variant="body1">{parse(para)}</Typography> */}
-        </Box>
+        {!!heading && <Typography variant="h2">{heading}</Typography>}
+        {!!price && (
+          <Box className="price">
+            <Typography variant="body1">$ {price}</Typography>
+          </Box>
+        )}
+        {!!renderDesc && (
+          <Box className="product_para">
+            {renderDesc}
+            {/* <Typography variant="body1">{parse(para)}</Typography> */}
+          </Box>
+        )}
         <Box className="social_sec">
           <Box className="social_lft">
             <Typography variant="body1">30-day Money-back</Typography>

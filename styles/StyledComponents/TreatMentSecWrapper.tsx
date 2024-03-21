@@ -67,16 +67,16 @@ export const TreatMentSecWrapper = styled(Box)`
       margin-bottom: 30px;
     }
     h3 {
-      font-size: 83px;
+      font-size: 50px;
       color: ${primaryColors.black};
       @media (max-width: 1199px) {
-        font-size: 80px;
+        font-size: 50px;
       }
       @media (max-width: 899px) {
-        font-size: 40px;
+        font-size: 30px;
       }
       @media (max-width: 599px) {
-        font-size: 30px;
+        font-size: 18px;
       }
       span {
         font-size: 66px;
@@ -85,16 +85,16 @@ export const TreatMentSecWrapper = styled(Box)`
         color: inherit;
         font-family: inherit;
         @media (max-width: 1199px) {
-          font-size: 50px;
+          font-size: 59px;
         }
         @media (max-width: 899px) {
-          font-size: 30px;
+          font-size: 38px;
         }
         @media (max-width: 599px) {
-          font-size: 20px;
+          font-size: 35px;
         }
         @media (max-width: 489px) {
-          font-size: 16px;
+          font-size: 20px;
         }
       }
     }

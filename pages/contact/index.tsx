@@ -1,9 +1,11 @@
 import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
+import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import InnerHeader from "@/components/InnerHeader/InnerHeader";
 import {
   useContactUs,
   useCountryList,
   useLanguageList,
+  usePractitionersMap,
   useStateList
 } from "@/hooks/react-qurey/query-hooks/contactUsQuery.hook";
 import useNotiStack from "@/hooks/useNotistack";
@@ -18,15 +20,17 @@ import CallIcon from "@/ui/Icons/CallIcon";
 import DistacneIcon from "@/ui/Icons/DistacneIcon";
 import MailIcon from "@/ui/Icons/MailIcon";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { List, ListItem, Stack } from "@mui/material";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { Box, Container } from "@mui/system";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { StringLocale } from "yup/lib/locale";
@@ -67,8 +71,9 @@ const recomendedCountryList = [
 ];
 
 export default function Index() {
-  const { toastSuccess, toastError } = useNotiStack();
+  const { toastSuccess, toastError, toastWarning } = useNotiStack();
   // const userGivenPhoneCode = useRef("");
+  const repDataRef = useRef<HTMLDivElement | null>(null);
   const [userGivenPhoneCode, setUserGivenPhoneCode] = useState("");
   const [selectedCountryId, setSelectedCountryId] = useState("");
   const [consent, setConsent] = useState("professional");
@@ -80,45 +85,6 @@ export default function Index() {
     country: null,
     state: null
   });
-  // const validationSchema = yup.object().shape({
-  //   email: yup
-  //     .string()
-  //     .email(validationText.error.email_format)
-  //     .required(validationText.error.enter_email),
-  //   firstName: yup.string().required(validationText.error.first_name),
-  //   lastName: yup.string().required(validationText.error.last_name),
-  //   phnCode: yup.string().required(validationText.error.phone_code),
-  //   phone: yup
-  //     .string()
-  //     .required(validationText.error.phone)
-  //     .matches(/^\d+$/, validationText.error.valid_phone_number)
-  //     .test("isValid", validationText.error.phone_number_range, (value) => {
-  //       console.log(value);
-  //       if (value && value?.length >= 8 && value?.length <= 16) {
-  //         return true;
-  //       } else {
-  //         return false;
-  //       }
-  //     }),
-  //   // phone: yup
-  //   //   .string()
-  //   //   .matches(phoneRegExp, validationText.error.valid_phone_number)
-  //   //   .required(validationText.error.phone),
-  //   country: yup.string().required(validationText.error.country),
-  //   ...(consent === "professional"
-  //     ? {
-  //         language: yup.string().required(validationText.error.language),
-  //         // country: yup.string().required(validationText.error.country),
-  //         // state: yup.string().required(validationText.error.state),
-  //         company: yup.string().required(validationText.error.company)
-  //       }
-  //     : {
-  //         zipCode: yup
-  //           .string()
-  //           .required(validationText.error.zipCode)
-  //           .matches(/^\d+$/, "ZIP code must contain only numbers")
-  //       })
-  // });
 
   const validationSchema = yup.object().shape({
     ...(consent === "professional"
@@ -133,7 +99,7 @@ export default function Index() {
           phone: yup
             .string()
             .required(validationText.error.phone)
-            .matches(/^\d+$/, validationText.error.valid_phone_number)
+            // .matches(/^\d+$/, validationText.error.valid_phone_number)
             .test(
               "isValid",
               validationText.error.phone_number_range,
@@ -149,7 +115,7 @@ export default function Index() {
           country: yup.string().required(validationText.error.country),
           language: yup.string().required(validationText.error.language),
           company: yup.string().required(validationText.error.company),
-          source: yup.string().required(validationText.error.source),
+          source: yup.string().required(validationText.error.source)
         }
       : {
           ...(isReenterFields
@@ -162,7 +128,7 @@ export default function Index() {
                 phone: yup
                   .string()
                   .required(validationText.error.phone)
-                  .matches(/^\d+$/, validationText.error.valid_phone_number)
+                  // .matches(/^\d+$/, validationText.error.valid_phone_number)
                   .test(
                     "isValid",
                     validationText.error.phone_number_range,
@@ -186,7 +152,8 @@ export default function Index() {
           zipCode: yup
             .string()
             .required(validationText.error.zipCode)
-            .matches(/^\d+$/, "ZIP code must contain only numbers")
+            // .matches(/^\d+$/, "ZIP code must contain only numbers")
+            .max(8, "ZIP code must contain valid six character code.")
         })
   });
 
@@ -203,6 +170,8 @@ export default function Index() {
   const { mutate: contactUsPost, isLoading } = useContactUs();
   const { data: languageList, isLoading: languageLoader } = useLanguageList();
   const { data: countryList, isLoading: countryLoader } = useCountryList();
+  const { data: practitionersMapData, isLoading: PractitionersMapLoader } =
+    usePractitionersMap(consent === "consumer");
   const { data: stateList, isLoading: stateLoder } = useStateList(
     !!selectedCountryId,
     selectedCountryId
@@ -259,7 +228,7 @@ export default function Index() {
         formData.append("phone", `${phnCode} ${phone}`);
         formData.append("email_from", email);
       }
-      
+
       formData.append("type", consent);
       // formData.append("message", source);
       formData.append("country_id", country);
@@ -276,27 +245,49 @@ export default function Index() {
           country: null,
           state: null
         });
-        toastSuccess(data?.data?.message);
+        reset();
+        if (consent == "professional") {
+          toastSuccess(data?.data?.message);
+        }
+        // toastWarning(data?.data?.message, 10000);
         const supportRepDataList =
           !!data?.data?.data && data?.data?.data?.length > 0
             ? data?.data?.data
             : [];
+        console.log("data?.data?.email_required", data?.data?.email_required);
+
         if (consent === "consumer" && data?.data?.email_required) {
           setIsReenterFields(true);
         } else {
-          reset();
+          // reset();
         }
         setSupportRepData(supportRepDataList);
+        if (repDataRef.current && supportRepDataList?.length > 0) {
+          repDataRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+            inline: "center"
+          });
+        }
       },
       onError: (data: any) => {
-        // reset();
-        // setSelectedValues({
-        //   phnCode: null,
-        //   language: null,
-        //   country: null,
-        //   state: null
-        // });
-        toastError(data?.response?.data?.message);
+        if (data?.response?.status == "424") {
+          const supportRepDataList =
+            !!data?.data?.data && data?.data?.data?.length > 0
+              ? data?.data?.data
+              : [];
+          console.log("data?.data?.email_required", data?.data?.email_required);
+
+          if (consent === "consumer" && data?.data?.email_required) {
+            setIsReenterFields(true);
+          } else {
+            reset();
+          }
+          setSupportRepData(supportRepDataList);
+          toastWarning(data?.data?.message, 15000);
+        } else {
+          toastError(data?.response?.data?.message);
+        }
       }
     });
     console.log("onFormSubmit", data);
@@ -304,6 +295,7 @@ export default function Index() {
   const consentHandler = (data: string) => {
     setValue("type", data == "professional");
     setConsent(data);
+    setSupportRepData([]);
     reset();
   };
   console.log("languageList", errors);
@@ -311,6 +303,11 @@ export default function Index() {
   const filterCountryOptions = createFilterOptions({
     matchFrom: "start",
     stringify: (option: any) => option.name
+  });
+  const filterPhnCdCountryOptions = createFilterOptions({
+    matchFrom: "any",
+    stringify: (option: any) =>
+      `${option.phone_code} ${option.name.toLowerCase()}`
   });
 
   const filterPhoneCodes = useMemo(() => {
@@ -332,774 +329,880 @@ export default function Index() {
       localStorage.removeItem("isConsumer");
     };
   }, []);
-  console.log("errors", errors);
+  console.log("practitionersMapData", practitionersMapData);
 
   return (
     <Wrapper>
-      <InnerHeader
-        innerHeaderTitle="Contact Us"
-        innerHeaderRediractedPage="Contact Us"
-        bannerImage={assest.innerHeaderbackground}
-        innerHeaderMainPage="Home"
-      />
-      <ContactWrapper className="cmn_gap">
-        <Image
-          src={assest?.blue_leaf}
-          alt="leaf image"
-          width={155}
-          height={190}
-          className="blue_leaf"
+      <>
+        <InnerHeader
+          innerHeaderTitle="Contact Us"
+          innerHeaderRediractedPage="Contact Us"
+          bannerImage={assest.innerHeaderbackground}
+          innerHeaderMainPage="Home"
         />
+        <ContactWrapper className="cmn_gap">
+          <Image
+            src={assest?.blue_leaf}
+            alt="leaf image"
+            width={155}
+            height={190}
+            className="blue_leaf"
+          />
 
-        <Image
-          src={assest?.pink_leaf}
-          alt="leaf image"
-          width={155}
-          height={190}
-          className="pink_leaf"
-        />
+          <Image
+            src={assest?.pink_leaf}
+            alt="leaf image"
+            width={155}
+            height={190}
+            className="pink_leaf"
+          />
 
-        <Image
-          src={assest?.pink_leaf}
-          alt="leaf image"
-          width={155}
-          height={190}
-          className="small_pink_leaf"
-        />
-        <Container fixed>
-          <Box className="contact_sec">
-            <Grid
-              container
-              spacing={{ xl: 4, lg: 2, md: 2, xs: 4 }}
-              alignItems=""
-            >
-              <Grid item xl={5} lg={6} md={6} xs={12} className="left_grid">
-                <figure>
-                  <Image
-                    src={assest?.contact_image}
-                    alt="image"
-                    width={700}
-                    height={600}
-                  />
-                </figure>
-              </Grid>
-              <Grid item xl={7} lg={5} md={6} xs={12}>
-                <Box className="contact_form">
-                  <Box className="sec_title">
-                    <Typography variant="h4">
-                      Average response time is 5 minutes!
-                    </Typography>
-                    {/* <Typography variant="h5">
+          <Image
+            src={assest?.pink_leaf}
+            alt="leaf image"
+            width={155}
+            height={190}
+            className="small_pink_leaf"
+          />
+          <Container fixed>
+            <Box className="contact_sec">
+              <Grid
+                container
+                spacing={{ xl: 4, lg: 2, md: 2, xs: 4 }}
+                alignItems=""
+              >
+                <Grid item xl={4} lg={5} md={5} xs={12} className="left_grid">
+                  <figure>
+                    <Image
+                      src={assest?.contact_image}
+                      alt="image"
+                      width={700}
+                      height={600}
+                    />
+                  </figure>
+                </Grid>
+                <Grid item xl={8} lg={7} md={7} xs={12}>
+                  <Box className="contact_form">
+                    <Box className="sec_title">
+                      {consent == "professional" ? (
+                        <Typography variant="h4">
+                          Average response time is 5 minutes!
+                        </Typography>
+                      ) : !PractitionersMapLoader &&
+                        !!practitionersMapData &&
+                        Object.keys(practitionersMapData ?? {})?.length > 0 ? (
+                        <Typography variant="h4">
+                          {`${practitionersMapData?.count} PRACTITIONERS ARE
+                        PERFORMING PROCELL MICROCHANNELING TREATMENTS`}
+                        </Typography>
+                      ) : (
+                        <></>
+                      )}
+                      {/* <Typography variant="h5">
                       <CallIcon IconColor={primaryColors?.text_purple} />
                       Give us a call at:
                       <Link href="tel:855.577.6235">855.577.6235</Link>
                     </Typography> */}
-                  </Box>
-                  <Box className="option_sec">
-                    <ContactusRadioHandler
-                      defaultValue={consent}
-                      RadioGroupValue={consent}
-                      radioList={radioChekcList}
-                      onChange={(e) => consentHandler(e.target.value)}
-                    />
-                  </Box>
-                  <form onSubmit={handleSubmit(onFormSubmit)} id="contact_form">
-                    {consent == "professional" ? (
-                      <>
-                        <Box className="form_group">
-                          <InputFieldCommon
-                            placeholder="First name"
-                            {...register("firstName")}
-                            onKeyDown={(e: any) =>
-                              [" "].includes(e.key) && e.preventDefault()
-                            }
-                          />
-                          {errors.firstName && (
-                            <div className="profile_error">
-                              {errors.firstName.message}
-                            </div>
-                          )}
-                        </Box>
-                        <Box className="form_group">
-                          <InputFieldCommon
-                            placeholder="Last name"
-                            {...register("lastName")}
-                            onKeyDown={(e: any) =>
-                              [" "].includes(e.key) && e.preventDefault()
-                            }
-                          />
-                          {errors.lastName && (
-                            <div className="profile_error">
-                              {errors.lastName.message}
-                            </div>
-                          )}
-                        </Box>
-                        <Box className="form_group">
-                          <div
-                            className="justify_start autocomplete_wrap"
-                            style={{ alignItems: "flex-start" }}
-                          >
-                            <Box className="phn_code">
-                              <Autocomplete
-                                id="phonecode-select-demo"
-                                className="autocomplete_div"
-                                sx={{ width: 300 }}
-                                // filterOptions={filterPhoneOptions}
-                                value={selectedValues?.phnCode}
-                                onChange={(
-                                  event: any,
-                                  newValue: any | null
-                                ) => {
-                                  console.log("country", newValue);
-                                  // setSelectedCountryId(
-                                  //   newValue ? newValue?.id : ""
-                                  // );
-                                  setValue(
-                                    "phnCode",
-                                    newValue ? newValue?.phone_code : ""
-                                  );
-                                  setSelectedValues({
-                                    ...selectedValues,
-                                    phnCode: newValue
-                                  });
-                                }}
-                                options={filterPhoneCodes ?? []}
-                                // options={recomendedCountryList ?? []}
-                                disabled={countryLoader}
-                                autoHighlight
-                                // getOptionLabel={(option: any) => option?.id}
-                                getOptionLabel={(option: any) =>
-                                  ` +${option?.phone_code}`
-                                }
-                                renderOption={(props, option) => (
-                                  <Box
-                                    component="li"
-                                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                                    {...props}
-                                  >
-                                    <img
-                                      loading="lazy"
-                                      width="20"
-                                      src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
-                                      alt=""
-                                    />
-                                    {" +"}
-                                    {option.phone_code}
-                                  </Box>
-                                )}
-                                renderInput={(params) => {
-                                  setUserGivenPhoneCode(
-                                    `${params?.inputProps?.value ?? ""}`
-                                  );
-                                  return (
-                                    <TextField
-                                      {...params}
-                                      // {...register("country")}
-                                      // label="Choose a country"
-                                      placeholder="Phone code"
-                                      inputProps={{
-                                        ...params.inputProps
-                                        // autoComplete: "new-password" // disable autocomplete and autofill
-                                      }}
-                                    />
-                                  );
-                                }}
-                              />
-                              {errors.phnCode && !selectedValues.phnCode && (
-                                <div className="profile_error">
-                                  {errors.phnCode.message}
-                                </div>
-                              )}
-                            </Box>
-                            <Box className="phn_num">
-                              <InputFieldCommon
-                                placeholder="Phone number"
-                                type="number"
-                                {...register("phone")}
-                                onKeyDown={(e: any) =>
-                                  exceptThisSymbols.includes(e.key) &&
-                                  e.preventDefault()
-                                }
-                                // {...register("phone", {
-                                //   max: 3
-                                // })}
-                              />
-                              {errors.phone && (
-                                <div className="profile_error">
-                                  {errors.phone.message}
-                                </div>
-                              )}
-                            </Box>
-                          </div>
-                        </Box>
-                        <Box className="form_group">
-                          <InputFieldCommon
-                            placeholder="Email address"
-                            {...register("email")}
-                          />
-                          {errors.email && (
-                            <div className="profile_error">
-                              {errors.email.message}
-                            </div>
-                          )}
-                        </Box>
-                        <Box className="form_group">
-                          <Autocomplete
-                            id="language-select-demo"
-                            className="autocomplete_div"
-                            sx={{ width: 300 }}
-                            value={selectedValues?.language}
-                            onChange={(event: any, newValue: any | null) => {
-                              setValue(
-                                "language",
-                                newValue ? newValue?.id : ""
-                              );
-                              setSelectedValues({
-                                ...selectedValues,
-                                language: newValue
-                              });
-                            }}
-                            options={languageList ?? []}
-                            disabled={languageLoader}
-                            autoHighlight
-                            getOptionLabel={(option: any) => option.name}
-                            renderOption={(props, option) => (
-                              <Box
-                                component="li"
-                                sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                                {...props}
-                              >
-                                {option.name}
-                              </Box>
+                    </Box>
+                    <Box className="option_sec">
+                      <ContactusRadioHandler
+                        defaultValue={consent}
+                        RadioGroupValue={consent}
+                        radioList={radioChekcList}
+                        onChange={(e) => consentHandler(e.target.value)}
+                      />
+                    </Box>
+                    <form
+                      onSubmit={handleSubmit(onFormSubmit)}
+                      id="contact_form"
+                    >
+                      {consent == "professional" ? (
+                        <>
+                          <Box className="form_group">
+                            <InputFieldCommon
+                              tabIndex={0}
+                              placeholder="First name"
+                              {...register("firstName")}
+                              // onKeyDown={(e: any) =>
+                              //   [" "].includes(e.key) && e.preventDefault()
+                              // }
+                            />
+                            {errors.firstName && (
+                              <div className="profile_error">
+                                {errors.firstName.message}
+                              </div>
                             )}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                // {...register("country")}
-                                // label="Choose a country"
-                                placeholder="Preferred language"
-                                inputProps={{
-                                  ...params.inputProps,
-                                  autoComplete: "new-password" // disable autocomplete and autofill
-                                }}
-                              />
+                          </Box>
+                          <Box className="form_group">
+                            <InputFieldCommon
+                              tabIndex={1}
+                              placeholder="Last name"
+                              {...register("lastName")}
+                              // onKeyDown={(e: any) =>
+                              //   [" "].includes(e.key) && e.preventDefault()
+                              // }
+                            />
+                            {errors.lastName && (
+                              <div className="profile_error">
+                                {errors.lastName.message}
+                              </div>
                             )}
-                          />
-                          {errors.language && !selectedValues.language && (
-                            <div className="profile_error">
-                              {errors?.language.message}
-                            </div>
-                          )}
-                        </Box>
-                        <Box className="form_group">
-                          <div
-                            className="space_between"
-                            style={{ alignItems: "flex-start" }}
-                          >
-                            <Box
-                              className={
-                                stateList && stateList.length > 0
-                                  ? "form_group_inner"
-                                  : "form_group_inner_full form_group_inner"
-                              }
+                          </Box>
+                          <Box className="form_group">
+                            <div
+                              className="justify_start autocomplete_wrap"
+                              style={{ alignItems: "flex-start" }}
                             >
-                              <Autocomplete
-                                id="country-select-demo"
-                                className="autocomplete_div"
-                                sx={{ width: 300 }}
-                                filterOptions={filterCountryOptions}
-                                value={selectedValues?.country}
-                                onChange={(
-                                  event: any,
-                                  newValue: any | null
-                                ) => {
-                                  console.log("country", newValue);
-                                  setSelectedCountryId(
-                                    newValue ? newValue?.id : ""
-                                  );
-                                  setValue(
-                                    "country",
-                                    newValue ? newValue?.id : ""
-                                  );
-                                  setSelectedValues({
-                                    ...selectedValues,
-                                    country: newValue
-                                  });
-                                }}
-                                options={countryList ?? []}
-                                // options={recomendedCountryList ?? []}
-                                disabled={countryLoader}
-                                autoHighlight
-                                getOptionLabel={(option: any) => option.name}
-                                renderOption={(props, option) => (
-                                  <Box
-                                    component="li"
-                                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                                    {...props}
-                                  >
-                                    <img
-                                      loading="lazy"
-                                      width="20"
-                                      src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
-                                      alt=""
-                                    />
-                                    {option.name}
-                                  </Box>
-                                )}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    // {...register("country")}
-                                    // label="Choose a country"
-                                    placeholder="Choose a country"
-                                    inputProps={{
-                                      ...params.inputProps,
-                                      autoComplete: "new-password" // disable autocomplete and autofill
-                                    }}
-                                  />
-                                )}
-                              />
-                              {errors.country && !selectedValues.country && (
-                                <div className="profile_error">
-                                  {errors.country.message}
-                                </div>
-                              )}
-                            </Box>
-                            {stateList && stateList.length > 0 && (
-                              <Box className="form_group_inner">
+                              <Box className="phn_code">
                                 <Autocomplete
-                                  disablePortal
-                                  id="combo-box-demo"
+                                  tabIndex={2}
+                                  id="phonecode-select-demo"
                                   className="autocomplete_div"
-                                  // {...register("state")}
-                                  options={stateList ?? []}
                                   sx={{ width: 300 }}
-                                  disabled={!selectedCountryId && !stateLoder}
-                                  getOptionLabel={(option: any) => option.name}
-                                  value={selectedValues?.state}
+                                  // filterOptions={filterPhoneOptions}
+                                  filterOptions={filterPhnCdCountryOptions}
+                                  value={selectedValues?.phnCode}
                                   onChange={(
                                     event: any,
                                     newValue: any | null
                                   ) => {
-                                    console.log("state", newValue);
-                                    // setSelectedCountryId(newValue ? newValue?.id : "");
+                                    console.log("country", newValue);
+                                    // setSelectedCountryId(
+                                    //   newValue ? newValue?.id : ""
+                                    // );
                                     setValue(
-                                      "state",
+                                      "phnCode",
+                                      newValue ? newValue?.phone_code : ""
+                                    );
+                                    setSelectedValues({
+                                      ...selectedValues,
+                                      phnCode: newValue
+                                    });
+                                  }}
+                                  options={countryList ?? []}
+                                  // options={filterPhoneCodes ?? []}
+                                  // options={recomendedCountryList ?? []}
+                                  disabled={countryLoader}
+                                  autoHighlight
+                                  // getOptionLabel={(option: any) => option?.id}
+                                  getOptionLabel={(option: any) =>
+                                    ` +${option?.phone_code} ${option.name}`
+                                  }
+                                  renderOption={(props, option) => (
+                                    <Box
+                                      component="li"
+                                      sx={{
+                                        "& > img": { mr: 2, flexShrink: 0 }
+                                      }}
+                                      {...props}
+                                    >
+                                      <img
+                                        loading="lazy"
+                                        width="20"
+                                        src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
+                                        alt=""
+                                      />
+                                      {" +"}
+                                      {option.phone_code} {option.name}
+                                    </Box>
+                                  )}
+                                  renderInput={(params) => {
+                                    setUserGivenPhoneCode(
+                                      `${params?.inputProps?.value ?? ""}`
+                                    );
+                                    return (
+                                      <TextField
+                                        {...params}
+                                        // {...register("country")}
+                                        // label="Choose a country"
+                                        placeholder="Phone code"
+                                        inputProps={{
+                                          ...params.inputProps
+                                          // autoComplete: "new-password" // disable autocomplete and autofill
+                                        }}
+                                      />
+                                    );
+                                  }}
+                                />
+                                {errors.phnCode && !selectedValues.phnCode && (
+                                  <div className="profile_error">
+                                    {errors.phnCode.message}
+                                  </div>
+                                )}
+                              </Box>
+                              <Box className="phn_num">
+                                <InputFieldCommon
+                                  tabIndex={4}
+                                  placeholder="Phone number"
+                                  // type="number"
+                                  {...register("phone")}
+                                  onKeyDown={(e: any) =>
+                                    exceptThisSymbols.includes(e.key) &&
+                                    e.preventDefault()
+                                  }
+                                  // {...register("phone", {
+                                  //   max: 3
+                                  // })}
+                                />
+                                {errors.phone && (
+                                  <div className="profile_error">
+                                    {errors.phone.message}
+                                  </div>
+                                )}
+                              </Box>
+                            </div>
+                          </Box>
+                          <Box className="form_group">
+                            <InputFieldCommon
+                              tabIndex={5}
+                              placeholder="Email address"
+                              {...register("email")}
+                            />
+                            {errors.email && (
+                              <div className="profile_error">
+                                {errors.email.message}
+                              </div>
+                            )}
+                          </Box>
+                          <Box className="form_group">
+                            <Autocomplete
+                              tabIndex={6}
+                              id="language-select-demo"
+                              className="autocomplete_div"
+                              sx={{ width: 300 }}
+                              value={selectedValues?.language}
+                              onChange={(event: any, newValue: any | null) => {
+                                setValue(
+                                  "language",
+                                  newValue ? newValue?.id : ""
+                                );
+                                setSelectedValues({
+                                  ...selectedValues,
+                                  language: newValue
+                                });
+                              }}
+                              options={languageList ?? []}
+                              disabled={languageLoader}
+                              autoHighlight
+                              getOptionLabel={(option: any) => option.name}
+                              renderOption={(props, option) => (
+                                <Box
+                                  component="li"
+                                  sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                                  {...props}
+                                >
+                                  {option.name}
+                                </Box>
+                              )}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  // {...register("country")}
+                                  // label="Choose a country"
+                                  placeholder="Preferred language"
+                                  inputProps={{
+                                    ...params.inputProps,
+                                    autoComplete: "new-password" // disable autocomplete and autofill
+                                  }}
+                                />
+                              )}
+                            />
+                            {errors.language && !selectedValues.language && (
+                              <div className="profile_error">
+                                {errors?.language.message}
+                              </div>
+                            )}
+                          </Box>
+                          <Box className="form_group">
+                            <div
+                              className="space_between"
+                              style={{ alignItems: "flex-start" }}
+                            >
+                              <Box
+                                className={
+                                  stateList && stateList.length > 0
+                                    ? "form_group_inner"
+                                    : "form_group_inner_full form_group_inner"
+                                }
+                              >
+                                <Autocomplete
+                                  tabIndex={7}
+                                  id="country-select-demo"
+                                  className="autocomplete_div"
+                                  sx={{ width: 300 }}
+                                  filterOptions={filterCountryOptions}
+                                  value={selectedValues?.country}
+                                  onChange={(
+                                    event: any,
+                                    newValue: any | null
+                                  ) => {
+                                    console.log("country", newValue);
+                                    setSelectedCountryId(
+                                      newValue ? newValue?.id : ""
+                                    );
+                                    setValue(
+                                      "country",
                                       newValue ? newValue?.id : ""
                                     );
                                     setSelectedValues({
                                       ...selectedValues,
-                                      state: newValue
+                                      country: newValue
                                     });
                                   }}
+                                  options={countryList ?? []}
+                                  // options={recomendedCountryList ?? []}
+                                  disabled={countryLoader}
+                                  autoHighlight
+                                  getOptionLabel={(option: any) => option.name}
+                                  renderOption={(props, option) => (
+                                    <Box
+                                      component="li"
+                                      sx={{
+                                        "& > img": { mr: 2, flexShrink: 0 }
+                                      }}
+                                      {...props}
+                                    >
+                                      <img
+                                        loading="lazy"
+                                        width="20"
+                                        src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
+                                        alt=""
+                                      />
+                                      {option.name}
+                                    </Box>
+                                  )}
                                   renderInput={(params) => (
                                     <TextField
                                       {...params}
-                                      placeholder="State"
+                                      // {...register("country")}
+                                      // label="Choose a country"
+                                      placeholder="Choose a country"
+                                      inputProps={{
+                                        ...params.inputProps,
+                                        autoComplete: "new-password" // disable autocomplete and autofill
+                                      }}
                                     />
                                   )}
                                 />
-                                {errors.state && (
+                                {errors.country && !selectedValues.country && (
                                   <div className="profile_error">
-                                    {errors.state.message}
+                                    {errors.country.message}
                                   </div>
                                 )}
                               </Box>
-                            )}
-                          </div>
-                        </Box>
-                        <Box className="form_group">
-                          <InputFieldCommon
-                            placeholder="Your company"
-                            {...register("company")}
-                          />
-                          {errors.company && (
-                            <div className="profile_error">
-                              {errors.company.message}
-                            </div>
-                          )}
-                        </Box>
-                        <Box className="form_group_textarea">
-                          <InputFieldCommon
-                            // placeholder="Message (How did you hear about Procell Therapies?)"
-                            // placeholder="Message"
-                            placeholder="How did you hear about Procell Therapies?"
-                            multiline
-                            rows={3}
-                            maxRows={4}
-                            style3
-                            {...register("source")}
-                          />
-                          {errors.source && (
-                                <div className="profile_error">
-                                  {errors.source.message}
-                                </div>
-                              )}
-                        </Box>
-                        <Box className="form_group_textarea">
-                          <InputFieldCommon
-                            // placeholder="Optional (In contact or referred by a specific Procell rep?)"
-                            // placeholder="Optional"
-                            placeholder="In contact or referred by a specific Procell rep?"
-                            multiline
-                            rows={3}
-                            maxRows={4}
-                            style3
-                            {...register("refference")}
-                          />
-                        </Box>
-                      </>
-                    ) : (
-                      <>
-                        {isReenterFields && (
-                          <>
-                            <Box className="form_group">
-                              <InputFieldCommon
-                                placeholder="First name"
-                                {...register("firstName")}
-                                onKeyDown={(e: any) =>
-                                  [" "].includes(e.key) && e.preventDefault()
-                                }
-                              />
-                              {errors.firstName && (
-                                <div className="profile_error">
-                                  {errors.firstName.message}
-                                </div>
-                              )}
-                            </Box>
-                            <Box className="form_group">
-                              <InputFieldCommon
-                                placeholder="Last name"
-                                {...register("lastName")}
-                                onKeyDown={(e: any) =>
-                                  [" "].includes(e.key) && e.preventDefault()
-                                }
-                              />
-                              {errors.lastName && (
-                                <div className="profile_error">
-                                  {errors.lastName.message}
-                                </div>
-                              )}
-                            </Box>
-                            <Box className="form_group">
-                              <div
-                                className="justify_start autocomplete_wrap"
-                                style={{ alignItems: "flex-start" }}
-                              >
-                                <Box className="phn_code">
+                              {stateList && stateList.length > 0 && (
+                                <Box className="form_group_inner">
                                   <Autocomplete
-                                    id="phonecode-select-demo"
+                                    tabIndex={8}
+                                    disablePortal
+                                    id="combo-box-demo"
                                     className="autocomplete_div"
+                                    // {...register("state")}
+                                    options={stateList ?? []}
                                     sx={{ width: 300 }}
-                                    // filterOptions={filterPhoneOptions}
-                                    value={selectedValues?.phnCode}
+                                    disabled={!selectedCountryId && !stateLoder}
+                                    getOptionLabel={(option: any) =>
+                                      option.name
+                                    }
+                                    value={selectedValues?.state}
                                     onChange={(
                                       event: any,
                                       newValue: any | null
                                     ) => {
-                                      console.log("country", newValue);
-                                      // setSelectedCountryId(
-                                      //   newValue ? newValue?.id : ""
-                                      // );
+                                      console.log("state", newValue);
+                                      // setSelectedCountryId(newValue ? newValue?.id : "");
                                       setValue(
-                                        "phnCode",
-                                        newValue ? newValue?.phone_code : ""
+                                        "state",
+                                        newValue ? newValue?.id : ""
                                       );
                                       setSelectedValues({
                                         ...selectedValues,
-                                        phnCode: newValue
+                                        state: newValue
                                       });
                                     }}
-                                    options={filterPhoneCodes ?? []}
-                                    // options={recomendedCountryList ?? []}
-                                    disabled={countryLoader}
-                                    autoHighlight
-                                    // getOptionLabel={(option: any) => option?.id}
-                                    getOptionLabel={(option: any) =>
-                                      ` +${option?.phone_code}`
-                                    }
-                                    renderOption={(props, option) => (
-                                      <Box
-                                        component="li"
-                                        sx={{
-                                          "& > img": { mr: 2, flexShrink: 0 }
-                                        }}
-                                        {...props}
-                                      >
-                                        <img
-                                          loading="lazy"
-                                          width="20"
-                                          src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
-                                          alt=""
-                                        />
-                                        {" +"}
-                                        {option.phone_code}
-                                      </Box>
+                                    renderInput={(params) => (
+                                      <TextField
+                                        {...params}
+                                        placeholder="State"
+                                      />
                                     )}
-                                    renderInput={(params) => {
-                                      setUserGivenPhoneCode(
-                                        `${params?.inputProps?.value ?? ""}`
-                                      );
-                                      return (
-                                        <TextField
-                                          {...params}
-                                          // {...register("country")}
-                                          // label="Choose a country"
-                                          placeholder="Phone code"
-                                          inputProps={{
-                                            ...params.inputProps
-                                            // autoComplete: "new-password" // disable autocomplete and autofill
-                                          }}
-                                        />
-                                      );
-                                    }}
                                   />
-                                  {errors.phnCode &&
-                                    !selectedValues.phnCode && (
-                                      <div className="profile_error">
-                                        {errors.phnCode.message}
-                                      </div>
-                                    )}
-                                </Box>
-                                <Box className="phn_num">
-                                  <InputFieldCommon
-                                    placeholder="Phone number"
-                                    type="number"
-                                    {...register("phone")}
-                                    onKeyDown={(e: any) =>
-                                      exceptThisSymbols.includes(e.key) &&
-                                      e.preventDefault()
-                                    }
-                                    // {...register("phone", {
-                                    //   max: 3
-                                    // })}
-                                  />
-                                  {errors.phone && (
+                                  {errors.state && (
                                     <div className="profile_error">
-                                      {errors.phone.message}
+                                      {errors.state.message}
                                     </div>
                                   )}
                                 </Box>
+                              )}
+                            </div>
+                          </Box>
+                          <Box className="form_group">
+                            <InputFieldCommon
+                              tabIndex={9}
+                              placeholder="Your company name"
+                              {...register("company")}
+                            />
+                            {errors.company && (
+                              <div className="profile_error">
+                                {errors.company.message}
                               </div>
-                            </Box>
-                            <Box className="form_group">
-                              <InputFieldCommon
-                                placeholder="Email address"
-                                {...register("email")}
-                              />
-                              {errors.email && (
-                                <div className="profile_error">
-                                  {errors.email.message}
-                                </div>
-                              )}
-                            </Box>
-                          </>
-                        )}
-
-                        <Box className="form_group">
-                          <div
-                            className="space_between"
-                            style={{
-                              alignItems: "flex-start",
-                              marginBottom: "15px"
-                            }}
-                          >
-                            <Box className="form_group_inner">
-                              <Autocomplete
-                                id="country-select-demo"
-                                className="autocomplete_div"
-                                sx={{ width: 300 }}
-                                value={selectedValues?.country}
-                                onChange={(
-                                  event: any,
-                                  newValue: any | null
-                                ) => {
-                                  console.log("country", newValue);
-                                  setSelectedCountryId(
-                                    newValue ? newValue?.id : ""
-                                  );
-                                  setValue(
-                                    "country",
-                                    newValue ? newValue?.id : ""
-                                  );
-                                  setSelectedValues({
-                                    ...selectedValues,
-                                    country: newValue
-                                  });
-                                }}
-                                filterOptions={filterCountryOptions}
-                                // options={countryList ?? []}
-                                options={recomendedCountryList ?? []}
-                                disabled={countryLoader}
-                                autoHighlight
-                                getOptionLabel={(option: any) => option.name}
-                                renderOption={(props, option) => (
-                                  <Box
-                                    component="li"
-                                    sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
-                                    {...props}
-                                  >
-                                    <img
-                                      loading="lazy"
-                                      width="20"
-                                      src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
-                                      alt=""
-                                    />
-                                    {option.name}
-                                  </Box>
+                            )}
+                          </Box>
+                          <Box className="form_group_textarea">
+                            <InputFieldCommon
+                              // placeholder="Message (How did you hear about Procell Therapies?)"
+                              // placeholder="Message"
+                              placeholder="How did you hear about Procell Therapies?"
+                              multiline
+                              rows={3}
+                              maxRows={4}
+                              style3
+                              {...register("source")}
+                            />
+                            {errors.source && (
+                              <div className="profile_error">
+                                {errors.source.message}
+                              </div>
+                            )}
+                          </Box>
+                          <Box className="form_group_textarea">
+                            <InputFieldCommon
+                              tabIndex={10}
+                              // placeholder="Optional (In contact or referred by a specific Procell rep?)"
+                              // placeholder="Optional"
+                              placeholder="In contact with or referred by a specific Procell rep?"
+                              multiline
+                              rows={3}
+                              maxRows={4}
+                              style3
+                              {...register("refference")}
+                            />
+                          </Box>
+                        </>
+                      ) : (
+                        <>
+                          {!PractitionersMapLoader &&
+                            !!practitionersMapData &&
+                            Object.keys(practitionersMapData ?? {})?.length >
+                              0 && (
+                              <>
+                                {isReenterFields && (
+                                  <>
+                                    <Box className="form_group">
+                                      <InputFieldCommon
+                                        placeholder="First name"
+                                        {...register("firstName")}
+                                        // onKeyDown={(e: any) =>
+                                        //   [" "].includes(e.key) &&
+                                        //   e.preventDefault()
+                                        // }
+                                      />
+                                      {errors.firstName && (
+                                        <div className="profile_error">
+                                          {errors.firstName.message}
+                                        </div>
+                                      )}
+                                    </Box>
+                                    <Box className="form_group">
+                                      <InputFieldCommon
+                                        placeholder="Last name"
+                                        {...register("lastName")}
+                                        // onKeyDown={(e: any) =>
+                                        //   [" "].includes(e.key) &&
+                                        //   e.preventDefault()
+                                        // }
+                                      />
+                                      {errors.lastName && (
+                                        <div className="profile_error">
+                                          {errors.lastName.message}
+                                        </div>
+                                      )}
+                                    </Box>
+                                    <Box className="form_group">
+                                      <div
+                                        className="justify_start autocomplete_wrap"
+                                        style={{ alignItems: "flex-start" }}
+                                      >
+                                        <Box className="phn_code">
+                                          <Autocomplete
+                                            id="phonecode-select-demo"
+                                            className="autocomplete_div"
+                                            sx={{ width: 300 }}
+                                            // filterOptions={filterPhoneOptions}
+                                            filterOptions={
+                                              filterPhnCdCountryOptions
+                                            }
+                                            value={selectedValues?.phnCode}
+                                            onChange={(
+                                              event: any,
+                                              newValue: any | null
+                                            ) => {
+                                              console.log("country", newValue);
+                                              // setSelectedCountryId(
+                                              //   newValue ? newValue?.id : ""
+                                              // );
+                                              setValue(
+                                                "phnCode",
+                                                newValue
+                                                  ? newValue?.phone_code
+                                                  : ""
+                                              );
+                                              setSelectedValues({
+                                                ...selectedValues,
+                                                phnCode: newValue
+                                              });
+                                            }}
+                                            // options={filterPhoneCodes ?? []}
+                                            options={countryList ?? []}
+                                            // options={recomendedCountryList ?? []}
+                                            disabled={countryLoader}
+                                            autoHighlight
+                                            // getOptionLabel={(option: any) => option?.id}
+                                            getOptionLabel={(option: any) =>
+                                              ` +${option?.phone_code} ${option.name}`
+                                            }
+                                            renderOption={(props, option) => (
+                                              <Box
+                                                component="li"
+                                                sx={{
+                                                  "& > img": { mr: 2, flexShrink: 0 }
+                                                }}
+                                                {...props}
+                                              >
+                                                <img
+                                                  loading="lazy"
+                                                  width="20"
+                                                  src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
+                                                  alt=""
+                                                />
+                                                {" +"}
+                                                {option.phone_code} {option.name}
+                                              </Box>
+                                            )}
+                                            renderInput={(params) => {
+                                              setUserGivenPhoneCode(
+                                                `${
+                                                  params?.inputProps?.value ??
+                                                  ""
+                                                }`
+                                              );
+                                              return (
+                                                <TextField
+                                                  {...params}
+                                                  // {...register("country")}
+                                                  // label="Choose a country"
+                                                  placeholder="Phone code"
+                                                  inputProps={{
+                                                    ...params.inputProps
+                                                    // autoComplete: "new-password" // disable autocomplete and autofill
+                                                  }}
+                                                />
+                                              );
+                                            }}
+                                          />
+                                          {errors.phnCode &&
+                                            !selectedValues.phnCode && (
+                                              <div className="profile_error">
+                                                {errors.phnCode.message}
+                                              </div>
+                                            )}
+                                        </Box>
+                                        <Box className="phn_num">
+                                          <InputFieldCommon
+                                            placeholder="Phone number"
+                                            // type="number"
+                                            {...register("phone")}
+                                            onKeyDown={(e: any) =>
+                                              exceptThisSymbols.includes(
+                                                e.key
+                                              ) && e.preventDefault()
+                                            }
+                                            // {...register("phone", {
+                                            //   max: 3
+                                            // })}
+                                          />
+                                          {errors.phone && (
+                                            <div className="profile_error">
+                                              {errors.phone.message}
+                                            </div>
+                                          )}
+                                        </Box>
+                                      </div>
+                                    </Box>
+                                    <Box className="form_group">
+                                      <InputFieldCommon
+                                        placeholder="Email address"
+                                        {...register("email")}
+                                      />
+                                      {errors.email && (
+                                        <div className="profile_error">
+                                          {errors.email.message}
+                                        </div>
+                                      )}
+                                    </Box>
+                                  </>
                                 )}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    // {...register("country")}
-                                    // label="Choose a country"
-                                    placeholder="Choose a country"
-                                    inputProps={{
-                                      ...params.inputProps,
-                                      autoComplete: "new-password" // disable autocomplete and autofill
+
+                                <Box className="form_group">
+                                  <div
+                                    className="space_between"
+                                    style={{
+                                      alignItems: "flex-start",
+                                      marginBottom: "15px"
                                     }}
-                                  />
-                                )}
-                              />
-                              {errors.country && !selectedValues.country && (
-                                <div className="profile_error">
-                                  {errors.country.message}
-                                </div>
-                              )}
-                            </Box>
-                            <Box className="form_group_inner">
-                              <InputFieldCommon
-                                placeholder="Zip code"
-                                {...register("zipCode")}
-                              />
-                              {errors.zipCode && (
-                                <div className="profile_error">
-                                  {errors.zipCode.message}
-                                </div>
-                              )}
-                            </Box>
-                          </div>
-                        </Box>
-                      </>
-                    )}
-                  </form>
+                                  >
+                                    <Box className="form_group_inner">
+                                      <Autocomplete
+                                        id="country-select-demo"
+                                        className="autocomplete_div"
+                                        sx={{ width: 300 }}
+                                        value={selectedValues?.country}
+                                        onChange={(
+                                          event: any,
+                                          newValue: any | null
+                                        ) => {
+                                          console.log("country", newValue);
+                                          setSelectedCountryId(
+                                            newValue ? newValue?.id : ""
+                                          );
+                                          setValue(
+                                            "country",
+                                            newValue ? newValue?.id : ""
+                                          );
+                                          setSelectedValues({
+                                            ...selectedValues,
+                                            country: newValue
+                                          });
+                                        }}
+                                        filterOptions={filterCountryOptions}
+                                        // options={countryList ?? []}
+                                        options={recomendedCountryList ?? []}
+                                        disabled={countryLoader}
+                                        autoHighlight
+                                        getOptionLabel={(option: any) =>
+                                          option.name
+                                        }
+                                        renderOption={(props, option) => (
+                                          <Box
+                                            component="li"
+                                            sx={{
+                                              "& > img": {
+                                                mr: 2,
+                                                flexShrink: 0
+                                              }
+                                            }}
+                                            {...props}
+                                          >
+                                            <img
+                                              loading="lazy"
+                                              width="20"
+                                              src={`${process.env.NEXT_APP_BASE_URL}/${option?.image_url}`}
+                                              alt=""
+                                            />
+                                            {option.name}
+                                          </Box>
+                                        )}
+                                        renderInput={(params) => (
+                                          <TextField
+                                            {...params}
+                                            // {...register("country")}
+                                            // label="Choose a country"
+                                            placeholder="Choose a country"
+                                            inputProps={{
+                                              ...params.inputProps,
+                                              autoComplete: "new-password" // disable autocomplete and autofill
+                                            }}
+                                          />
+                                        )}
+                                      />
+                                      {errors.country &&
+                                        !selectedValues.country && (
+                                          <div className="profile_error">
+                                            {errors.country.message}
+                                          </div>
+                                        )}
+                                    </Box>
+                                    <Box className="form_group_inner">
+                                      <InputFieldCommon
+                                        placeholder="Zip code"
+                                        {...register("zipCode")}
+                                      />
+                                      {errors.zipCode && (
+                                        <div className="profile_error">
+                                          {errors.zipCode.message}
+                                        </div>
+                                      )}
+                                    </Box>
+                                  </div>
+                                </Box>
+                              </>
+                            )}
+                        </>
+                      )}
+                    </form>
 
-                  <Box className="form_btm_sec">
-                    <Box className="option_sec">
-                      {/* <CustomRadio
+                    <Box className="form_btm_sec">
+                      <Box className="option_sec">
+                        {/* <CustomRadio
                         defaultValue="professional"
                         radioList={radioChekcList}
                         onChange={(e) => consentHandler(e.target.value)}
                       /> */}
+                      </Box>
+                      {!isLoading ? (
+                        <CustomButtonPrimary
+                          variant="contained"
+                          color="primary"
+                          type="submit"
+                          form="contact_form"
+                        >
+                          <Typography>Submit</Typography>
+                        </CustomButtonPrimary>
+                      ) : (
+                        <CustomButtonPrimary
+                          variant="contained"
+                          color="primary"
+                        >
+                          <ButtonLoader />
+                        </CustomButtonPrimary>
+                      )}
+                      <Typography>
+                        Protected by reCAPTCHA, &nbsp;
+                        <Link href="/privacy-policy">
+                          Privacy Policy
+                        </Link> &{" "}
+                        <Link href="/terms-of-service">Terms of Service</Link>
+                        &nbsp; apply.
+                      </Typography>
                     </Box>
-                    {!isLoading ? (
-                      <CustomButtonPrimary
-                        variant="contained"
-                        color="primary"
-                        type="submit"
-                        form="contact_form"
-                      >
-                        <Typography>Submit</Typography>
-                      </CustomButtonPrimary>
-                    ) : (
-                      <CustomButtonPrimary variant="contained" color="primary">
-                        <ButtonLoader />
-                      </CustomButtonPrimary>
-                    )}
-                    <Typography>
-                      Protected by reCAPTCHA, &nbsp;
-                      <Link href="/privacy-policy">Privacy Policy</Link> &{" "}
-                      <Link href="/terms-of-service">Terms of Service</Link>
-                      &nbsp; apply.
-                    </Typography>
                   </Box>
-                </Box>
-              </Grid>
-            </Grid>
-          </Box>
+                  {consent == "consumer" ? (
+                    !PractitionersMapLoader &&
+                    !!practitionersMapData &&
+                    Object.keys(practitionersMapData ?? {})?.length > 0 ? (
+                      <Box className="cnt_grid_sec" sx={{ marginTop: "30px" }}>
+                        <figure>
+                          <img
+                            src={practitionersMapData?.image_url}
+                            alt="image"
+                            width={712}
+                            height={667}
+                          />
+                        </figure>
+                      </Box>
+                    ) : (
+                      <ButtonLoaderSecondary />
+                    )
+                  ) : (
+                    <></>
+                  )}
 
-          <Box className="cnt_grid_sec" sx={{ marginTop: "30px" }}>
-            <Grid container spacing={2} className="cnt_grid">
-              {!!supportRepData &&
-                supportRepData?.length > 0 &&
-                supportRepData?.map((_i: any, index: number) => (
-                  <Grid item lg={4} md={6} key={index + 1}>
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      flexWrap="wrap"
-                      className="rep_user"
+                  <div ref={repDataRef} />
+                  <Box className="cnt_grid_btm">
+                    <Grid
+                      container
+                      spacing={2}
+                      className="cnt_grid"
                       justifyContent="center"
                     >
-                      {!!_i?.image && (
-                        <Box className="cnt_image">
-                          <img
-                            src={_i?.image}
-                            alt=""
-                            width={248}
-                            height={264}
-                          />
-                        </Box>
-                      )}
-                      <List disablePadding className="cnt_list">
-                        {!!_i?.name && (
-                          <ListItem disablePadding>
-                            <Typography
-                              variant="body1"
-                              className="cnt_text cnt_name"
+                      {!!supportRepData &&
+                        supportRepData?.length > 0 &&
+                        supportRepData?.map((_i: any, index: number) => (
+                          <Grid
+                            item
+                            lg={6}
+                            md={6}
+                            sm={6}
+                            xs={12}
+                            key={index + 1}
+                          >
+                            <Stack
+                              direction="row"
+                              alignItems="center"
+                              flexWrap="wrap"
+                              className="rep_user"
+                              justifyContent="center"
                             >
-                              {_i?.name}
-                            </Typography>
-                          </ListItem>
-                        )}
-                        {!!_i?.distance && !!_i?.unit && (
-                          <ListItem disablePadding className="cnt_item">
-                            <i className="icon">
-                              <DistacneIcon />
-                            </i>
-                            <Typography variant="body1" className="cnt_text">
-                              <Typography variant="body1">
-                                {_i?.distance} {_i?.unit}
-                              </Typography>
-                              {/* <Link href={`mailto:${_i?.email}`}>{_i?.email}</Link> */}
-                            </Typography>
-                          </ListItem>
-                        )}
-                        {!!_i?.email && (
-                          <ListItem disablePadding className="cnt_item">
-                            <i className="icon">
-                              <MailIcon />
-                            </i>
-                            <Typography variant="body1" className="cnt_text">
-                              <Link href={`mailto:${_i?.email}`}>
-                                {_i?.email}
-                              </Link>
-                            </Typography>
-                          </ListItem>
-                        )}
+                              {!!_i?.image && (
+                                <Box className="cnt_image">
+                                  <img
+                                    src={_i?.image}
+                                    alt=""
+                                    width={248}
+                                    height={264}
+                                  />
+                                </Box>
+                              )}
+                              <List disablePadding className="cnt_list">
+                                {!!_i?.name && (
+                                  <ListItem disablePadding>
+                                    <Typography
+                                      variant="body1"
+                                      className="cnt_text cnt_name"
+                                    >
+                                      {_i?.name}
+                                    </Typography>
+                                  </ListItem>
+                                )}
+                                {!!_i?.distance && !!_i?.unit && (
+                                  <ListItem disablePadding className="cnt_item">
+                                    <i className="icon">
+                                      <DistacneIcon />
+                                    </i>
+                                    <Typography
+                                      variant="body1"
+                                      className="cnt_text"
+                                    >
+                                      <Typography variant="body1">
+                                        {_i?.distance} {_i?.unit}
+                                      </Typography>
+                                      {/* <Link href={`mailto:${_i?.email}`}>{_i?.email}</Link> */}
+                                    </Typography>
+                                  </ListItem>
+                                )}
+                                {!!_i?.email && (
+                                  <ListItem disablePadding className="cnt_item">
+                                    <i className="icon">
+                                      <MailIcon />
+                                    </i>
+                                    <Typography
+                                      variant="body1"
+                                      className="cnt_text"
+                                    >
+                                      <Link href={`mailto:${_i?.email}`}>
+                                        {_i?.email}
+                                      </Link>
+                                    </Typography>
+                                  </ListItem>
+                                )}
 
-                        {!!_i?.phone && (
-                          <ListItem disablePadding className="cnt_item">
-                            <i className="icon">
-                              <CallIcon />
-                            </i>
-                            <Typography variant="body1" className="cnt_text">
-                              {
-                                <Link href={`tel:${_i?.phone}`}>
-                                  {_i?.phone}
-                                </Link>
-                              }
-                            </Typography>
-                          </ListItem>
-                        )}
-                      </List>
-                    </Stack>
-                  </Grid>
-                ))}
-            </Grid>
-          </Box>
-        </Container>
-      </ContactWrapper>
+                                {!!_i?.phone && (
+                                  <ListItem disablePadding className="cnt_item">
+                                    <i className="icon">
+                                      <CallIcon />
+                                    </i>
+                                    <Typography
+                                      variant="body1"
+                                      className="cnt_text"
+                                    >
+                                      <Link href={`tel:${_i?.phone}`}>
+                                        {_i?.phone}
+                                      </Link>
+                                    </Typography>
+                                  </ListItem>
+                                )}
+                              </List>
+                            </Stack>
+                          </Grid>
+                        ))}
+                    </Grid>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+          </Container>
+        </ContactWrapper>
+      </>
     </Wrapper>
   );
 }
