@@ -50,10 +50,10 @@ const Index = () => {
   useEffect(() => {
     if (!!query?.slug) {
       if (query?.slug == "practitioner-academy") {
-        setAcademyType("Practitioner Acadamy");
+        setAcademyType("Practitioner Academy");
         fetchPractitionerAcademyContent();
       } else if (query?.slug == "rep-academy") {
-        setAcademyType("Rep Acadamy");
+        setAcademyType("Rep Academy");
         fetchRepAcademyContent();
       } else {
         push("/academy");
@@ -71,9 +71,18 @@ const Index = () => {
             innerHeaderRediractedPage={academyType}
             bannerImage={assest.innerHeaderbackground}
             innerHeaderMainPage="Academy"
-            innnerHeaderMainurl={'/academy'}
+            innnerHeaderMainurl={"/academy"}
           />
-          <LinearProgressBar completed={practitioner_academy_progress ?? 0} />
+          <LinearProgressBar
+            completed={
+              !!practitioner_academy_progress &&
+              practitioner_academy_progress != false &&
+              practitioner_academy_progress != "false" &&
+              practitioner_academy_progress != "False"
+                ? practitioner_academy_progress
+                : 0
+            }
+          />
           <PractionerSec academyContentData={academyContentData} />
         </>
       ) : (

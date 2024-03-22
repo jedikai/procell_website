@@ -73,7 +73,7 @@ export default function Index() {
     phone: yup
       .string()
       .required(validationText.error.phone)
-      .matches(/^\d+$/, validationText.error.valid_phone_number)
+      // .matches(/^\d+$/, validationText.error.valid_phone_number)
       .test("isValid", validationText.error.phone_number_range, (value) => {
         console.log(value);
         if (value && value?.length >= 8 && value?.length <= 16) {
@@ -86,7 +86,8 @@ export default function Index() {
     zipCode: yup
       .string()
       .required(validationText.error.zipCode)
-      .matches(/^\d+$/, "ZIP code must contain only numbers"),
+      // .matches(/^\d+$/, "ZIP code must contain only numbers")
+      .max(8, "ZIP code must contain valid six character code."),
     ...(stateList && stateList.length > 0
       ? { state: yup.string().required(validationText.error.state) }
       : {})
@@ -157,6 +158,11 @@ export default function Index() {
       ? countryList
       : countryList?.filter((_i: any) => _i?.phone_code == userGivenPhoneCode);
   }, [userGivenPhoneCode, countryList]);
+  const filterPhnCdCountryOptions = createFilterOptions({
+    matchFrom: "any",
+    stringify: (option: any) =>
+      `${option.phone_code} ${option.name.toLowerCase()}`
+  });
   console.log("hasUserConcent", hasUserConcent);
   return (
     <Wrapper>
@@ -225,9 +231,9 @@ export default function Index() {
                       <InputFieldCommon
                         placeholder="First name"
                         {...register("firstName")}
-                        onKeyDown={(e: any) =>
-                          [' '].includes(e.key) && e.preventDefault()
-                        }
+                        // onKeyDown={(e: any) =>
+                        //   [' '].includes(e.key) && e.preventDefault()
+                        // }
                       />
                       {errors.firstName && (
                         <div className="profile_error">
@@ -239,9 +245,9 @@ export default function Index() {
                       <InputFieldCommon
                         placeholder="Last name"
                         {...register("lastName")}
-                        onKeyDown={(e: any) =>
-                          [' '].includes(e.key) && e.preventDefault()
-                        }
+                        // onKeyDown={(e: any) =>
+                        //   [' '].includes(e.key) && e.preventDefault()
+                        // }
                       />
                       {errors.lastName && (
                         <div className="profile_error">
@@ -259,6 +265,9 @@ export default function Index() {
                             id="phonecode-select-demo"
                             className="autocomplete_div"
                             sx={{ width: 300 }}
+                            filterOptions={
+                              filterPhnCdCountryOptions
+                            }
                             // filterOptions={filterPhoneOptions}
                             value={selectedValues?.phnCode}
                             onChange={(event: any, newValue: any | null) => {
@@ -275,12 +284,13 @@ export default function Index() {
                                 phnCode: newValue
                               });
                             }}
-                            options={filterPhoneCodes ?? []}
+                            // options={filterPhoneCodes ?? []}
+                            options={countryList ?? []}
                             disabled={countryLoader}
                             autoHighlight
                             // getOptionLabel={(option: any) => option?.id}
                             getOptionLabel={(option: any) =>
-                              ` +${option?.phone_code}`
+                              ` +${option?.phone_code} ${option.name}`
                             }
                             renderOption={(props, option) => (
                               <Box
@@ -295,7 +305,7 @@ export default function Index() {
                                   alt=""
                                 />
                                 {" +"}
-                                {option.phone_code}
+                                {option.phone_code} {option.name}
                               </Box>
                             )}
                             renderInput={(params) => {
@@ -325,7 +335,7 @@ export default function Index() {
                         <Box className="phn_num">
                           <InputFieldCommon
                             placeholder="Phone number"
-                            type="number"
+                            // type="number"
                             {...register("phone")}
                             onKeyDown={(e: any) => exceptThisSymbols.includes(e.key) && e.preventDefault()}
                           // {...register("phone", {

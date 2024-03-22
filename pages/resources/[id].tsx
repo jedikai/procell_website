@@ -1,3 +1,4 @@
+import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
 import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import InnerHeader from "@/components/InnerHeader/InnerHeader";
 import {
@@ -6,6 +7,7 @@ import {
 } from "@/hooks/react-qurey/query-hooks/recourcesQuery.hooks";
 import assest from "@/json/assest";
 import Wrapper from "@/layout/wrapper/Wrapper";
+import { getCookie } from "@/lib/functions/storage.lib";
 import { ResourceWrapper } from "@/styles/StyledComponents/ResourcdePhotosWrapper";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import DefaultFileIcon from "@/ui/Icons/DefaultFileIcon";
@@ -23,12 +25,15 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import axios from "axios";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 
 const ResorceDetails = () => {
   const router = useRouter();
   const [loader, setLoader] = useState(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [selectedId, setSelectedId] = useState<any>("");
 
   const {
     data: pracRecourcesData,
@@ -66,13 +71,62 @@ const ResorceDetails = () => {
       setLoader(false);
     }
   }, [router]);
-  const handleDownload = (file: any) => {
-    const link = document.createElement("a");
-    link.href = file?.file_url ?? "";
-    link.download = file?.name || "downloaded_file";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+
+  const fileTypeExtensionHandler = (mimeType: any) => {
+    const mimeToIconMap: { [key: string]: any } = {
+      "image/jpeg": "jpeg",
+      "image/png": "png",
+      "application/pdf": "pdf",
+      "application/postscript": "ps",
+      "video/mp4": "mp4",
+      "application/vnd.ms-excel": "xlsx",
+      "application/msword": "docx",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        "docx",
+      "application/vnd.ms-powerpoint": "pptx",
+      "image/vnd.adobe.photoshop": "psd",
+      "application/octet-stream": "mp4"
+    };
+
+    const extension = mimeToIconMap[mimeType.toLowerCase()];
+    return extension ? extension : "pdf";
+  };
+  const downloadFile = async (
+    id: any,
+    name: string,
+    url: string,
+    content_type: string
+  ) => {
+    setSelectedId(id);
+    setLoading(true);
+    // const sessionId = sessionStorage.getItem("session_id") || "";
+    const sessionId = getCookie("access_token") || "";
+    const fileDownloadInstance = axios.create({
+      baseURL: process.env.NEXT_APP_BASE_URL,
+      responseType: "blob",
+      headers: {
+        "Content-Type": content_type
+      },
+      params: { session_id: sessionId }
+    });
+    await fileDownloadInstance
+      .get(`${url}/${id}`)
+      .then((response: any) => {
+        setSelectedId("");
+        setLoading(false);
+        const blob = new Blob([response.data]);
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${name}.${fileTypeExtensionHandler(content_type)}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      })
+      .catch((error: any) => {
+        setLoading(false);
+        console.error("An error occurred:", error);
+      });
   };
   const fileTypeIconHandler = (mimeType: any) => {
     const mimeToIconMap: { [key: string]: any } = {
@@ -126,7 +180,14 @@ const ResorceDetails = () => {
                       <Grid container spacing={2}>
                         {resources?.map((data: any, index: number) => (
                           // eslint-disable-next-line react/no-array-index-key
-                          <Grid item lg={6} md={6} sm={12} xs={12} key={index}>
+                          <Grid
+                            item
+                            lg={6}
+                            md={6}
+                            sm={12}
+                            xs={12}
+                            key={index + 1}
+                          >
                             <Stack
                               direction="row"
                               alignItems="center"
@@ -152,17 +213,34 @@ const ResorceDetails = () => {
                                     {data.name}
                                   </Typography>
                                 )}
-                                <CustomButtonPrimary
-                                  className="downloads_btn"
-                                  variant="contained"
-                                  color="primary"
-                                  endIcon={<DownloasdIcon />}
-                                  onClick={() => handleDownload(data)}
-                                >
-                                  <Typography variant="body1">
-                                    Download
-                                  </Typography>
-                                </CustomButtonPrimary>
+                                {loading && selectedId == data.id ? (
+                                  <CustomButtonPrimary
+                                    className="downloads_btn"
+                                    variant="contained"
+                                    color="primary"
+                                  >
+                                    <ButtonLoader />
+                                  </CustomButtonPrimary>
+                                ) : (
+                                  <CustomButtonPrimary
+                                    className="downloads_btn"
+                                    variant="contained"
+                                    color="primary"
+                                    endIcon={<DownloasdIcon />}
+                                    onClick={() =>
+                                      downloadFile(
+                                        data?.id,
+                                        data?.name,
+                                        data?.file_url,
+                                        data?.mimetype
+                                      )
+                                    }
+                                  >
+                                    <Typography variant="body1">
+                                      Download
+                                    </Typography>
+                                  </CustomButtonPrimary>
+                                )}
                               </Box>
                             </Stack>
                           </Grid>

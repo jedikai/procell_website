@@ -18,7 +18,7 @@ interface customProps extends HTMLAttributes<HTMLDivElement> {
 
 const AcademyEachComponent: React.FC<
   customProps & HTMLAttributes<HTMLDivElement>
-> = ({ title, numberOfResources, compeltePercent, ...props }) => {
+> = ({ title, numberOfResources, compeltePercent, ...props }: any) => {
   const router = useRouter();
   return (
     <AcademyEachComponentWrapper {...props}>
@@ -39,14 +39,17 @@ const AcademyEachComponent: React.FC<
           <ArrowRightIcon />
         </Button>
       </Box>
-
-      <LinearProgressBar
-        completed={compeltePercent}
-        labelClassName="no_label"
-      />
-      <Typography className="blue_para">
-        {compeltePercent}% completed
-      </Typography>
+      {!!compeltePercent && compeltePercent != "false" && (
+        <>
+          <LinearProgressBar
+            completed={compeltePercent}
+            labelClassName="no_label"
+          />
+          <Typography className="blue_para">
+            {compeltePercent}% completed
+          </Typography>
+        </>
+      )}
       <EachLinearComponent>
         <Box
           className="wrapper"

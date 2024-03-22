@@ -18,6 +18,7 @@ export const useCartList = (
   useQuery([CART_LIST], getCartList, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     // enabled: false,
     select: (data) => data?.data?.data ?? []
   });
@@ -43,6 +44,7 @@ export const useCartListWithAuthCred = (
       onSuccess,
       onError,
       enabled,
+      refetchOnWindowFocus: false,
       select: (data) => data?.data?.data ?? {}
     }
   );

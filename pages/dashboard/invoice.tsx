@@ -6,6 +6,7 @@ import {
 // import { invoiceList } from "@/json/mock/invoice.mock";
 import DashboardWrapper from "@/layout/DashboardWrapper/DashboardWrapper";
 import Wrapper from "@/layout/wrapper/Wrapper";
+import { getCookie } from "@/lib/functions/storage.lib";
 import {
   InvoiceCardWrap,
   InvoiceWrapper
@@ -31,7 +32,8 @@ export function InvoiceCard({ ...props }: any) {
   const [loading, setLoading] = useState<boolean>(false);
   const downloadPdf = async (id: string) => {
     setLoading(true);
-    const sessionId = localStorage.getItem("session_id") || "";
+    // const sessionId = sessionStorage.getItem("session_id") || "";
+    const sessionId = getCookie("access_token") || "";
     const pdfDownloadInstance = axios.create({
       baseURL: process.env.NEXT_APP_BASE_URL,
       responseType: "blob",
@@ -41,7 +43,8 @@ export function InvoiceCard({ ...props }: any) {
       params: { session_id: sessionId }
     });
     await pdfDownloadInstance
-      .get(`/web/download/invoice_pdf/${id}`)
+      // .get(`/web/download/invoice_pdf/${id}`)
+      .get(`/web/portal/invoices/${id}/download`)
       .then((response: any) => {
         setLoading(false);
         const blob = new Blob([response.data]);
@@ -161,6 +164,7 @@ export default function Index() {
   const [invoicePDF, setInvoicePDF] = useState<any>([]);
   const [type, setType] = useState("date");
   const [page, setPage] = useState(1);
+  const [showEle, setShowEle] = useState(false);
   const onSuccessInvoiceList = (response: any) => {
     setInvoiceList(
       removeDuplicates([
@@ -168,9 +172,11 @@ export default function Index() {
         ...(response && response?.invoice_data ? response?.invoice_data : [])
       ])
     );
+    if (response?.invoice_data?.length > 0) {
+      setShowEle(true);
+    }
   };
   const { data, isLoading } = useInvoiceList(page, "", onSuccessInvoiceList);
-  const { data: pdf } = useInvoiceDownload(297187);
   const fetchList = (isInview: boolean) => {
     console.log("isInview", isInview);
 
@@ -179,41 +185,7 @@ export default function Index() {
         setPage(page + 1);
       }
     }
-  };
-
-  const base64ArrayBuffer = (arrayBuffer: ArrayBuffer): string => {
-    let binary: string = "";
-    const bytes: Uint8Array = new Uint8Array(arrayBuffer);
-    for (let i: number = 0; i < bytes.byteLength; i++) {
-      binary += String.fromCharCode(bytes[i]);
-    }
-    return btoa(binary);
-  };
-  const downloadPdf = async (id: string) => {
-    const sessionId = localStorage.getItem("session_id") || "";
-    const pdfDownloadInstance = axios.create({
-      baseURL: process.env.NEXT_APP_BASE_URL,
-      responseType: "blob",
-      headers: {
-        "Content-Type": "application/pdf"
-      },
-      params: { session_id: sessionId }
-    });
-    await pdfDownloadInstance
-      .get(`/web/download/invoice_pdf/${id}`)
-      .then((response: any) => {
-        const blob = new Blob([response.data]);
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "invoice.pdf";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      })
-      .catch((error: any) => {
-        console.error("An error occurred:", error);
-      });
+    setShowEle(false);
   };
 
   useEffect(() => {
@@ -240,11 +212,11 @@ export default function Index() {
                 <></>
               )}
             </InvoiceWrapper>
-            {!isLoading ? (
-              <div ref={ref} />
+            {!isLoading && showEle ? (
+              <div ref={ref}></div>
             ) : (
               <div style={{ marginTop: "10px" }}>
-                <ButtonLoaderSecondary />
+                {isLoading ? <ButtonLoaderSecondary /> : <></>}
               </div>
             )}
           </div>

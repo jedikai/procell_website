@@ -108,7 +108,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
     phnNumber: yup.string().required(validationText.error.phone),
     address: yup.string().required(validationText.error.address),
     city: yup.string().required(validationText.error.city),
-    zip: yup.string().required(validationText.error.zipCode),
+    zip: yup.string().required(validationText.error.zipCode).max(8, "ZIP code must contain valid six character code."),
     country: yup.string().required(validationText.error.country),
     state: yup.string().required(validationText.error.state),
     ...(!isShippedToShippingAddress
@@ -129,7 +129,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
         phnNumber_shipping: yup.string().required(validationText.error.phone),
         address_shipping: yup.string().required(validationText.error.address),
         city_shipping: yup.string().required(validationText.error.city),
-        zip_shipping: yup.string().required(validationText.error.zipCode),
+        zip_shipping: yup.string().required(validationText.error.zipCode).max(8, "ZIP code must contain valid six character code."),
         country_shipping: yup.string().required(validationText.error.country),
         state_shipping: yup.string().required(validationText.error.state)
       }
@@ -181,29 +181,29 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
       setValue("lastName_shipping", `${last_name}`);
       setValue("email", `${email}`);
       setValue("email_shipping", `${email}`);
-      setValue("phnCode", `${!!phone ? phone?.split(" ")[0] : "N/A"}`);
-      setValue("phnCode_shipping", `${!!phone ? phone?.split(" ")[0] : "N/A"}`);
-      setValue("phnNumber", `${!!phone ? phone?.split(" ")[1] : "N/A"}`);
+      setValue("phnCode", `${!!phone ? phone?.split(" ")[0] : ""}`);
+      setValue("phnCode_shipping", `${!!phone ? phone?.split(" ")[0] : ""}`);
+      setValue("phnNumber", `${!!phone ? phone?.split(" ")[1] : ""}`);
       setValue(
         "phnNumber_shipping",
-        `${!!phone ? phone?.split(" ")[1] : "N/A"}`
+        `${!!phone ? phone?.split(" ")[1] : ""}`
       );
-      setValue("address", `${`${street}` == "false" ? "N/A" : street}`);
+      setValue("address", `${`${street}` == "false" ? "" : street}`);
       setValue(
         "address_shipping",
-        `${`${street}` == "false" ? "N/A" : street}`
+        `${`${street}` == "false" ? "" : street}`
       );
-      setValue("address2", `${`${street2}` == "false" ? "N/A" : street2}`);
+      setValue("address2", `${`${street2}` == "false" ? "" : street2}`);
       setValue(
         "address2_shipping",
-        `${`${street2}` == "false" ? "N/A" : street2}`
+        `${`${street2}` == "false" ? "" : street2}`
       );
       setValue("country", `${country_id[0]}`);
       setValue("country_shipping", `${country_id[0]}`);
-      setValue("city", `${`${city}` == "false" ? "N/A" : city}`);
-      setValue("city_shipping", `${`${city}` == "false" ? "N/A" : city}`);
-      setValue("zip", `${`${zip}` == "false" ? "N/A" : zip}`);
-      setValue("zip_shipping", `${`${zip}` == "false" ? "N/A" : zip}`);
+      setValue("city", `${`${city}` == "false" ? "" : city}`);
+      setValue("city_shipping", `${`${city}` == "false" ? "" : city}`);
+      setValue("zip", `${`${zip}` == "false" ? "" : zip}`);
+      setValue("zip_shipping", `${`${zip}` == "false" ? "" : zip}`);
       setSelectedCountryId(country_id[0]);
       // setValue('phnCode', {phone_code:phone?.split(' ')[0]})
       // setSelectedShippingaddressId(getselectedShippingAddressId);
@@ -376,6 +376,13 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
       onError: () => { }
     });
   }, []);
+
+  const filterPhnCdCountryOptions = createFilterOptions({
+    matchFrom: "any",
+    stringify: (option: any) =>
+      `${option.phone_code} ${option.name.toLowerCase()}`
+  });
+
   useEffect(() => {
     if (!!data?.is_data_completed) {
       let getselectedShippingAddressId =
@@ -479,9 +486,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                   placeholder="First name"
                   style3
                   {...register("firstName")}
-                  onKeyDown={(e: any) =>
-                    [' '].includes(e.key) && e.preventDefault()
-                  }
+                  // onKeyDown={(e: any) =>
+                  //   [' '].includes(e.key) && e.preventDefault()
+                  // }
                 />
                 {errors?.firstName && (
                   <div className="profile_error">
@@ -494,9 +501,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                   placeholder="Last name"
                   style3
                   {...register("lastName")}
-                  onKeyDown={(e: any) =>
-                    [' '].includes(e.key) && e.preventDefault()
-                  }
+                  // onKeyDown={(e: any) =>
+                  //   [' '].includes(e.key) && e.preventDefault()
+                  // }
                 />
                 {errors?.lastName && (
                   <div className="profile_error">
@@ -527,6 +534,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                         className="autocomplete_div"
                         sx={{ width: 300 }}
                         defaultValue={getDefaultPhoneCode[0]}
+                        filterOptions={filterPhnCdCountryOptions}
                         // value={selectedValues?.phnCode}
                         onChange={(event: any, newValue: any | null) => {
                           console.log("country", newValue);
@@ -542,11 +550,12 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                             phnCode: newValue
                           });
                         }}
-                        options={filterPhoneCodes ?? []}
+                        // options={filterPhoneCodes ?? []}
+                        options={countryList ?? []}
                         disabled={countryLoader}
                         autoHighlight
                         getOptionLabel={(option: any) =>
-                          ` +${option?.phone_code}`
+                          ` +${option?.phone_code} ${option.name}`
                         }
                         renderOption={(props, option) => (
                           <Box
@@ -561,7 +570,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                               alt=""
                             />
                             {" +"}
-                            {option.phone_code}
+                            {option.phone_code} {option.name}
                           </Box>
                         )}
                         renderInput={(params) => {
@@ -594,7 +603,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
               <Grid item lg={8} md={8} xs={12}>
                 <InputFieldCommon
                   placeholder="Phone number"
-                  type="number"
+                  // type="number"
                   style3
                   {...register("phnNumber")}
                   onKeyDown={(e: any) =>
@@ -774,7 +783,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
             </Grid>
             // </form>
           )}
-          {!isLoading && !isUserLoggedIn && renderCheckBox}
+          {/* {!isLoading && !isUserLoggedIn && renderCheckBox} */}
           {/* {!isLoading && !isUserLoggedIn && (
             <FormControlLabel
               onChange={shippingAddressHandler}
@@ -823,9 +832,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                     placeholder="First name"
                     style3
                     {...register("firstName_shipping")}
-                    onKeyDown={(e: any) =>
-                      [' '].includes(e.key) && e.preventDefault()
-                    }
+                    // onKeyDown={(e: any) =>
+                    //   [' '].includes(e.key) && e.preventDefault()
+                    // }
                   />
                   {errors?.firstName_shipping && (
                     <div className="profile_error">
@@ -838,9 +847,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                     placeholder="Last name"
                     style3
                     {...register("lastName_shipping")}
-                    onKeyDown={(e: any) =>
-                      [' '].includes(e.key) && e.preventDefault()
-                    }
+                    // onKeyDown={(e: any) =>
+                    //   [' '].includes(e.key) && e.preventDefault()
+                    // }
                   />
                   {errors?.lastName_shipping && (
                     <div className="profile_error">
@@ -872,6 +881,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                           id="phonecode-select-demo"
                           className="autocomplete_div"
                           sx={{ width: 300 }}
+                          filterOptions={filterPhnCdCountryOptions}
                           defaultValue={getDefaultPhoneCode[0]}
                           // value={selectedValues?.phnCode}
                           onChange={(event: any, newValue: any | null) => {
@@ -889,12 +899,13 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                             });
                           }}
                           // options={filterPhoneCodes ?? []}
-                          options={filterPhoneCodesShipping ?? []}
+                          // options={filterPhoneCodesShipping ?? []}
+                          options={countryList ?? []}
                           disabled={countryLoader}
                           autoHighlight
                           // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
                           getOptionLabel={(option: any) =>
-                            ` +${option?.phone_code}`
+                            ` +${option?.phone_code} ${option.name}`
                           }
                           renderOption={(props, option) => (
                             <Box
@@ -909,7 +920,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                                 alt=""
                               />
                               {" +"}
-                              {option.phone_code}
+                              {option.phone_code} {option.name}
                             </Box>
                           )}
                           renderInput={(params) => {
@@ -943,7 +954,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                 <Grid item lg={8} md={8} xs={12}>
                   <InputFieldCommon
                     placeholder="Phone number"
-                    type="number"
+                    // type="number"
                     style3
                     {...register("phnNumber_shipping")}
                     onKeyDown={(e: any) =>

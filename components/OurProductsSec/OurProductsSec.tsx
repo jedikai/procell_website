@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import Container from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
-import React, { memo, useMemo } from "react";
+import React, { memo, useEffect, useMemo } from "react";
 import CategorySlider from "../CategorySlider/CategorySlider";
 import OurProductSlider from "../OurProductSlider/OurProductSlider";
 import SearchComponent from "../SearchComponent/SearchComponent";
@@ -25,9 +25,13 @@ const OurProductsSec = ({
   filterList,
   categoriesList,
   selectedCategory,
-  category
+  category,
+  handleuserGivenSearch,
+  userGivenSearch
 }: any) => {
   const [value, setValue] = React.useState("Featured");
+  const [updatedCategoryList, setUpdatedCategoryList] =
+    React.useState([]);
   const [shortList, setShortList] = React.useState(searchList);
 
   const handleChange = (event: SelectChangeEvent | any) => {
@@ -38,13 +42,17 @@ const OurProductsSec = ({
   console.log("productList===>", productList);
 
   const getSearchValue = (e: any) => {
-    filterList({ type: "search", value: e.target.value });
+    // filterList({ type: "search", value: e.target.value });
+    handleuserGivenSearch(e.target.value);
     console.log("searched value", e.target.value);
   };
   const shortListHandler: any = useMemo(
     () => searchList.filter((_i: any) => _i?.name != value),
     [value]
   );
+  useEffect(() => {
+    setUpdatedCategoryList(categoriesList);
+  }, [productList]);
   return (
     <ProductsWrapper className="cmn_gap">
       <Container fixed>
@@ -79,12 +87,15 @@ const OurProductsSec = ({
               </CustomSelect>
             </Box>
 
-            <SearchComponent getSearchValue={getSearchValue} />
+            <SearchComponent
+              value={userGivenSearch}
+              getSearchValue={getSearchValue}
+            />
           </Box>
         </Box>
         <Box className="product_mdl">
           <CategorySlider
-            categorySlider={categoriesList}
+            categorySlider={updatedCategoryList}
             selectedCategory={selectedCategory}
             category={category}
           />

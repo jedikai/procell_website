@@ -15,6 +15,7 @@ export const useStorySecData = (
   useQuery([GET_STORY_SECTION_DATA], getStorySecData, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 const getTreatmentVideoData = async () => {
@@ -29,6 +30,7 @@ export const useTreatmentVideoData = (
   useQuery([GET_TREATMENT_VIDEO_DATA], getTreatmentVideoData, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 const getImageCompressionData = async () => {
@@ -43,6 +45,7 @@ export const useImageCompressionData = (
   useQuery([GET_IMAGE_COMPRESSION_DATA], getImageCompressionData, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -58,5 +61,6 @@ export const useTestimonialData = (
   useQuery([GET_TESTIMONIAL_DATA], getTestimonialData, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });

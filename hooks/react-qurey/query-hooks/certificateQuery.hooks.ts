@@ -16,5 +16,6 @@ export const useCertificateList = (
     onSuccess,
     onError,
     enabled: false,
-    select: (data) => data?.data?.data ?? []
+    refetchOnWindowFocus: false,
+    select: (data) => data?.data ?? {}
   });

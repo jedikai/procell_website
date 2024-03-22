@@ -6,6 +6,28 @@ export const LoginPageWrapper = styled(Box)`
   &.forget_wrapper {
     margin: auto;
   }
+  .phone_num_wrap {
+    justify-content: space-between;
+    flex-wrap: wrap;
+    .autocomplete_wrap {
+      width: 49%;
+
+      @media (max-width: 479px) {
+        width: 100%;
+        margin: 0 0 15px;
+      }
+      .MuiAutocomplete-root {
+        max-width: none;
+        width: 100%;
+      }
+    }
+    .autocomplete_right {
+      width: 49%;
+      @media (max-width: 479px) {
+        width: 100%;
+      }
+    }
+  }
   .wrapper {
     text-align: center;
     padding-bottom: 20px;

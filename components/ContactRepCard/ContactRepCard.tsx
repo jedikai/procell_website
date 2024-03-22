@@ -35,32 +35,38 @@ export default function ContactRepCard({
                   {title}
                 </Typography>
               )}
-              {!!desg && desg != "N/A" && <Typography variant="body1" className="desg">
-                {desg}
-              </Typography>}
+              {!!desg && desg != "N/A" && (
+                <Typography variant="body1" className="desg">
+                  {desg}
+                </Typography>
+              )}
             </Box>
             <Box className="cnt_btm">
               <List disablePadding className="cnt_list">
-                {!!email && email != "N/A" && <ListItem disablePadding>
-                  <i className="icon">
-                    <MailIcon />
-                  </i>
-                  <Typography variant="body1" className="cnt_text">
-                    <Typography variant="caption"> Email:</Typography>
+                {!!phone && phone != "N/A" && (
+                  <ListItem disablePadding>
+                    <i className="icon">
+                      <CallIcon />
+                    </i>
+                    <Typography variant="body1" className="cnt_text">
+                      <Typography variant="caption"> Phone Number:</Typography>
 
-                    <Link href={`mailto:${emailUrl}`}>{email}</Link>
-                  </Typography>
-                </ListItem>}
-                {!!phone && phone != "N/A" && <ListItem disablePadding>
-                  <i className="icon">
-                    <CallIcon />
-                  </i>
-                  <Typography variant="body1" className="cnt_text">
-                    <Typography variant="caption"> Phone Number:</Typography>
+                      {<Link href={`tel:${phoneUrl}`}>{phone}</Link>}
+                    </Typography>
+                  </ListItem>
+                )}
+                {!!email && email != "N/A" && (
+                  <ListItem disablePadding>
+                    <i className="icon">
+                      <MailIcon />
+                    </i>
+                    <Typography variant="body1" className="cnt_text">
+                      <Typography variant="caption"> Email:</Typography>
 
-                    {<Link href={`tel:${phoneUrl}`}>{phone}</Link>}
-                  </Typography>
-                </ListItem>}
+                      <Link href={`mailto:${emailUrl}`}>{email}</Link>
+                    </Typography>
+                  </ListItem>
+                )}
               </List>
             </Box>
           </Box>

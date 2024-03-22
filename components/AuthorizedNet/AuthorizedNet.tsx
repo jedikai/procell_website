@@ -164,7 +164,7 @@ const AuthorizedNet = ({
         <Grid container columnSpacing={2} rowSpacing={2.2}>
           <Grid item lg={6} xs={12}>
             <InputFieldCommon
-              placeholder="Card zipcode"
+              placeholder="Card zip code"
               name="cardZipCode"
               value={cardData.cardZipCode}
               onChange={getUserGivenCarddetails}
