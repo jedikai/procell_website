@@ -27,6 +27,7 @@ import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import Link from "next/link";
 
 type Inputs = {
   email: string;
@@ -45,7 +46,7 @@ const validationSchema = yup.object().shape({
   callBackPhoneNumber: yup
     .string()
     .required(validationText.error.phone)
-    .matches(/^\d+$/, validationText.error.valid_phone_number)
+    // .matches(/^\d+$/, validationText.error.valid_phone_number)
     .test("isValid", validationText.error.phone_number_range, (value) => {
       console.log(value);
       if (value && value?.length >= 8 && value?.length <= 16) {
@@ -196,7 +197,7 @@ export default function Index() {
                     </Box>
                     <Box className="form_group">
                       <InputFieldCommon
-                        type="number"
+                        // type="number"
                         placeholder="Call back number"
                         {...register("callBackPhoneNumber")}
                         onKeyDown={(e: any) =>
@@ -256,7 +257,7 @@ export default function Index() {
                         }}
                       >
                         <MenuItem value="" sx={{ display: "none" }} selected>
-                          Please choose your issue*
+                          Please choose your issue
                         </MenuItem>
 
                         {data &&
@@ -301,6 +302,12 @@ export default function Index() {
                         </CustomButtonPrimary>
                       )}
                     </Box>
+                    <Typography style={{ marginTop: "10px" }}>
+                      Protected by reCAPTCHA, &nbsp;
+                      <Link href="/privacy-policy">Privacy Policy</Link> &{" "}
+                      <Link href="/terms-of-service">Terms of Service</Link>
+                      &nbsp; apply.
+                    </Typography>
                   </form>
                 </Box>
               </Grid>

@@ -18,6 +18,7 @@ export const useRepVerificationToken = (
     onSuccess,
     onError,
     enabled: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.client_key ?? ""
   });
 

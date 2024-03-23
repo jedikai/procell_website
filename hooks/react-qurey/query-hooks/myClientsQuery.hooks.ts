@@ -22,6 +22,7 @@ export const useMyClientsListList = (
     enabled,
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -41,6 +42,7 @@ export const useClientEntries = (
     onSuccess,
     onError,
     enabled: !!id,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -123,6 +125,7 @@ export const useClientDetails = (
     onSuccess,
     onError,
     enabled,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -143,5 +146,6 @@ export const useClientEntryDetails = (
     onSuccess,
     onError,
     enabled,
+    refetchOnWindowFocus: false,
     select: (data) => (data?.data?.data ? data?.data?.data[0] : {})
   });

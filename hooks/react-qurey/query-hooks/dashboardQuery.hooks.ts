@@ -27,6 +27,7 @@ export const useProfileDetails = (
     onError,
     enabled,
     retry: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -64,6 +65,7 @@ export const useQuotationList = (
     {
       onSuccess,
       onError,
+      refetchOnWindowFocus: false,
       select: (data) => data?.data?.data ?? []
     }
   );
@@ -84,8 +86,17 @@ export const useSalesList = (
   useQuery([GET_SALES_LIST, page, type], () => getSalesList(page, type), {
     onSuccess,
     onError,
+    enabled: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
+
+  const orderListSearch = async (body: object) => {
+    const res = await axiosInstance.post(endpoints.app.sales_list_serach, body);
+    return res;
+  };
+  
+  export const useOrderListSearch = () => useMutation(orderListSearch);
 // <------------------------------ INVOICE SECTION APIS ------------------------------>
 const getInvoiceList = async (page: number, type: string) => {
   const res = await axiosInstance.get(
@@ -103,6 +114,7 @@ export const useInvoiceList = (
   useQuery([GET_INVOICE_LIST, page, type], () => getInvoiceList(page, type), {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 // <------------------------------ INVOICE DOWNLOAD SECTION APIS ------------------------------>
@@ -120,7 +132,8 @@ export const useInvoiceDownload = (
 ) =>
   useQuery([GET_INVOICE_DOWNLOAD, id], () => getInvoiceDownload(id), {
     onSuccess,
-    onError
+    onError,
+    refetchOnWindowFocus: false,
     // select: (data) => data?.data?.data ?? []
   });
 
@@ -139,6 +152,7 @@ export const usePurchaseList = (
   useQuery([GET_PURCHASE_LIST], getPurchaseList, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -164,6 +178,7 @@ export const useMannageCommunicationData = (
   useQuery([GET_MANAGE_COMMUNICATION_DATA], getMannageCommunicationData, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 

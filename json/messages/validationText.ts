@@ -2,9 +2,11 @@ export default {
   success: {},
   error: {
     zipCode: "Zip code is required",
-    language: "Preffered language is required",
+    language: "Preferred language is required",
     company: "Company is required",
     source: "Message is required",
+    url: "Url is required",
+    social_media: "Social media is required",
     country: "Country is required",
     state: "State is required",
     city: "City is required",

@@ -1,6 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
 import { useQuery } from "react-query";
-import { RESULT_LIST } from "../query-keys/resultQuery.keys";
+import { INSTAGRAM_TOKEN, RESULT_LIST } from "../query-keys/resultQuery.keys";
+import { endpoints } from "@/api/endpoints";
 
 const getResultList = async (apiUrl: string) => {
   const res = await axiosInstance.get(
@@ -20,5 +21,23 @@ export const useResultList = (
     onSuccess,
     onError,
     enabled: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data ?? {}
+  });
+
+const getInstagramToken = async () => {
+  const res = await axiosInstance.get(endpoints.app.instagram_token);
+  return res;
+};
+
+export const useInstagramTokenFetch = (
+  onSuccess: any = () => {},
+  onError: any = () => {}
+) =>
+  useQuery([INSTAGRAM_TOKEN], getInstagramToken, {
+    onSuccess,
+    onError,
+    enabled: false,
+    refetchOnWindowFocus: false,
+    select: (data) => data?.data?.access_token ?? ""
   });

@@ -14,28 +14,71 @@ import Document, {
 } from "next/document";
 import * as React from "react";
 import { CustomAppProps } from "./_app";
+import { baseUrlApi } from "@/api/endpoints";
+import { getCookie } from "@/lib/functions/storage.lib";
 
 interface MyDocumentProps extends DocumentProps {
   emotionStyleTags: JSX.Element[];
 }
 
 export default function MyDocument({ emotionStyleTags }: MyDocumentProps) {
+  // const [isSessionIdThere, setIsSessionIdThere] = React.useState(false);
+  // const [sessionId, setSessionId] = React.useState("");
+  // React.useEffect(() => {
+    
+  //   if (typeof window !== "undefined") {
+  //     if (!!getCookie("session_id")) {
+  //       try {
+  //         const session_id: any = getCookie("session_id");
+  //         setIsSessionIdThere(true);
+  //         setSessionId(session_id);
+  //       } catch (error) {
+  //         setIsSessionIdThere(false);
+  //       }
+  //     } else {
+  //       setIsSessionIdThere(false);
+  //     }
+  //   }
+  // }, []);
+
   return (
-    <Html lang="en">
+    <Html lang="en_US">
       <Head>
         {/* PWA primary color */}
         {/* <meta name="theme-color" content={theme.palette.primary.main} /> */}
-        <link rel="shortcut icon" href="/favicon.ico" />
+        <link rel="shortcut icon" href="/favicon.png" />
         <link
           rel="stylesheet"
           href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
         />
+        {/* {!!isSessionIdThere && !!sessionId && ( */}
+          <link
+            rel="stylesheet"
+            // href={`${baseUrlApi}/im_livechat/external_lib.css?session_id=${sessionId}`}
+            href={`${baseUrlApi}/im_livechat/external_lib.css`}
+          />
+        {/* )} */}
         <meta name="emotion-insertion-point" content="" />
         {emotionStyleTags}
       </Head>
       <body>
         <Main />
         <NextScript />
+        {/* {!!isSessionIdThere && !!sessionId && ( */}
+          <>
+            <script
+              type="text/javascript"
+              // src={`${baseUrlApi}/im_livechat/external_lib.js?session_id=${sessionId}`}
+              src={`${baseUrlApi}/im_livechat/external_lib.js`}
+            />
+
+            <script
+              type="text/javascript"
+              // src={`${baseUrlApi}/im_livechat/loader/3?session_id=${sessionId}`}
+              src={`${baseUrlApi}/im_livechat/loader/3`}
+            />
+          </>
+        {/* )} */}
       </body>
     </Html>
   );

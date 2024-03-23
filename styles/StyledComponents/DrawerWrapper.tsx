@@ -13,61 +13,57 @@ export const DrawerWrapper = styled(Box)`
       width: 100px;
       display: inline-block;
       font-size: 0;
+      margin-bottom: 15px;
 
       img {
         width: 100%;
       }
     }
     ul {
-     
-
-        li {
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-          padding: 15px 5px 15px 0;
-         a{
+      li {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        padding: 15px 5px 15px 0;
+        a {
           display: inline-block;
           text-decoration: none;
           color: ${primaryColors.mainFontColor};
           transition: 0.5s ease-in-out;
-          &:hover{
+          &:hover {
             color: ${primaryColors.primary};
           }
-          &.draweractive{
-            color:${primaryColors.primary};
+          &.draweractive {
+            color: ${primaryColors.primary};
           }
-         }
-         &:last-child{
+        }
+        &:last-child {
           border: 0;
         }
-        
-        }
-      
       }
     }
-    button {
-      padding: 10px 20px;
-      margin: 0 auto;
-      min-width: 150px;
-    }
-    .DrawerCloseBtn {
-      position: absolute;
-      top: 28px;
+  }
+  button {
+    padding: 10px 20px;
+    margin: 0 auto;
+    min-width: 150px;
+  }
+  .DrawerCloseBtn {
+    position: absolute;
+    top: 28px;
     right: 12px;
-      width: 27px;
-      border-radius: 100%;
-      button {
-        padding: 5px;
-        min-width: auto;
-        border-radius: 4px;
-    border: 1px solid rgba(0, 0, 0, 0.17);
-    svg{
-      width: 12px;
-    height: 12px;
-    }
-        &:hover {
-          background-color: ${primaryColors.primary};
-        }
+    width: 27px;
+    border-radius: 100%;
+    button {
+      padding: 5px;
+      min-width: auto;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 0, 0, 0.17);
+      svg {
+        width: 12px;
+        height: 12px;
+      }
+      &:hover {
+        background-color: ${primaryColors.primary};
       }
     }
-  
+  }
 `;

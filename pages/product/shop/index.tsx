@@ -2,6 +2,7 @@ import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSeconda
 import InnerHeader from "@/components/InnerHeader/InnerHeader";
 import OurProductsSec from "@/components/OurProductsSec/OurProductsSec";
 import { useProductList } from "@/hooks/react-qurey/query-hooks/productQuery.hooks";
+import { useDebounce } from "@/hooks/useDebounce";
 import assest from "@/json/assest";
 import Wrapper from "@/layout/wrapper/Wrapper";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -14,11 +15,13 @@ export default function index() {
     threshold: 0
   });
   const [page, setPage] = useState(1);
+  const [userGivenSearch, setUserGivenSearch] = useState("");
   const [sort, setSort] = useState("");
   const [category, setCategory] = useState("");
   const [showEle, setShowEle] = useState(false);
   const [productList, setProductList] = useState<any>([]);
   const [categoriesList, setCategoriesList] = useState<any>([]);
+  const debouncedValue = useDebounce(userGivenSearch, 600);
   const onSuccessProductList = (data: any) => {
     // setProductList([...data?.products_info]);
     const lastPage = data?.page_count ?? 0;
@@ -32,10 +35,11 @@ export default function index() {
     setShowEle(true);
   };
   const onErrorProductList = () => {};
-  const { data, isLoading } = useProductList(
+  const { data, isLoading, refetch } = useProductList(
     page,
     sort,
     category,
+    debouncedValue,
     onSuccessProductList,
     onErrorProductList
   );
@@ -48,6 +52,17 @@ export default function index() {
       }
     }
   };
+
+  const handleuserGivenSearch = useCallback(
+    (data: any) => {
+      setShowEle(false);
+      setPage(1);
+      setUserGivenSearch(data);
+      setProductList([]);
+      setCategoriesList([]);
+    },
+    [userGivenSearch]
+  );
 
   useEffect(() => {
     if (inView) {
@@ -74,7 +89,7 @@ export default function index() {
           setSort("");
         }
       } else if (value != "") {
-        setSort(`search=${value}`);
+        // setSort(`search=${value}`);
       } else {
         setSort(``);
       }
@@ -95,6 +110,10 @@ export default function index() {
     },
     [category]
   );
+
+  useEffect(() => {
+    refetch();
+  }, [sort, page, category, debouncedValue]);
   console.log(data, "productList");
 
   return (
@@ -113,6 +132,8 @@ export default function index() {
             categoriesList={categoriesList}
             selectedCategory={selectedCategory}
             category={category}
+            handleuserGivenSearch={handleuserGivenSearch}
+            userGivenSearch={userGivenSearch}
           />
           {showEle && <div ref={ref} />}
         </>
