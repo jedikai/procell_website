@@ -4,7 +4,7 @@ import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
 import validationText from "@/json/messages/validationText";
 import LoginWrapper from "@/layout/wrapper/LoginWrapper";
-import { setCookieClient } from "@/lib/functions/storage.lib";
+import { getCookie, setCookieClient } from "@/lib/functions/storage.lib";
 import { LoginPageWrapper } from "@/styles/StyledComponents/LoginPageWrapper";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
@@ -39,7 +39,7 @@ const validationSchema = yup.object().shape({
 
 const Login = () => {
   const router = useRouter();
-  const [render, setRender] = useState(true);
+  const [render, setRender] = useState(false);
   const [checked, setChecked] = useState(false);
   const { toastSuccess, toastError } = useNotiStack();
   const onSuccessUserLogin = () => {
@@ -48,11 +48,6 @@ const Login = () => {
   const onErrorUserLogin = (error: any) => {
     toastError(error ? error?.message : "Something went wrong.");
   };
-  // const {
-  //   data: userLogin,
-  //   isLoading,
-  //   refetch
-  // } = useUserLogin(userGivenCred, false, onSuccessUserLogin, onErrorUserLogin);
   const { mutate: userLogin, isLoading } = useUserLogin();
   const {
     register,
@@ -76,8 +71,7 @@ const Login = () => {
           email,
           cred: data?.data?.data?.sid
         });
-        localStorage.setItem("session_id", data?.data?.data?.sid);
-        // if (remember_me) {
+        setCookieClient("access_token", data?.data?.data?.sid);
         if (checked) {
           localStorage.setItem(
             "userDetails",
@@ -94,7 +88,6 @@ const Login = () => {
         router.push("/dashboard/profile");
       },
       onError: (error: any) => {
-        // console.log("login user cred", error);
         toastError(
           error ? error?.response?.data?.message : "Something went wrong."
         );
@@ -102,28 +95,29 @@ const Login = () => {
     });
   };
   useEffect(() => {
+    setRender(false);
     if (typeof window !== "undefined") {
-      // const userLoginStatus: boolean =
-      //   !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
-      // if (userLoginStatus) {
-      //   router.push("/dashboard/profile");
-      //   setRender(false);
-      // } else {
-      //   setRender(true);
-      // }
+
       let getUserDetails: any = {};
       if (!!localStorage.getItem("userDetails")) {
         getUserDetails = JSON.parse(localStorage.getItem("userDetails") ?? "");
       }
       setValue("email", getUserDetails?.email ?? "");
       setChecked(getUserDetails?.remember_me ?? false);
-      // setValue("remember_me", getUserDetails?.remember_me ?? false);
       console.log(
         "getUserDetails",
         typeof getUserDetails,
         getUserDetails?.email ?? "nodata"
       );
-      //  getUserDetails=JSON.parse()
+      if (!!getUserDetails?.cred) {
+        if (!getCookie("access_token")) {
+          setCookieClient("access_token", getUserDetails?.cred);
+        }
+      }
+      if (!!getCookie("access_token")) {
+        router.push("/dashboard/profile");
+      }
+      setRender(true);
     }
     // }
   }, []);
@@ -151,9 +145,7 @@ const Login = () => {
                       Sign in to{" "}
                       <Typography variant="caption">Procell</Typography>
                     </Typography>
-                    {/* <Typography variant="body1">
-                      Enter your details to get sign in to your account
-                    </Typography> */}
+
                     <Box className="input_wrap">
                       <InputFieldCommon
                         placeholder="Email"

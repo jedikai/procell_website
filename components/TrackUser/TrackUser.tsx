@@ -35,7 +35,7 @@ const TrackUser = () => {
     }
   }, [loadScript]);
   useEffect(() => {
-    if (window != undefined) {
+    if (typeof window !== "undefined") {
       const origin =
         typeof window !== "undefined" && window.location.origin
           ? window.location.origin
@@ -45,8 +45,8 @@ const TrackUser = () => {
         setLoadScript(true);
       }
       if (!trackerIsCalled) {
-        console.log('called');
-        
+        console.log("called");
+
         const formData: FormData = new FormData();
         // formData.append(
         //   "track",
@@ -83,10 +83,10 @@ const TrackUser = () => {
   useEffect(() => {
     const currentPage = localStorage.getItem("current_page") ?? "";
     // if (router.asPath != currentPage) {
-      setTrackerIsCalled(false);
+    setTrackerIsCalled(false);
     // }
   }, [router]);
-  return <>{chatWidgetScript}</>;
+  return <></>;
 };
 
 export default memo(TrackUser);

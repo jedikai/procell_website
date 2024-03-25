@@ -1,7 +1,10 @@
 import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
 import ButtonLoaderSecondary from "@/components/ButtonLoader/ButtonLoaderSecondary";
 import InnerHeader from "@/components/InnerHeader/InnerHeader";
-import { useResultList } from "@/hooks/react-qurey/query-hooks/resultQuery.hooks";
+import {
+  useInstagramTokenFetch,
+  useResultList
+} from "@/hooks/react-qurey/query-hooks/resultQuery.hooks";
 import { ResultProps2 } from "@/interface/result.interface";
 import assest from "@/json/assest";
 import Wrapper from "@/layout/wrapper/Wrapper";
@@ -110,9 +113,9 @@ export function ResultCard({
     </ResultCardWrapper>
   );
 }
-const instagramPostsApiUrl = `https://graph.instagram.com/v12.0/me/media?fields=id,username,caption,media_type,media_url,thumbnail_url,permalink,timestamp&access_token=${process.env.NEXT_AUTHORIZATION_INSTAGRAM_ACCESS_TOKEN}`;
+const instagramPostsApiUrl = `https://graph.instagram.com/v12.0/me/media?fields=id,username,caption,media_type,media_url,thumbnail_url,permalink,timestamp`;
 export default function Index() {
-  const [apiUrl, setApiUrl] = useState(instagramPostsApiUrl);
+  const [apiUrl, setApiUrl] = useState('');
   const [postList, setPostList] = useState<any>([]);
   const [isApiFetchAgain, setIsApiFetchAgain] = useState<boolean>(false);
   const onSuccessInstaPostsFetch = (response: any) => {
@@ -135,18 +138,36 @@ export default function Index() {
       }
     }
   };
+
+  const {
+    data: instagramToken,
+    isLoading: tokenLoader,
+    refetch: tokenFetch
+  } = useInstagramTokenFetch((response: any) => {
+    if (!!response) {
+      setApiUrl(`${instagramPostsApiUrl}&access_token=${response}`);
+    }
+  });
   const {
     data: resultData,
     isLoading,
     refetch
   } = useResultList(apiUrl, onSuccessInstaPostsFetch);
+
   const fetchPostHandler = () => {
-    refetch();
+    // refetch();
     setIsApiFetchAgain(true);
   };
   useEffect(() => {
-    refetch();
+    if (!!apiUrl) {
+      refetch();
+    }
+  }, [apiUrl]);
+
+  useEffect(() => {
+    tokenFetch();
   }, []);
+  console.log("useInstagramTokenFetch", instagramToken);
   console.log("show me url result", postList);
 
   return (

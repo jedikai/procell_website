@@ -27,6 +27,7 @@ export const useMyOrderListList = (
     {
       onSuccess,
       onError,
+      refetchOnWindowFocus: false,
       select: (data) => data?.data?.data ?? []
     }
   );

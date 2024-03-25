@@ -116,7 +116,7 @@ PROCELL"
                 </Link>
                 <form onSubmit={handleSubmit(onFormSubmit)}>
                   <Box className="form_body">
-                    <Box className="verified_box">
+                    {/* <Box className="verified_box">
                       <Image
                         src={assest.purple_tick}
                         alt="verified"
@@ -126,7 +126,7 @@ PROCELL"
                       <Typography variant="body1">
                         Verification Successful
                       </Typography>
-                    </Box>
+                    </Box> */}
                     <Typography variant="h4">CREATE NEW PASSWORD</Typography>
 
                     <Box className="input_wrap">
@@ -185,7 +185,7 @@ PROCELL"
                     <CustomButtonPrimary
                       variant="contained"
                       color="primary"
-                      onClick={() => router.push("/auth/login")}
+                      onClick={() => router.push("/login")}
                     >
                       <Typography variant="body1">Ok</Typography>
                     </CustomButtonPrimary>

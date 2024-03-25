@@ -9,21 +9,16 @@ import { baseUrlApi, sucessNotificationEndPoints } from "../endpoints";
 import { BaseApiResponse } from "@/interface/common.interface";
 
 const axiosInstance = axios.create({
-  baseURL: baseUrlApi
+  baseURL: baseUrlApi,
   // withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use((config) => {
   const cookies = parseCookies();
-
-  const token = cookies?.career_token;
-  if (token && !!config.headers) {
-    config.headers["x-access-token"] = `${token}`;
-  }
-  const sessionId = localStorage.getItem("session_id") || "";
   config.params = config.params || {};
-
-  if (sessionId) {
+  const sessionId = cookies?.session_id;
+  console.log(sessionId);
+  if (!!sessionId) {
     config.params["session_id"] = sessionId;
   }
 
@@ -45,38 +40,9 @@ axiosInstance.interceptors.response.use(
     return res;
   },
   async (error: AxiosError<BaseApiResponse>) => {
-    // globalCatchError(error);
-    // const { data, status, config } = error.response!;
     const originalRequest = error.config;
 
-    // if (error.response.status === 401 && !originalRequest._retry) {
-    //   originalRequest._retry = true;
-    //   const access_token = await refreshAccessToken();
-    //   setCookieClient("token", access_token?.token);
-    //   axios.defaults.headers.common["x-access-token"] = access_token?.token;
-    //   return axiosInstance(originalRequest);
-    // }
-
     return Promise.reject(error);
-
-    // switch (status) {
-    //   case 400:
-    //     console.error(data);
-    //     break;
-
-    //   case 401:
-    //     console.error("unauthorized");
-    //     break;
-
-    //   case 404:
-    //     console.error("/not-found");
-    //     break;
-
-    //   case 500:
-    //     console.error("/server-error");
-    //     break;
-    // }
-    // return Promise.reject(error);
   }
 );
 

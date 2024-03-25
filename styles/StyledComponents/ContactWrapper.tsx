@@ -4,7 +4,24 @@ import { Box } from "@mui/system";
 
 export const ContactWrapper = styled(Box)`
   position: relative;
+  .cnt_grid_btm {
+    margin-top: 30px;
+  }
   .cnt_grid_sec {
+    @media (max-width: 899px) {
+      display: flex;
+      justify-content: center;
+    }
+
+    figure {
+      margin-left: 0 !important;
+      @media (max-width: 899px) {
+        margin: 0 !important;
+      }
+      @media (max-width: 599px) {
+        width: 100% !important;
+      }
+    }
     .cnt_grid {
       justify-content: center;
     }
@@ -29,7 +46,8 @@ export const ContactWrapper = styled(Box)`
       }
     }
     .cnt_list {
-      padding-left: 15px;
+      width: 100%;
+
       @media (max-width: 599px) {
         width: 100%;
         padding: 0;
@@ -63,6 +81,9 @@ export const ContactWrapper = styled(Box)`
         font-size: 24px;
         font-weight: 600;
         color: #000;
+        @media (max-width: 1199px) {
+          font-size: 18px;
+        }
       }
       .cnt_text {
         p {
@@ -70,6 +91,9 @@ export const ContactWrapper = styled(Box)`
           font-weight: 500;
           font-size: 16px;
           margin-left: 10px;
+          @media (max-width: 1199px) {
+            font-size: 12px;
+          }
           @media (max-width: 599px) {
             font-size: 11px;
           }
@@ -80,6 +104,9 @@ export const ContactWrapper = styled(Box)`
           font-size: 16px;
           margin-left: 10px;
           text-decoration: none;
+          @media (max-width: 1199px) {
+            font-size: 12px;
+          }
           @media (max-width: 599px) {
             font-size: 11px;
           }
@@ -100,7 +127,7 @@ export const ContactWrapper = styled(Box)`
     @media (max-width: 1299px) {
       left: 3%;
       width: 100px;
-      top: calc(100% - 85%);
+      top: 50px;
     }
     @media (max-width: 899px) {
       display: none;
@@ -108,7 +135,7 @@ export const ContactWrapper = styled(Box)`
   }
   .pink_leaf {
     position: absolute;
-    right: 10%;
+    right: 0;
     top: 100px;
     pointer-events: none;
     z-index: 2;
@@ -122,7 +149,7 @@ export const ContactWrapper = styled(Box)`
   }
   .small_pink_leaf {
     position: absolute;
-    left: 38%;
+    left: 33%;
     top: 250px;
     pointer-events: none;
     z-index: 4;
@@ -138,9 +165,10 @@ export const ContactWrapper = styled(Box)`
     .autocomplete_wrap {
       display: flex;
       .phn_code {
+        width: 50%;
       }
       .phn_num {
-        width: 100%;
+        width: 50%;
         margin-left: 10px;
       }
     }
@@ -156,7 +184,7 @@ export const ContactWrapper = styled(Box)`
       }
       @media (max-width: 1199px) {
         margin-left: -159px;
-        width: 54vw;
+        width: 45vw;
       }
       @media (max-width: 899px) {
         margin-left: 0px;
@@ -185,7 +213,7 @@ export const ContactWrapper = styled(Box)`
   .sec_title {
     margin-bottom: 30px;
     h4 {
-      font-size: 25px;
+      font-size: 30px;
       margin-bottom: 25px;
       @media (max-width: 1199px) {
         font-size: 20px;
@@ -195,6 +223,9 @@ export const ContactWrapper = styled(Box)`
         font-size: 24px;
       }
       @media (max-width: 599px) {
+        font-size: 20px;
+      }
+      @media (max-width: 400px) {
         font-size: 14px;
       }
     }

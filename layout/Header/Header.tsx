@@ -20,14 +20,18 @@ import assest from "@/json/assest";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 
 import {
-  useCartList
+  useCartList,
+  useCartListWithAuthCred
 } from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
 import { useProfileDetails } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
 import { useLogout } from "@/hooks/react-qurey/query-hooks/logoutQuery.hooks";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useAppSelector } from "@/hooks/useAppSelector";
-import { getCookie } from "@/lib/functions/storage.lib";
-import { getUserName } from "@/reduxtoolkit/slices/userProfle.slice";
+import { getCookie, setCookieClient } from "@/lib/functions/storage.lib";
+import {
+  getUserAcademyAccessbility,
+  getUserName
+} from "@/reduxtoolkit/slices/userProfle.slice";
 import { DrawerWrapper } from "@/styles/StyledComponents/DrawerWrapper";
 import { HeaderWrap } from "@/styles/StyledComponents/HeaderWrapper";
 import { MenuWrapperStyle } from "@/styles/StyledComponents/MenuWrapperStyle";
@@ -43,6 +47,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
+import Head from "next/head";
+import CrmIcon from "@/ui/Icons/CrmIcon";
+import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
 
 // const CustomButton = dynamic(() => import("@/ui/Buttons/CustomButton"));
 
@@ -104,8 +111,7 @@ export default React.memo((props: Props) => {
   const [sessionId, setSessionId] = React.useState("");
   const [userLoggedIn, setUserLoggedIn] = React.useState(false);
   const [navbarListItems, setNavbarListItems] = React.useState<any>(navItems);
-  // const { userData, isLoggedIn } = useAppSelector((state) => state.userSlice);
-  // const dispatch = useAppDispatch();
+
   const router = useRouter();
   const { refresh, productVariantId } = useAppSelector(
     (s) => s.userProfileImgSlice
@@ -115,14 +121,20 @@ export default React.memo((props: Props) => {
     const {
       first_name,
       last_name,
-      can_access_rep_academy
+      can_access_rep_academy,
+      partner_type
     }: {
       first_name: string;
       last_name: string;
       can_access_rep_academy: boolean | string;
+      partner_type: string;
     } = response && response?.length > 0 ? response[0] : {};
     dispatch(getUserName(`${first_name ?? ""} ${last_name ?? ""}`));
-    if (!!can_access_rep_academy || can_access_rep_academy == "true") {
+    dispatch(getUserAcademyAccessbility(can_access_rep_academy));
+    if (
+      // (!!can_access_rep_academy || can_access_rep_academy == "true") &&
+      partner_type == "practitioner"
+    ) {
       setNavbarListItems(
         [
           {
@@ -138,8 +150,8 @@ export default React.memo((props: Props) => {
   const { data, isLoading, refetch, isFetched } = useProfileDetails(
     onSuccessProfileDetails,
     (error: any) => {
-      console.log("eeeeeeeeeeeeeeeeeeeeee", error);
-      setAuthenticUser(false)
+      console.log("eeeeeeeeeeeeeeeeeeeeee", sessionId);
+      setAuthenticUser(false);
     },
     // true
     userLoggedIn
@@ -156,20 +168,20 @@ export default React.memo((props: Props) => {
       return true;
     }
   }, [router, productVariantId]);
-  const origin =
-    typeof window !== "undefined" && window.location.origin
-      ? window.location.origin
-      : "";
-  const tractUserActivityParams = `?page_name=${
-    router.pathname.includes("product-details")
-      ? "product-details"
-      : router.pathname.split("/").at(-1)
-  }&page_url=${router.pathname}${
-    router.pathname.includes("product-details")
-      ? `&track=product&product_id=${productVariantId}`
-      : ""
-  }${!!origin ? `&base_url=${origin}` : ""}`;
-  console.log("router header", tractUserActivityParams);
+  // const origin =
+  //   typeof window !== "undefined" && window.location.origin
+  //     ? window.location.origin
+  //     : "";
+  // const tractUserActivityParams = `?page_name=${
+  //   router.pathname.includes("product-details")
+  //     ? "product-details"
+  //     : router.pathname.split("/").at(-1)
+  // }&page_url=${router.pathname}${
+  //   router.pathname.includes("product-details")
+  //     ? `&track=product&product_id=${productVariantId}`
+  //     : ""
+  // }${!!origin ? `&base_url=${origin}` : ""}`;
+  // console.log("router header", tractUserActivityParams);
   const onCartListSuccess = (response: any) => {
     const { order_line }: any =
       !!response && response?.length > 0 ? response[0] : [];
@@ -216,13 +228,16 @@ export default React.memo((props: Props) => {
     document.body.classList.add("home");
   };
   const [openmod, setopenmod] = React.useState(false);
+  const [logoutLoader, setLogoutLoader] = React.useState(false);
   const handleLogin = () => {
+    setLogoutLoader(true);
     if (typeof window !== "undefined") {
       setAuthenticUser(false);
-      // localStorage.removeItem("userDetails");
+      localStorage.removeItem("userDetails");
       destroyCookie(null, "userDetails", { path: "/" });
       // router.push("/auth/login");
       destroyCookie(null, "userDetails", { path: "/" });
+      // destroyCookie(null, "session_id", { path: "/" });
       logout(
         {
           body: {},
@@ -236,9 +251,12 @@ export default React.memo((props: Props) => {
         {
           onSuccess: () => {
             setAuthenticUser(false);
-            // localStorage.removeItem("userDetails");
+            localStorage.removeItem("userDetails");
             destroyCookie(null, "userDetails", { path: "/" });
-            router.push("/auth/login");
+            destroyCookie(null, "session_id", { path: "/" });
+            destroyCookie(null, "access_token", { path: "/" });
+            router.push("/login");
+            setLogoutLoader(false);
           },
           onError: () => {}
         }
@@ -264,40 +282,41 @@ export default React.memo((props: Props) => {
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
-      const isUserLoggedIn =
-        !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
-      if (isUserLoggedIn) {
+      let getSessionId = getCookie("access_token") ?? "";
+      if (!!getCookie("userDetails")) {
         setUserLoggedIn(true);
-        let getUserDetails: any = {};
-        if (localStorage.getItem("userDetails")) {
-          getUserDetails = JSON.parse(
+        setAuthenticUser(true);
+        setSessionId(getSessionId);
+        try {
+          const getUserDetails = JSON.parse(getCookie("userDetails") ?? "");
+          setCookieClient("access_token", getUserDetails?.cred);
+          refetch()
+        } catch (error) {
+          console.error("Error parsing user details:", error);
+          // router.push("/login");
+        }
+      } else {
+        if (!!localStorage.getItem("userDetails")) {
+          setUserLoggedIn(true);
+          setAuthenticUser(true);
+          setSessionId(getSessionId);
+          const getUserDetails = JSON.parse(
             localStorage.getItem("userDetails") ?? ""
           );
+          if (!!getUserDetails?.cred) {
+            setCookieClient("access_token", getUserDetails?.cred);
+            refetch()
+          } else {
+            // router.push("/login");
+          }
         } else {
-          if (getCookie("userDetails")) {
-            try {
-              getUserDetails = JSON.parse(getCookie("userDetails") ?? "");
-            } catch (error) {
-              console.error("Error parsing user details:", error);
-            }
-          }
-          // getUserDetails = JSON.parse(getCookie("userDetails") ?? "");
+          // router.push("/login");
         }
-        // if (getUserDetails && getUserDetails?.cred)
-        if (localStorage.getItem("session_id")) {
-          if (!!getUserDetails) {
-            setAuthenticUser(true);
-          }
-          setSessionId(getUserDetails?.cred ?? "");
-        }
-        console.log("getUserDetails", typeof getUserDetails, getUserDetails);
-
-        //  getUserDetails=JSON.parse()
-      } else {
-        setUserLoggedIn(false);
       }
     }
   }, []);
+
+
 
   const userNameString = user; //replace with your string.
   const maxLength = 8; // maximum number of characters to extract
@@ -322,7 +341,11 @@ export default React.memo((props: Props) => {
         <Divider />
         <List>
           {navbarListItems.map((item: any, index: number) => (
-            <ListItem key={index + 1} disablePadding>
+            <ListItem
+              key={index + 1}
+              onClick={() => router.push(item?.route)}
+              disablePadding
+            >
               <Link
                 href={item?.route}
                 key={item.name}
@@ -357,26 +380,11 @@ export default React.memo((props: Props) => {
       return 0;
     }
   }, [cardListData]);
-  console.log("header ========>", navbarListItems);
+  // console.log("header practitioner========>",  data[0]?.partner_type == "practitioner");
+  console.log("sessionId", sessionId);
 
   return (
     <>
-      {/* {!authorizationloader && (
-        <Head>
-          <link
-            rel="stylesheet"
-            href="https://procelltherapies-staging-11007389.dev.odoo.com/im_livechat/external_lib.css"
-          />
-          <script
-            type="text/javascript"
-            src="https://procelltherapies-staging-11007389.dev.odoo.com/im_livechat/external_lib.js"
-          ></script>
-          <script
-            type="text/javascript"
-            src="https://procelltherapies-staging-11007389.dev.odoo.com/im_livechat/loader/3"
-          ></script>
-        </Head>
-      )} */}
       <HeaderWrap sx={{ display: "flex" }} className="main_head">
         <AppBar
           component="nav"
@@ -481,7 +489,7 @@ export default React.memo((props: Props) => {
                               alt="image"
                               width={36}
                               height={36}
-                              key={refresh ? "render" : "no-render"}
+                              // key={refresh ? "render" : "no-render"}
                             />
                           )}
                         {/* <Typography
@@ -507,6 +515,21 @@ export default React.memo((props: Props) => {
                           <ProfileIcon />
                           Profile
                         </MenuItem>
+                        {!!data &&
+                          data?.length > 0 &&
+                          !data[0]?.share &&
+                          data[0]?.partner_type == "practitioner" && (
+                            <MenuItem
+                              onClick={() =>
+                                router.push(
+                                  `${process.env.NEXT_APP_BASE_URL}/web?session_id=${sessionId}`
+                                )
+                              }
+                            >
+                              <CrmIcon />
+                              CRM
+                            </MenuItem>
+                          )}
                         <MenuItem onClick={handleLogout}>
                           <LogoutIcon />
                           Logout
@@ -518,7 +541,7 @@ export default React.memo((props: Props) => {
                       type="button"
                       variant="contained"
                       color="primary"
-                      onClick={() => router.push("/auth/login")}
+                      onClick={() => router.push("/login")}
                       className="login_btn"
                     >
                       <Box
@@ -581,14 +604,24 @@ export default React.memo((props: Props) => {
 
             <List disablePadding className="btn_wrapper">
               <ListItem disablePadding>
-                <CustomButtonPrimary
-                  variant="contained"
-                  color="primary"
-                  className="deletebtn"
-                  onClick={handleLogin}
-                >
-                  <Typography variant="body1">Yes</Typography>
-                </CustomButtonPrimary>
+                {logoutLoader ? (
+                  <CustomButtonPrimary
+                    variant="contained"
+                    color="primary"
+                    className="deletebtn"
+                  >
+                    <ButtonLoader />
+                  </CustomButtonPrimary>
+                ) : (
+                  <CustomButtonPrimary
+                    variant="contained"
+                    color="primary"
+                    className="deletebtn"
+                    onClick={handleLogin}
+                  >
+                    <Typography variant="body1">Yes</Typography>
+                  </CustomButtonPrimary>
+                )}
               </ListItem>
               <ListItem disablePadding>
                 <CustomButtonPrimary

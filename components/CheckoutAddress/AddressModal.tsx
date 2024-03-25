@@ -1,7 +1,13 @@
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import MuiModalWrapper from "@/ui/Modal/MuiModalWrapper";
-import { Autocomplete, Grid, TextField, Typography } from "@mui/material";
+import {
+  Autocomplete,
+  Grid,
+  TextField,
+  Typography,
+  createFilterOptions
+} from "@mui/material";
 import { Box } from "@mui/system";
 import React, { memo, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -25,7 +31,7 @@ import ButtonLoader from "../ButtonLoader/ButtonLoader";
 type Inputs = {
   firstName: string;
   lastName: string;
-  email: string;
+  email?: string;
   phnCode: string;
   phnNumber: string;
   address: string;
@@ -36,32 +42,6 @@ type Inputs = {
   state: string;
 };
 const phoneRegExp = /^[0-9]{10}$/;
-const validationSchema = yup.object().shape({
-  firstName: yup.string().required(validationText.error.first_name),
-  lastName: yup.string().required(validationText.error.last_name),
-  email: yup
-    .string()
-    .email(validationText.error.email_format)
-    .required(validationText.error.enter_email),
-  phnCode: yup.string().required(validationText.error.phone_code),
-  phnNumber: yup
-    .string()
-    .required(validationText.error.phone)
-    .matches(/^\d+$/, validationText.error.valid_phone_number)
-    .test("isValid", validationText.error.phone_number_range, (value) => {
-      console.log(value);
-      if (value && value?.length >= 8 && value?.length <= 16) {
-        return true;
-      } else {
-        return false;
-      }
-    }),
-  address: yup.string().required(validationText.error.address),
-  city: yup.string().required(validationText.error.city),
-  zip: yup.string().required(validationText.error.zipCode),
-  country: yup.string().required(validationText.error.country),
-  state: yup.string().required(validationText.error.state)
-});
 
 const exceptThisSymbols = ["e", "E", "+", "-", "."];
 const AddressModal = ({
@@ -73,9 +53,44 @@ const AddressModal = ({
   console.log("selectedAddress", selectedAddress);
   const queryClient = useQueryClient();
   const { toastSuccess, toastError } = useNotiStack();
+  const validationSchema = yup.object().shape({
+    firstName: yup.string().required(validationText.error.first_name),
+    lastName: yup.string().required(validationText.error.last_name),
+    ...(type != "Billing address"
+      ? {
+          email: yup
+            .string()
+            .email(validationText.error.email_format)
+            .required(validationText.error.enter_email)
+        }
+      : {}),
+    phnCode: yup.string().required(validationText.error.phone_code),
+    phnNumber: yup
+      .string()
+      .required(validationText.error.phone)
+      // .matches(/^\d+$/, validationText.error.valid_phone_number)
+      .test("isValid", validationText.error.phone_number_range, (value) => {
+        console.log(value);
+        if (value && value?.length >= 8 && value?.length <= 16) {
+          return true;
+        } else {
+          return false;
+        }
+      }),
+    address: yup.string().required(validationText.error.address),
+    city: yup.string().required(validationText.error.city),
+    zip: yup
+      .string()
+      .required(validationText.error.zipCode)
+      .max(8, "ZIP code must contain valid six character code."),
+    country: yup.string().required(validationText.error.country),
+    state: yup.string().required(validationText.error.state)
+  });
   const {
     id,
     name,
+    first_name,
+    last_name,
     email,
     phone,
     street,
@@ -93,6 +108,8 @@ const AddressModal = ({
     !!selectedCountryId,
     selectedCountryId
   );
+  const [userGivenPhoneCode, setUserGivenPhoneCode] = useState("");
+
   const { mutate: editAddress, isLoading: editLoader } = useEditAddress();
   const { mutate: createAddress, isLoading: createLoader } = useCreateAddress();
 
@@ -128,7 +145,10 @@ const AddressModal = ({
     }
     formData.append("first_name", `${firstName}`);
     formData.append("last_name", `${lastName}`);
-    formData.append("email", `${email}`);
+    formData.append(
+      "email",
+      `${type != "Billing address" ? email : selectedAddress?.email}`
+    );
     formData.append("phone", `${phnCode} ${phnNumber}`);
     formData.append("street", `${address}`);
     formData.append("street2", `${address2}`);
@@ -196,26 +216,35 @@ const AddressModal = ({
 
   useEffect(() => {
     if (open) {
-      setValue('firstName', name ? name?.split(" ")[0] : "")
-      setValue('lastName', name ? name?.split(" ")[1] : "")
-      setValue('email', email ?? "")
-      setValue('phnCode', getSelectedItemsData[0]?.phone_code)
-      setValue('phnNumber', phone
-        ? phone?.split(" ").length == 1
-          ? phone?.split(" ")[0]
-          : phone?.split(" ")[1]
-        : "")
-      setValue('address', street ?? "")
-      setValue('address2', street2 ?? "")
-      setValue('country', getSelectedItemsData[0]?.id)
-      setValue('state', state_id ? state_id[0] : "")
-      setValue('city', city ?? "")
-      setValue('zip', zip ?? "")
+      setValue("firstName", !!first_name ? first_name : "");
+      setValue("lastName", !!last_name ? last_name : "");
+      setValue("email", email ?? "");
+      setValue("phnCode", getSelectedItemsData[0]?.phone_code);
+      setValue(
+        "phnNumber",
+        phone
+          ? phone?.split(" ").length == 1
+            ? phone?.split(" ")[0]
+            : phone?.split(" ")[1]
+          : ""
+      );
+      setValue("address", !!street && street != "false" ? street : "");
+      setValue("address2", !!street2 && street2 != "false" ? street2 : "");
+      setValue("country", getSelectedItemsData[0]?.id);
+      setValue("state", !!state_id && !!state_id[0] ? state_id[0] : "");
+      setValue("city", !!city && city != "false" ? city : "");
+      setValue("zip", !!zip && zip != "false" ? zip : "");
     }
-    setRender(!render)
-  }, [open])
+    setRender(!render);
+  }, [open]);
+  const filterPhnCdCountryOptions = createFilterOptions({
+    matchFrom: "any",
+    stringify: (option: any) =>
+      `${option.phone_code} ${option.name.toLowerCase()}`
+  });
 
   console.log("AddressModal in add more", id);
+  console.log("AddressModal selectedAddress", selectedAddress);
 
   return (
     <>
@@ -223,7 +252,7 @@ const AddressModal = ({
         open={open}
         onClose={() => {
           handleClose();
-          reset()
+          reset();
         }}
         title=""
       >
@@ -237,13 +266,14 @@ const AddressModal = ({
                 <Grid container spacing={2} className="billing_adress_grid">
                   <Grid item lg={6} md={6} xs={12}>
                     <InputFieldCommon
-                      defaultValue={name ? name?.split(" ")[0] : ""}
+                      // defaultValue={name ? name?.split(" ")[0] : ""}
+                      defaultValue={!!first_name ? first_name : ""}
                       placeholder="First name"
                       style3
                       {...register("firstName")}
-                      onKeyDown={(e: any) =>
-                        [' '].includes(e.key) && e.preventDefault()
-                      }
+                      // onKeyDown={(e: any) =>
+                      //   [" "].includes(e.key) && e.preventDefault()
+                      // }
                     />
                     {/* <InputFieldCommon
                       defaultValue={name?.split(" ")[0]??''}
@@ -259,13 +289,14 @@ const AddressModal = ({
                   </Grid>
                   <Grid item lg={6} md={6} xs={12}>
                     <InputFieldCommon
-                      defaultValue={name ? name?.split(" ")[1] : ""}
+                      // defaultValue={name ? name?.split(" ")[1] : ""}
+                      defaultValue={!!last_name ? last_name : ""}
                       placeholder="Last name"
                       style3
                       {...register("lastName")}
-                      onKeyDown={(e: any) =>
-                        [' '].includes(e.key) && e.preventDefault()
-                      }
+                      // onKeyDown={(e: any) =>
+                      //   [" "].includes(e.key) && e.preventDefault()
+                      // }
                     />
                     {errors?.lastName && (
                       <div className="profile_error">
@@ -280,6 +311,7 @@ const AddressModal = ({
                       placeholder="Email"
                       style3
                       {...register("email")}
+                      disabled={type == "Billing address"}
                     />
                     {errors?.email && (
                       <div className="profile_error">
@@ -300,8 +332,9 @@ const AddressModal = ({
                             id="phonecode-select-demo"
                             className="autocomplete_div"
                             sx={{ width: 300 }}
+                            // filterOptions={filterPhoneOptions}
+                            filterOptions={filterPhnCdCountryOptions}
                             // value={selectedValues?.phnCode}
-                            // defaultValue={{phone_code:phone?.split(" ")[0]??''}phone ?  : ""}
                             defaultValue={getSelectedItemsData[0]}
                             onChange={(event: any, newValue: any | null) => {
                               console.log("country", newValue);
@@ -312,22 +345,29 @@ const AddressModal = ({
                                 "phnCode",
                                 newValue ? newValue?.phone_code : ""
                               );
-                              //   setSelectedValues({
-                              //     ...selectedValues,
-                              //     phnCode: newValue
-                              //   });
+                              // setSelectedValues({
+                              //   ...selectedValues,
+                              //   phnCode: newValue
+                              // });
                             }}
+                            // options={filterPhoneCodes ?? []}
                             options={countryList ?? []}
+                            // options={recomendedCountryList ?? []}
                             disabled={countryLoader}
                             autoHighlight
-                            // getOptionLabel={(option: any) => ` +${option?.phone_code}`}
+                            // getOptionLabel={(option: any) => option?.id}
                             getOptionLabel={(option: any) =>
-                              ` +${option?.phone_code}`
+                              `${option?.phone_code} ${option.name ?? ""}`
                             }
                             renderOption={(props, option) => (
                               <Box
                                 component="li"
-                                sx={{ "& > img": { mr: 2, flexShrink: 0 } }}
+                                sx={{
+                                  "& > img": {
+                                    mr: 2,
+                                    flexShrink: 0
+                                  }
+                                }}
                                 {...props}
                               >
                                 <img
@@ -337,21 +377,26 @@ const AddressModal = ({
                                   alt=""
                                 />
                                 {" +"}
-                                {option.phone_code}
+                                {option.phone_code} {option.name ?? ""}
                               </Box>
                             )}
-                            renderInput={(params) => (
-                              <TextField
-                                {...params}
-                                // {...register("country")}
-                                // label="Choose a country"
-                                placeholder="Phone code"
-                                inputProps={{
-                                  ...params.inputProps
-                                  // autoComplete: "new-password" // disable autocomplete and autofill
-                                }}
-                              />
-                            )}
+                            renderInput={(params) => {
+                              setUserGivenPhoneCode(
+                                `${params?.inputProps?.value ?? ""}`
+                              );
+                              return (
+                                <TextField
+                                  {...params}
+                                  // {...register("country")}
+                                  // label="Choose a country"
+                                  placeholder="Phone code"
+                                  inputProps={{
+                                    ...params.inputProps
+                                    // autoComplete: "new-password" // disable autocomplete and autofill
+                                  }}
+                                />
+                              );
+                            }}
                           />
                           {errors.phnCode && (
                             <div className="profile_error">
@@ -371,11 +416,13 @@ const AddressModal = ({
                             : phone?.split(" ")[1]
                           : ""
                       }
-                      type="number"
+                      // type="number"
                       placeholder="Phone number"
                       style3
                       {...register("phnNumber")}
-                      onKeyDown={(e: any) => exceptThisSymbols.includes(e.key) && e.preventDefault()}
+                      onKeyDown={(e: any) =>
+                        exceptThisSymbols.includes(e.key) && e.preventDefault()
+                      }
                     />
                     {errors?.phnNumber && (
                       <div className="profile_error">
@@ -480,52 +527,52 @@ const AddressModal = ({
                         </Box>
                         {(!!state_id ||
                           (stateList && stateList.length > 0)) && (
-                            <Box className="form_group_inner">
-                              <Autocomplete
-                                disablePortal
-                                id="combo-box-demo"
-                                className="autocomplete_div"
-                                // {...register("state")}
-                                options={stateList ?? []}
-                                sx={{ width: 300 }}
-                                // disabled={
-                                //   (!selectedCountryId && !stateLoder) ||
-                                //   (state_id)
-                                // }
-                                getOptionLabel={(option: any) => option.name}
-                                //   value={selectedValues?.state}
-                                // defaultValue={getSelectedItemsState[0]}
-                                defaultValue={
-                                  state_id
-                                    ? {
+                          <Box className="form_group_inner">
+                            <Autocomplete
+                              disablePortal
+                              id="combo-box-demo"
+                              className="autocomplete_div"
+                              // {...register("state")}
+                              options={stateList ?? []}
+                              sx={{ width: 300 }}
+                              // disabled={
+                              //   (!selectedCountryId && !stateLoder) ||
+                              //   (state_id)
+                              // }
+                              getOptionLabel={(option: any) => option.name}
+                              //   value={selectedValues?.state}
+                              // defaultValue={getSelectedItemsState[0]}
+                              defaultValue={
+                                state_id
+                                  ? {
                                       id: state_id[0],
                                       name: state_id[1]
                                     }
-                                    : null
-                                }
-                                onChange={(event: any, newValue: any | null) => {
-                                  console.log("state", newValue);
-                                  // setSelectedCountryId(newValue ? newValue?.id : "");
-                                  setValue("state", newValue ? newValue?.id : "");
-                                  // setSelectedValues({
-                                  //   ...selectedValues,
-                                  //   state: newValue
-                                  // });
-                                }}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    placeholder="State/Province"
-                                  />
-                                )}
-                              />
-                              {errors?.state && (
-                                <div className="profile_error">
-                                  {errors?.state?.message}
-                                </div>
+                                  : null
+                              }
+                              onChange={(event: any, newValue: any | null) => {
+                                console.log("state", newValue);
+                                // setSelectedCountryId(newValue ? newValue?.id : "");
+                                setValue("state", newValue ? newValue?.id : "");
+                                // setSelectedValues({
+                                //   ...selectedValues,
+                                //   state: newValue
+                                // });
+                              }}
+                              renderInput={(params) => (
+                                <TextField
+                                  {...params}
+                                  placeholder="State/Province"
+                                />
                               )}
-                            </Box>
-                          )}
+                            />
+                            {errors?.state && (
+                              <div className="profile_error">
+                                {errors?.state?.message}
+                              </div>
+                            )}
+                          </Box>
+                        )}
                       </div>
                     </Box>
                   </Grid>
@@ -579,9 +626,9 @@ const AddressModal = ({
               variant="contained"
               color="primary"
               className="payment_bill_btn mx-auto"
-            // type="submit"
-            // // onClick={handleClose}
-            // form="form-modal"
+              // type="submit"
+              // // onClick={handleClose}
+              // form="form-modal"
             >
               <ButtonLoader />
             </CustomButtonPrimary>

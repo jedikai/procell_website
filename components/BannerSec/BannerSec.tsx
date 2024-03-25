@@ -26,7 +26,7 @@ export default memo(function BannerSec() {
   };
 
   useEffect(() => {
-    if (window != undefined && !!videoRef.current) {
+    if (typeof window !== "undefined" && !!videoRef.current) {
       if (typeof videoRef.current.webkitAudioDecodedByteCount !== "undefined") {
         // non-zero if video has audio track
         if (videoRef.current.webkitAudioDecodedByteCount > 0) {

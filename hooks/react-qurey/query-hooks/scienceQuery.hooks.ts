@@ -24,6 +24,7 @@ export const useScienceCategoriesList = (
     onSuccess,
     onError,
     // enabled: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data ?? []
   });
 //   <------------------ SCIENCE BLOG LIST ------------------->
@@ -43,6 +44,7 @@ export const useScienceBlogList = (
     onSuccess,
     onError,
     // enabled: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data ?? []
   });
 
@@ -61,6 +63,7 @@ export const useScienceBlogList_new = (
     onSuccess,
     onError,
     // enabled: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 //   <------------------ SCIENCE BLOG LIST SEARCH WISE------------------->
@@ -86,6 +89,7 @@ export const useScienceBlogListSearchWise = (
       onSuccess,
       onError,
       enabled,
+      refetchOnWindowFocus: false,
       select: (data) => data?.data ?? []
     }
   );
@@ -102,6 +106,7 @@ export const usePopularPostList = (
   useQuery([SCIENCE_POPULAR_POST_LIST], getPopularPostList, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data ?? []
   });
 //   <------------------ SCIENCE DETAILS LIST ------------------->
@@ -122,5 +127,6 @@ export const useScienceBlogDetails = (
     onSuccess,
     onError,
     enabled,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data ?? []
   });
