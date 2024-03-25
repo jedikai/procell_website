@@ -19,9 +19,9 @@ import * as React from "react";
 import assest from "@/json/assest";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 
+import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
 import {
-  useCartList,
-  useCartListWithAuthCred
+  useCartList
 } from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
 import { useProfileDetails } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
 import { useLogout } from "@/hooks/react-qurey/query-hooks/logoutQuery.hooks";
@@ -36,6 +36,7 @@ import { DrawerWrapper } from "@/styles/StyledComponents/DrawerWrapper";
 import { HeaderWrap } from "@/styles/StyledComponents/HeaderWrapper";
 import { MenuWrapperStyle } from "@/styles/StyledComponents/MenuWrapperStyle";
 import { primaryColors } from "@/themes/_muiPalette";
+import CrmIcon from "@/ui/Icons/CrmIcon";
 import LogoutIcon from "@/ui/Icons/LogoutIcon";
 import ProfileIcon from "@/ui/Icons/ProfileIcon";
 import CartIcon from "@/ui/Icons/cartIcon";
@@ -47,9 +48,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
-import Head from "next/head";
-import CrmIcon from "@/ui/Icons/CrmIcon";
-import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
 
 // const CustomButton = dynamic(() => import("@/ui/Buttons/CustomButton"));
 
@@ -315,7 +313,6 @@ export default React.memo((props: Props) => {
       }
     }
   }, []);
-
 
 
   const userNameString = user; //replace with your string.

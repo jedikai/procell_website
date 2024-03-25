@@ -1,4 +1,8 @@
+import { useMarkAsDefaultAddress } from "@/hooks/react-qurey/query-hooks/checkoutQuery.hooks";
+import { DELIVERY_ADDRESS_LIST } from "@/hooks/react-qurey/query-keys/checkoutQuery.keys";
+import useNotiStack from "@/hooks/useNotistack";
 import { CartItemsWrapper } from "@/styles/StyledComponents/CartItemWrapper";
+import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import {
   Box,
   Checkbox,
@@ -7,12 +11,8 @@ import {
   Typography
 } from "@mui/material";
 import { memo, useCallback, useEffect, useState } from "react";
-import AddressModal from "./AddressModal";
-import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
-import { useMarkAsDefaultAddress } from "@/hooks/react-qurey/query-hooks/checkoutQuery.hooks";
 import { useQueryClient } from "react-query";
-import useNotiStack from "@/hooks/useNotistack";
-import { DELIVERY_ADDRESS_LIST } from "@/hooks/react-qurey/query-keys/checkoutQuery.keys";
+import AddressModal from "./AddressModal";
 
 const SavedAddressList = ({
   checkoutAddress,

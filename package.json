@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev  -p 14047",
+    "dev": "next dev -p 14047",
     "build": "next build",
-    "start": "next start -p 14047",
+    "start": "next start -p ${PORT:=14047}",
     "lint": "next lint",
     "prepare": "husky install",
     "postinstall": "npm run prepare",

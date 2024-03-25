@@ -1,5 +1,3 @@
-import axiosInstance from "@/api/axiosInstance";
-import { endpoints } from "@/api/endpoints";
 import EventListeners from "@/components/EventListener/EventListener";
 // import TrackUser from "@/components/TrackUser/TrackUser";
 import { checkWindow } from "@/lib/functions/_helpers.lib";

@@ -1,6 +1,6 @@
 import axiosInstance from "@/api/axiosInstance";
 import { endpoints } from "@/api/endpoints";
-import { useInfiniteQuery, useQuery } from "react-query";
+import { useQuery } from "react-query";
 import { PRODUCT_DETAILS, PRODUCT_LIST } from "../query-keys/productQuery.keys";
 
 const getProductList = async (

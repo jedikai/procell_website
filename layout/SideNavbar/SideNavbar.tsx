@@ -23,15 +23,12 @@ import {
 import { SideBarWrapper } from "@/styles/StyledComponents/SideBarWrapper";
 import { primaryColors } from "@/themes/_muiPalette";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
-import BillIcon from "@/ui/Icons/BillIcon";
 import CertificateIcon from "@/ui/Icons/CertificateIcon";
 import EditIcon from "@/ui/Icons/EditIcon";
 import LogoutIcon from "@/ui/Icons/LogoutIcon";
 import MailBoxIcon from "@/ui/Icons/MailBoxIcon";
-import OrderIcon from "@/ui/Icons/OrderIcon";
 import PaymentIcon from "@/ui/Icons/PaymentIcon";
 import ProfileIcon from "@/ui/Icons/ProfileIcon";
-import QuotationIcon from "@/ui/Icons/QuotationIcon";
 import SaleIcon from "@/ui/Icons/SaleIcon";
 import SpinnerLoaderIcon from "@/ui/Icons/SpinnerLoaderIcon";
 import UpdateProfileIcon from "@/ui/Icons/UpdateProfileIcon";

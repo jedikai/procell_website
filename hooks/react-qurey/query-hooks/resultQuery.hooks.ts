@@ -1,7 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
+import { endpoints } from "@/api/endpoints";
 import { useQuery } from "react-query";
 import { INSTAGRAM_TOKEN, RESULT_LIST } from "../query-keys/resultQuery.keys";
-import { endpoints } from "@/api/endpoints";
 
 const getResultList = async (apiUrl: string) => {
   const res = await axiosInstance.get(

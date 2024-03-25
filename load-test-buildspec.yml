@@ -1,0 +1,18 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - echo Entering load test for staging
+      - npm install -g artillery@latest
+  build:
+    commands:
+      - echo Run load test if not production
+      - chmod +x load-test.sh
+      - ./load-test.sh
+
+artifacts:
+  files:
+    - 'artillery-report.json'

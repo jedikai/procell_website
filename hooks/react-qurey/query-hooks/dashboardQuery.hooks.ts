@@ -1,4 +1,6 @@
-import { useInfiniteQuery, useMutation, useQuery } from "react-query";
+import axiosInstance from "@/api/axiosInstance";
+import { endpoints } from "@/api/endpoints";
+import { useMutation, useQuery } from "react-query";
 import {
   GET_INVOICE_DOWNLOAD,
   GET_INVOICE_LIST,
@@ -8,8 +10,6 @@ import {
   GET_QUOTATION_LIST,
   GET_SALES_LIST
 } from "../query-keys/dashboardQuery.keys";
-import axiosInstance from "@/api/axiosInstance";
-import { endpoints } from "@/api/endpoints";
 
 // <------------------------------ PROFILE SECTION APIS------------------------------>
 const getProfileDetails = async () => {
