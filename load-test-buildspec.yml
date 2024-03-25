@@ -15,4 +15,5 @@ phases:
 
 artifacts:
   files:
-    - 'artillery-report.json'
+    - 'load-test-report.json'
+    - 'load-test-report.json.html'

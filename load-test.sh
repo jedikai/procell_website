@@ -6,4 +6,5 @@ if [ "$MODE" = "production" ]; then
     exit 0
 fi
 
-artillery run load-tests/normal-flow.yml
+artillery run --output load-test-report.json load-tests/normal-flow.yml
+artillery report load-test-report.json
