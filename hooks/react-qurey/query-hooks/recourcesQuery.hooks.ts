@@ -22,6 +22,7 @@ export const useRecourcesPrac = (
     enabled,
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -42,6 +43,7 @@ export const useRecourcesPracById = (
     enabled,
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -59,6 +61,7 @@ export const useRecourcesRep = (
     enabled,
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -79,5 +82,6 @@ export const useRecourcesRepById = (
     enabled,
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });

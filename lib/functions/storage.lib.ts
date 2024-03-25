@@ -30,7 +30,6 @@ export function getFromLocalStorage(key: string) {
     const getItem = localStorage.getItem(key);
 
     if (getItem?.length) {
-
       return getItem;
     }
 
@@ -86,9 +85,23 @@ export function getCookie(cname: string) {
 
 export function setCookieClient(key: string, value: string) {
   setCookie(null, key, value, {
-    path: "/"
+    path: "/",
   });
 }
 
+export function setCookieClientForGuest(key: string, value: string) {
+  const expires = new Date();
+  // Set the expiration date to one year from now
+  expires.setFullYear(expires.getFullYear() + 1);
+  
+  setCookie(null, key, value, {
+    path: "/",
+    expires, // Set the expiration date
+    // You may also need to set other options depending on your requirements
+    // For example, you might want to set 'secure: true' if your site is served over HTTPS
+    // secure: true
+  });
+}
+
+
 export { checkWindow };
- 

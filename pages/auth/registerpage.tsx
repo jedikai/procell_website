@@ -55,7 +55,7 @@ const validationSchema = yup.object().shape({
   phone: yup
     .string()
     .required(validationText.error.phone)
-    .matches(/^\d+$/, validationText.error.valid_phone_number)
+    // .matches(/^\d+$/, validationText.error.valid_phone_number)
     .test("isValid", validationText.error.phone_number_range, (value) => {
       console.log(value);
       if (value && value?.length >= 8 && value?.length <= 16) {
@@ -195,9 +195,9 @@ const Registerpage = () => {
                       placeholder="First Name"
                       style2
                       {...register("firstName")}
-                      onKeyDown={(e: any) =>
-                        [" "].includes(e.key) && e.preventDefault()
-                      }
+                      // onKeyDown={(e: any) =>
+                      //   [" "].includes(e.key) && e.preventDefault()
+                      // }
                     />
                     {errors.firstName && (
                       <div className="error">{errors.firstName.message}</div>
@@ -206,9 +206,9 @@ const Registerpage = () => {
                       placeholder="Last Name"
                       style2
                       {...register("lastName")}
-                      onKeyDown={(e: any) =>
-                        [" "].includes(e.key) && e.preventDefault()
-                      }
+                      // onKeyDown={(e: any) =>
+                      //   [" "].includes(e.key) && e.preventDefault()
+                      // }
                     />
                     {errors.lastName && (
                       <div className="error">{errors.lastName.message}</div>
@@ -298,7 +298,7 @@ const Registerpage = () => {
                         <InputFieldCommon
                           placeholder="Phone Number"
                           style2
-                          type="number"
+                          // type="number"
                           {...register("phone")}
                           onKeyDown={(e: any) =>
                             exceptThisSymbols.includes(e.key) &&

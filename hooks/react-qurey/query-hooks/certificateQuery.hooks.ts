@@ -1,7 +1,7 @@
 import axiosInstance from "@/api/axiosInstance";
+import { endpoints } from "@/api/endpoints";
 import { useQuery } from "react-query";
 import { GET_CERTIFICATES } from "../query-keys/certificateQuery.keys";
-import { endpoints } from "@/api/endpoints";
 
 const getCertificateList = async () => {
   const res = await axiosInstance.get(endpoints.app.certificate_list);
@@ -16,5 +16,6 @@ export const useCertificateList = (
     onSuccess,
     onError,
     enabled: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data ?? {}
   });

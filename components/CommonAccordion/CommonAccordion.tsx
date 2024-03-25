@@ -20,7 +20,7 @@ const CommonAccordion: React.FC<accorProps & AccordionSummaryProps> = ({
   ...others
 }) => {
   useEffect(() => {
-    if (window != undefined) {
+    if (typeof window !== "undefined") {
       if (expand == `panel${indexNumber + 1}`) {
         const element: any = document.getElementById(
           `panel${indexNumber}bh-header`

@@ -17,5 +17,6 @@ const getWorkshopList = async () => {
     useQuery([WORKSHOP_LIST],getWorkshopList, {
       onSuccess,
       onError,
+      refetchOnWindowFocus: false,
       select: (data) => data?.data?.data ?? []
     });

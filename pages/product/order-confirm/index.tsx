@@ -150,9 +150,8 @@ function Index() {
                 severity={severity}
                 style={{ marginBottom: "10px" }}
               >
-                <Typography
-                  variant="body1"
-                  dangerouslySetInnerHTML={{ __html: data?.message ?? "" }}
+                <div
+                  dangerouslySetInnerHTML={{ __html: data?.html_message ?? "" }}
                 />
               </Alert>
             )}

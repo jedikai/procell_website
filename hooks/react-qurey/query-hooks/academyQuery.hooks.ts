@@ -23,6 +23,7 @@ export const useAcademyInfo = (
     enabled,
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -42,6 +43,7 @@ export const usePractitionerAcademyContent = (
     enabled,
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -61,6 +63,7 @@ export const useRepAcademyContent = (
     enabled,
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -84,6 +87,7 @@ export const useRepAcademyContentById = (
       enabled,
       onSuccess,
       onError,
+      refetchOnWindowFocus: false,
       select: (data) => (data?.data?.data ? data?.data?.data[0] : {})
     }
   );
@@ -108,6 +112,7 @@ export const usePractitionerAcademyContentById = (
       enabled,
       onSuccess,
       onError,
+      refetchOnWindowFocus: false,
       select: (data) => (data?.data?.data ? data?.data?.data[0] : {})
     }
   );

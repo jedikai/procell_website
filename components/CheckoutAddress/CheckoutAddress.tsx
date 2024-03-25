@@ -486,9 +486,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                   placeholder="First name"
                   style3
                   {...register("firstName")}
-                  onKeyDown={(e: any) =>
-                    [' '].includes(e.key) && e.preventDefault()
-                  }
+                  // onKeyDown={(e: any) =>
+                  //   [' '].includes(e.key) && e.preventDefault()
+                  // }
                 />
                 {errors?.firstName && (
                   <div className="profile_error">
@@ -501,9 +501,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                   placeholder="Last name"
                   style3
                   {...register("lastName")}
-                  onKeyDown={(e: any) =>
-                    [' '].includes(e.key) && e.preventDefault()
-                  }
+                  // onKeyDown={(e: any) =>
+                  //   [' '].includes(e.key) && e.preventDefault()
+                  // }
                 />
                 {errors?.lastName && (
                   <div className="profile_error">
@@ -603,7 +603,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
               <Grid item lg={8} md={8} xs={12}>
                 <InputFieldCommon
                   placeholder="Phone number"
-                  type="number"
+                  // type="number"
                   style3
                   {...register("phnNumber")}
                   onKeyDown={(e: any) =>
@@ -832,9 +832,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                     placeholder="First name"
                     style3
                     {...register("firstName_shipping")}
-                    onKeyDown={(e: any) =>
-                      [' '].includes(e.key) && e.preventDefault()
-                    }
+                    // onKeyDown={(e: any) =>
+                    //   [' '].includes(e.key) && e.preventDefault()
+                    // }
                   />
                   {errors?.firstName_shipping && (
                     <div className="profile_error">
@@ -847,9 +847,9 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                     placeholder="Last name"
                     style3
                     {...register("lastName_shipping")}
-                    onKeyDown={(e: any) =>
-                      [' '].includes(e.key) && e.preventDefault()
-                    }
+                    // onKeyDown={(e: any) =>
+                    //   [' '].includes(e.key) && e.preventDefault()
+                    // }
                   />
                   {errors?.lastName_shipping && (
                     <div className="profile_error">
@@ -954,7 +954,7 @@ const CheckoutAddress = ({ vendorSelectionHandler = () => { } }: any) => {
                 <Grid item lg={8} md={8} xs={12}>
                   <InputFieldCommon
                     placeholder="Phone number"
-                    type="number"
+                    // type="number"
                     style3
                     {...register("phnNumber_shipping")}
                     onKeyDown={(e: any) =>

@@ -15,6 +15,7 @@ export const useCardList = (
   useQuery([GET_CARD_LIST], getCardList, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 

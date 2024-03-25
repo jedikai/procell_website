@@ -1,4 +1,6 @@
-import { useInfiniteQuery, useMutation, useQuery } from "react-query";
+import axiosInstance from "@/api/axiosInstance";
+import { endpoints } from "@/api/endpoints";
+import { useMutation, useQuery } from "react-query";
 import {
   GET_INVOICE_DOWNLOAD,
   GET_INVOICE_LIST,
@@ -8,8 +10,6 @@ import {
   GET_QUOTATION_LIST,
   GET_SALES_LIST
 } from "../query-keys/dashboardQuery.keys";
-import axiosInstance from "@/api/axiosInstance";
-import { endpoints } from "@/api/endpoints";
 
 // <------------------------------ PROFILE SECTION APIS------------------------------>
 const getProfileDetails = async () => {
@@ -27,6 +27,7 @@ export const useProfileDetails = (
     onError,
     enabled,
     retry: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -64,6 +65,7 @@ export const useQuotationList = (
     {
       onSuccess,
       onError,
+      refetchOnWindowFocus: false,
       select: (data) => data?.data?.data ?? []
     }
   );
@@ -85,6 +87,7 @@ export const useSalesList = (
     onSuccess,
     onError,
     enabled: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -111,6 +114,7 @@ export const useInvoiceList = (
   useQuery([GET_INVOICE_LIST, page, type], () => getInvoiceList(page, type), {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 // <------------------------------ INVOICE DOWNLOAD SECTION APIS ------------------------------>
@@ -128,7 +132,8 @@ export const useInvoiceDownload = (
 ) =>
   useQuery([GET_INVOICE_DOWNLOAD, id], () => getInvoiceDownload(id), {
     onSuccess,
-    onError
+    onError,
+    refetchOnWindowFocus: false,
     // select: (data) => data?.data?.data ?? []
   });
 
@@ -147,6 +152,7 @@ export const usePurchaseList = (
   useQuery([GET_PURCHASE_LIST], getPurchaseList, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -172,6 +178,7 @@ export const useMannageCommunicationData = (
   useQuery([GET_MANAGE_COMMUNICATION_DATA], getMannageCommunicationData, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 

@@ -1,6 +1,6 @@
 import axiosInstance from "@/api/axiosInstance";
 import { endpoints } from "@/api/endpoints";
-import { useInfiniteQuery, useQuery } from "react-query";
+import { useQuery } from "react-query";
 import { PRODUCT_DETAILS, PRODUCT_LIST } from "../query-keys/productQuery.keys";
 
 const getProductList = async (
@@ -33,6 +33,7 @@ export const useProductList = (
       onSuccess,
       onError,
       enabled,
+      refetchOnWindowFocus: false,
       select: (data) => data?.data?.data ?? [],
       keepPreviousData: true
     }
@@ -50,6 +51,7 @@ export const useFeaturedProductList = (
   useQuery([PRODUCT_LIST], getFeaturedProductList, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data?.products_info ?? []
   });
 
@@ -68,6 +70,7 @@ export const useProductDetails = (
   useQuery([PRODUCT_DETAILS, pageId], () => getProductDetails(pageId), {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? [],
     keepPreviousData: true
   });

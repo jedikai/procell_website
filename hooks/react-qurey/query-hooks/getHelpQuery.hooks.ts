@@ -15,6 +15,7 @@ export const useHelpReasonList = (
   useQuery([GET_HELP_REASON_LIST], getHelpReasonList, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 // get_help_submit

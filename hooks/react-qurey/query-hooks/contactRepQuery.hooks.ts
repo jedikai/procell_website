@@ -15,5 +15,6 @@ export const useContactRep = (
   useQuery([GET_CONTACT_REP], getContactRep, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => (data?.data?.data ? data?.data?.data[0] : {})
   });

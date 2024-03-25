@@ -9,24 +9,24 @@ import {
   createFilterOptions
 } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { memo, useEffect, useMemo, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
 import {
-  useCountryList,
-  useStateList
-} from "@/hooks/react-qurey/query-hooks/contactUsQuery.hook";
-import validationText from "@/json/messages/validationText";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { CheckOutAddressWrap } from "@/styles/StyledComponents/ChekOutAddressWrapper";
-import {
   useCreateAddress,
   useEditAddress
 } from "@/hooks/react-qurey/query-hooks/checkoutQuery.hooks";
-import { useQueryClient } from "react-query";
+import {
+  useCountryList,
+  useStateList
+} from "@/hooks/react-qurey/query-hooks/contactUsQuery.hook";
 import { DELIVERY_ADDRESS_LIST } from "@/hooks/react-qurey/query-keys/checkoutQuery.keys";
 import useNotiStack from "@/hooks/useNotistack";
+import validationText from "@/json/messages/validationText";
+import { CheckOutAddressWrap } from "@/styles/StyledComponents/ChekOutAddressWrapper";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useQueryClient } from "react-query";
 import ButtonLoader from "../ButtonLoader/ButtonLoader";
 type Inputs = {
   firstName: string;
@@ -56,7 +56,7 @@ const AddressModal = ({
   const validationSchema = yup.object().shape({
     firstName: yup.string().required(validationText.error.first_name),
     lastName: yup.string().required(validationText.error.last_name),
-    ...(type == "Shipping address"
+    ...(type != "Billing address"
       ? {
           email: yup
             .string()
@@ -68,7 +68,7 @@ const AddressModal = ({
     phnNumber: yup
       .string()
       .required(validationText.error.phone)
-      .matches(/^\d+$/, validationText.error.valid_phone_number)
+      // .matches(/^\d+$/, validationText.error.valid_phone_number)
       .test("isValid", validationText.error.phone_number_range, (value) => {
         console.log(value);
         if (value && value?.length >= 8 && value?.length <= 16) {
@@ -79,13 +79,18 @@ const AddressModal = ({
       }),
     address: yup.string().required(validationText.error.address),
     city: yup.string().required(validationText.error.city),
-    zip: yup.string().required(validationText.error.zipCode).max(8, "ZIP code must contain valid six character code."),
+    zip: yup
+      .string()
+      .required(validationText.error.zipCode)
+      .max(8, "ZIP code must contain valid six character code."),
     country: yup.string().required(validationText.error.country),
     state: yup.string().required(validationText.error.state)
   });
   const {
     id,
     name,
+    first_name,
+    last_name,
     email,
     phone,
     street,
@@ -142,7 +147,7 @@ const AddressModal = ({
     formData.append("last_name", `${lastName}`);
     formData.append(
       "email",
-      `${type == "Shipping address" ? email : selectedAddress?.email}`
+      `${type != "Billing address" ? email : selectedAddress?.email}`
     );
     formData.append("phone", `${phnCode} ${phnNumber}`);
     formData.append("street", `${address}`);
@@ -211,8 +216,8 @@ const AddressModal = ({
 
   useEffect(() => {
     if (open) {
-      setValue("firstName", name ? name?.split(" ")[0] : "");
-      setValue("lastName", name ? name?.split(" ")[1] : "");
+      setValue("firstName", !!first_name ? first_name : "");
+      setValue("lastName", !!last_name ? last_name : "");
       setValue("email", email ?? "");
       setValue("phnCode", getSelectedItemsData[0]?.phone_code);
       setValue(
@@ -223,12 +228,12 @@ const AddressModal = ({
             : phone?.split(" ")[1]
           : ""
       );
-      setValue("address", street ?? "");
-      setValue("address2", street2 ?? "");
+      setValue("address", !!street && street != "false" ? street : "");
+      setValue("address2", !!street2 && street2 != "false" ? street2 : "");
       setValue("country", getSelectedItemsData[0]?.id);
-      setValue("state", state_id ? state_id[0] : "");
-      setValue("city", city ?? "");
-      setValue("zip", zip ?? "");
+      setValue("state", !!state_id && !!state_id[0] ? state_id[0] : "");
+      setValue("city", !!city && city != "false" ? city : "");
+      setValue("zip", !!zip && zip != "false" ? zip : "");
     }
     setRender(!render);
   }, [open]);
@@ -239,6 +244,7 @@ const AddressModal = ({
   });
 
   console.log("AddressModal in add more", id);
+  console.log("AddressModal selectedAddress", selectedAddress);
 
   return (
     <>
@@ -260,13 +266,14 @@ const AddressModal = ({
                 <Grid container spacing={2} className="billing_adress_grid">
                   <Grid item lg={6} md={6} xs={12}>
                     <InputFieldCommon
-                      defaultValue={name ? name?.split(" ")[0] : ""}
+                      // defaultValue={name ? name?.split(" ")[0] : ""}
+                      defaultValue={!!first_name ? first_name : ""}
                       placeholder="First name"
                       style3
                       {...register("firstName")}
-                      onKeyDown={(e: any) =>
-                        [" "].includes(e.key) && e.preventDefault()
-                      }
+                      // onKeyDown={(e: any) =>
+                      //   [" "].includes(e.key) && e.preventDefault()
+                      // }
                     />
                     {/* <InputFieldCommon
                       defaultValue={name?.split(" ")[0]??''}
@@ -282,13 +289,14 @@ const AddressModal = ({
                   </Grid>
                   <Grid item lg={6} md={6} xs={12}>
                     <InputFieldCommon
-                      defaultValue={name ? name?.split(" ")[1] : ""}
+                      // defaultValue={name ? name?.split(" ")[1] : ""}
+                      defaultValue={!!last_name ? last_name : ""}
                       placeholder="Last name"
                       style3
                       {...register("lastName")}
-                      onKeyDown={(e: any) =>
-                        [" "].includes(e.key) && e.preventDefault()
-                      }
+                      // onKeyDown={(e: any) =>
+                      //   [" "].includes(e.key) && e.preventDefault()
+                      // }
                     />
                     {errors?.lastName && (
                       <div className="profile_error">
@@ -303,7 +311,7 @@ const AddressModal = ({
                       placeholder="Email"
                       style3
                       {...register("email")}
-                      disabled={type != "Shipping address"}
+                      disabled={type == "Billing address"}
                     />
                     {errors?.email && (
                       <div className="profile_error">
@@ -408,7 +416,7 @@ const AddressModal = ({
                             : phone?.split(" ")[1]
                           : ""
                       }
-                      type="number"
+                      // type="number"
                       placeholder="Phone number"
                       style3
                       {...register("phnNumber")}

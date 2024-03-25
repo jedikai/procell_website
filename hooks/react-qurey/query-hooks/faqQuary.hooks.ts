@@ -16,5 +16,6 @@ export const useFAQList = (
   useQuery([FAQ_LIST], getFAQList, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });

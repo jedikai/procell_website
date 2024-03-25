@@ -35,7 +35,7 @@ const TrackUser = () => {
     }
   }, [loadScript]);
   useEffect(() => {
-    if (window != undefined) {
+    if (typeof window !== "undefined") {
       const origin =
         typeof window !== "undefined" && window.location.origin
           ? window.location.origin

@@ -71,7 +71,8 @@ const Login = () => {
           email,
           cred: data?.data?.data?.sid
         });
-        setCookieClient("access_token", data?.data?.data?.sid);
+        // setCookieClient("access_token", data?.data?.data?.sid);
+        setCookieClient("session_id", data?.data?.data?.sid);
         if (checked) {
           localStorage.setItem(
             "userDetails",
@@ -85,9 +86,15 @@ const Login = () => {
           setCookieClient("userDetails", userDetails);
           localStorage.removeItem("userDetails");
         }
-        router.push("/dashboard/profile");
+        if (!!router?.query?.cart) {
+          router.push("/product/cart/")
+        } else {
+          router.push("/dashboard/profile");
+        }
       },
       onError: (error: any) => {
+        console.log("error?.response?.data?.message", error);
+
         toastError(
           error ? error?.response?.data?.message : "Something went wrong."
         );
@@ -97,24 +104,27 @@ const Login = () => {
   useEffect(() => {
     setRender(false);
     if (typeof window !== "undefined") {
-
-      let getUserDetails: any = {};
-      if (!!localStorage.getItem("userDetails")) {
-        getUserDetails = JSON.parse(localStorage.getItem("userDetails") ?? "");
-      }
-      setValue("email", getUserDetails?.email ?? "");
-      setChecked(getUserDetails?.remember_me ?? false);
-      console.log(
-        "getUserDetails",
-        typeof getUserDetails,
-        getUserDetails?.email ?? "nodata"
-      );
-      if (!!getUserDetails?.cred) {
-        if (!getCookie("access_token")) {
-          setCookieClient("access_token", getUserDetails?.cred);
-        }
-      }
-      if (!!getCookie("access_token")) {
+      // let getUserDetails: any = {};
+      // if (!!localStorage.getItem("userDetails")) {
+      //   getUserDetails = JSON.parse(localStorage.getItem("userDetails") ?? "");
+      // }
+      // setValue("email", getUserDetails?.email ?? "");
+      // setChecked(getUserDetails?.remember_me ?? false);
+      // console.log(
+      //   "getUserDetails",
+      //   typeof getUserDetails,
+      //   getUserDetails?.email ?? "nodata"
+      // );
+      // if (!!getUserDetails?.cred) {
+      //   if (!getCookie("access_token")) {
+      //     setCookieClient("access_token", getUserDetails?.cred);
+      //   }
+      // }
+      // if (!!getCookie("access_token")) {
+      //   router.push("/dashboard/profile");
+      // }
+      // setRender(true);
+      if (!!getCookie("userDetails") || !!localStorage.getItem("userDetails")) {
         router.push("/dashboard/profile");
       }
       setRender(true);
@@ -122,7 +132,7 @@ const Login = () => {
     // }
   }, []);
 
-  console.log("getValues", checked);
+  console.log("router=======>login", router);
   const checkHandler = (data: boolean) => setChecked(data);
   return (
     <>

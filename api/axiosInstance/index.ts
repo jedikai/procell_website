@@ -9,14 +9,14 @@ import { baseUrlApi, sucessNotificationEndPoints } from "../endpoints";
 import { BaseApiResponse } from "@/interface/common.interface";
 
 const axiosInstance = axios.create({
-  baseURL: baseUrlApi
+  baseURL: baseUrlApi,
   // withCredentials: true,
 });
 
 axiosInstance.interceptors.request.use((config) => {
   const cookies = parseCookies();
   config.params = config.params || {};
-  const sessionId = cookies?.access_token;
+  const sessionId = cookies?.session_id;
   console.log(sessionId);
   if (!!sessionId) {
     config.params["session_id"] = sessionId;

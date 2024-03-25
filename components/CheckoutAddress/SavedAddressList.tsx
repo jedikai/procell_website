@@ -1,4 +1,8 @@
+import { useMarkAsDefaultAddress } from "@/hooks/react-qurey/query-hooks/checkoutQuery.hooks";
+import { DELIVERY_ADDRESS_LIST } from "@/hooks/react-qurey/query-keys/checkoutQuery.keys";
+import useNotiStack from "@/hooks/useNotistack";
 import { CartItemsWrapper } from "@/styles/StyledComponents/CartItemWrapper";
+import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 import {
   Box,
   Checkbox,
@@ -6,13 +10,9 @@ import {
   FormControlLabel,
   Typography
 } from "@mui/material";
-import { memo, useCallback, useState } from "react";
-import AddressModal from "./AddressModal";
-import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
-import { useMarkAsDefaultAddress } from "@/hooks/react-qurey/query-hooks/checkoutQuery.hooks";
+import { memo, useCallback, useEffect, useState } from "react";
 import { useQueryClient } from "react-query";
-import useNotiStack from "@/hooks/useNotistack";
-import { DELIVERY_ADDRESS_LIST } from "@/hooks/react-qurey/query-keys/checkoutQuery.keys";
+import AddressModal from "./AddressModal";
 
 const SavedAddressList = ({
   checkoutAddress,
@@ -25,7 +25,7 @@ const SavedAddressList = ({
   const [checkList, setCheckList] = useState(
     // checkoutAddress ? checkoutAddress?.map((_i: any) => !!_i?.is_selected) : []
     checkoutAddress
-      ? checkoutAddress?.map((_i: any) => !!_i?.default_shipping)
+      ? checkoutAddress?.map((_i: any) => !!_i?.is_selected)
       : []
   );
   const [selectedAddress, setSelectedAddress] = useState({});
@@ -78,6 +78,14 @@ const SavedAddressList = ({
     }
   };
 
+  useEffect(() => {
+    setCheckList(
+      checkoutAddress
+        ? checkoutAddress?.map((_i: any) => !!_i?.is_selected)
+        : []
+    );
+  }, [checkoutAddress]);
+
   return (
     <>
       {checkoutAddress?.map((_i: any, idx: number) => (
@@ -86,7 +94,7 @@ const SavedAddressList = ({
             <div className="flex-wrap">
               {type == "shipping" && (
                 <FormControlLabel
-                className="check_control"
+                  className="check_control"
                   onChange={(e) => checkHandler(e, idx, _i?.id)}
                   control={<Checkbox checked={checkList[idx]} />}
                   // control={<Checkbox checked={!!_i?.is_selected} />}

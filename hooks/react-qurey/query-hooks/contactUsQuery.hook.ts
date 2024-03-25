@@ -20,6 +20,7 @@ export const useCountryList = (
   useQuery([GET_COUNTRY_LIST], getCountryList, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -40,6 +41,7 @@ export const useStateList = (
     onSuccess,
     onError,
     enabled,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -55,6 +57,7 @@ export const useLanguageList = (
   useQuery([GET_LANGUAGE_LIST], getLanguageList, {
     onSuccess,
     onError,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -79,5 +82,6 @@ export const usePractitionersMap = (
     onSuccess,
     onError,
     enabled,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data ?? {}
   });

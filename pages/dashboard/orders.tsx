@@ -53,7 +53,7 @@ export default function Index() {
   const { userCreationDate } = useAppSelector((s) => s.userProfileImgSlice);
   const [value, setValue] = useState<any>("");
   const [yearList, setYearList] = useState<any>([]);
-  const [expanded, setExpanded] = useState<string>("panel1");
+  const [expanded, setExpanded] = useState<string>("");
   const handleChanges = (data: string) => {
     if (expanded === data) {
       setExpanded("");

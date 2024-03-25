@@ -68,7 +68,7 @@ const validationSchema = yup.object().shape({
   phnNumber: yup
     .string()
     .required(validationText.error.phone)
-    .matches(/^\d+$/, validationText.error.valid_phone_number)
+    // .matches(/^\d+$/, validationText.error.valid_phone_number)
     .test("isValid", validationText.error.phone_number_range, (value) => {
       console.log(value);
       if (value && value?.length >= 8 && value?.length <= 16) {
@@ -356,9 +356,9 @@ export default function ManageAdress() {
                               placeholder="First name"
                               style3
                               {...register("firstName")}
-                              onKeyDown={(e: any) =>
-                                [" "].includes(e.key) && e.preventDefault()
-                              }
+                              // onKeyDown={(e: any) =>
+                              //   [" "].includes(e.key) && e.preventDefault()
+                              // }
                             />
                             {/* <InputFieldCommon
                       defaultValue={name?.split(" ")[0]??''}
@@ -378,9 +378,9 @@ export default function ManageAdress() {
                               placeholder="Last name"
                               style3
                               {...register("lastName")}
-                              onKeyDown={(e: any) =>
-                                [" "].includes(e.key) && e.preventDefault()
-                              }
+                              // onKeyDown={(e: any) =>
+                              //   [" "].includes(e.key) && e.preventDefault()
+                              // }
                             />
                             {errors?.lastName && (
                               <div className="profile_error">
@@ -512,7 +512,7 @@ export default function ManageAdress() {
                                     : phone?.split(" ")[1]
                                   : ""
                               }
-                              type="number"
+                              // type="number"
                               placeholder="Phone number"
                               style3
                               {...register("phnNumber")}
@@ -946,7 +946,7 @@ export default function ManageAdress() {
                 variant="outlined"
                 color="info"
                 className="gradient_btn"
-                onClick={() => {}}
+                onClick={modalOpenHandler}
               >
                 <Typography variant="body1">No</Typography>
               </CustomButtonPrimary>

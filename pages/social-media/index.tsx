@@ -12,10 +12,8 @@ import assest from "@/json/assest";
 import validationText from "@/json/messages/validationText";
 import Wrapper from "@/layout/wrapper/Wrapper";
 import { ContactWrapper } from "@/styles/StyledComponents/ContactWrapper";
-import { primaryColors } from "@/themes/_muiPalette";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
-import CallIcon from "@/ui/Icons/CallIcon";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Autocomplete, { createFilterOptions } from "@mui/material/Autocomplete";
 import Grid from "@mui/material/Grid";
@@ -98,7 +96,7 @@ export default function Index() {
     phone: yup
       .string()
       .required(validationText.error.phone)
-      .matches(/^\d+$/, validationText.error.valid_phone_number)
+      // .matches(/^\d+$/, validationText.error.valid_phone_number)
       .test("isValid", validationText.error.phone_number_range, (value) => {
         console.log(value);
         if (value && value?.length >= 8 && value?.length <= 16) {
@@ -331,9 +329,9 @@ export default function Index() {
                       <InputFieldCommon
                         placeholder="First name"
                         {...register("firstName")}
-                        onKeyDown={(e: any) =>
-                          [" "].includes(e.key) && e.preventDefault()
-                        }
+                        // onKeyDown={(e: any) =>
+                        //   [" "].includes(e.key) && e.preventDefault()
+                        // }
                       />
                       {errors.firstName && (
                         <div className="profile_error">
@@ -345,9 +343,9 @@ export default function Index() {
                       <InputFieldCommon
                         placeholder="Last name"
                         {...register("lastName")}
-                        onKeyDown={(e: any) =>
-                          [" "].includes(e.key) && e.preventDefault()
-                        }
+                        // onKeyDown={(e: any) =>
+                        //   [" "].includes(e.key) && e.preventDefault()
+                        // }
                       />
                       {errors.lastName && (
                         <div className="profile_error">
@@ -434,7 +432,7 @@ export default function Index() {
                         <Box className="phn_num">
                           <InputFieldCommon
                             placeholder="Phone number"
-                            type="number"
+                            // type="number"
                             {...register("phone")}
                             onKeyDown={(e: any) =>
                               exceptThisSymbols.includes(e.key) &&

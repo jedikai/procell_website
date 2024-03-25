@@ -13,14 +13,15 @@ const getDeliveryMethodsList = async () => {
 };
 
 export const useDeliveryMethodsList = (
-  onSuccess: any = () => {},
-  onError: any = () => {},
+  onSuccess: any = () => { },
+  onError: any = () => { },
   enabled: boolean = false
 ) =>
   useQuery([DELIVERY_METHODS_LIST], getDeliveryMethodsList, {
     onSuccess,
     onError,
     enabled,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -52,12 +53,13 @@ const getAddressList = async () => {
 };
 
 export const useAddressList = (
-  onSuccess: any = () => {},
-  onError: any = () => {},
+  onSuccess: any = () => { },
+  onError: any = () => { },
 ) =>
   useQuery([DELIVERY_ADDRESS_LIST], getAddressList, {
     onSuccess,
     onError,
+    refetchOnWindowFocus:false,
     select: (data) => data?.data?.data ?? {}
   });
 // <------------------------------ ADDRESS SAVE APIS ------------------------------>

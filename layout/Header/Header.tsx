@@ -19,9 +19,9 @@ import * as React from "react";
 import assest from "@/json/assest";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
 
+import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
 import {
-  useCartList,
-  useCartListWithAuthCred
+  useCartList
 } from "@/hooks/react-qurey/query-hooks/cartQuery.hooks";
 import { useProfileDetails } from "@/hooks/react-qurey/query-hooks/dashboardQuery.hooks";
 import { useLogout } from "@/hooks/react-qurey/query-hooks/logoutQuery.hooks";
@@ -36,6 +36,7 @@ import { DrawerWrapper } from "@/styles/StyledComponents/DrawerWrapper";
 import { HeaderWrap } from "@/styles/StyledComponents/HeaderWrapper";
 import { MenuWrapperStyle } from "@/styles/StyledComponents/MenuWrapperStyle";
 import { primaryColors } from "@/themes/_muiPalette";
+import CrmIcon from "@/ui/Icons/CrmIcon";
 import LogoutIcon from "@/ui/Icons/LogoutIcon";
 import ProfileIcon from "@/ui/Icons/ProfileIcon";
 import CartIcon from "@/ui/Icons/cartIcon";
@@ -47,9 +48,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { destroyCookie } from "nookies";
-import Head from "next/head";
-import CrmIcon from "@/ui/Icons/CrmIcon";
-import ButtonLoader from "@/components/ButtonLoader/ButtonLoader";
 
 // const CustomButton = dynamic(() => import("@/ui/Buttons/CustomButton"));
 
@@ -168,20 +166,20 @@ export default React.memo((props: Props) => {
       return true;
     }
   }, [router, productVariantId]);
-  const origin =
-    typeof window !== "undefined" && window.location.origin
-      ? window.location.origin
-      : "";
-  const tractUserActivityParams = `?page_name=${
-    router.pathname.includes("product-details")
-      ? "product-details"
-      : router.pathname.split("/").at(-1)
-  }&page_url=${router.pathname}${
-    router.pathname.includes("product-details")
-      ? `&track=product&product_id=${productVariantId}`
-      : ""
-  }${!!origin ? `&base_url=${origin}` : ""}`;
-  console.log("router header", tractUserActivityParams);
+  // const origin =
+  //   typeof window !== "undefined" && window.location.origin
+  //     ? window.location.origin
+  //     : "";
+  // const tractUserActivityParams = `?page_name=${
+  //   router.pathname.includes("product-details")
+  //     ? "product-details"
+  //     : router.pathname.split("/").at(-1)
+  // }&page_url=${router.pathname}${
+  //   router.pathname.includes("product-details")
+  //     ? `&track=product&product_id=${productVariantId}`
+  //     : ""
+  // }${!!origin ? `&base_url=${origin}` : ""}`;
+  // console.log("router header", tractUserActivityParams);
   const onCartListSuccess = (response: any) => {
     const { order_line }: any =
       !!response && response?.length > 0 ? response[0] : [];
@@ -282,79 +280,40 @@ export default React.memo((props: Props) => {
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
-      let getUserDetails: any = {};
-      if (!getCookie("access_token")) {
-        if (!!localStorage.getItem("userDetails")) {
-          getUserDetails = JSON.parse(
-            localStorage.getItem("userDetails") ?? ""
-          );
-          setCookieClient("access_token", getUserDetails?.cred);
-        } else {
-          if (getCookie("userDetails")) {
-            try {
-              getUserDetails = JSON.parse(getCookie("userDetails") ?? "");
-            } catch (error) {
-              console.error("Error parsing user details:", error);
-            }
-          }
-        }
-        if (!!getUserDetails && Object.keys(getUserDetails)?.length > 0) {
-          setUserLoggedIn(true);
-          setAuthenticUser(true);
-          setSessionId(getUserDetails?.cred ?? "");
-        }
-      } else {
-        let getSessionId = getCookie("access_token") ?? "";
+      let getSessionId = getCookie("access_token") ?? "";
+      if (!!getCookie("userDetails")) {
         setUserLoggedIn(true);
         setAuthenticUser(true);
         setSessionId(getSessionId);
+        try {
+          const getUserDetails = JSON.parse(getCookie("userDetails") ?? "");
+          setCookieClient("access_token", getUserDetails?.cred);
+          refetch()
+        } catch (error) {
+          console.error("Error parsing user details:", error);
+          // router.push("/login");
+        }
+      } else {
+        if (!!localStorage.getItem("userDetails")) {
+          setUserLoggedIn(true);
+          setAuthenticUser(true);
+          setSessionId(getSessionId);
+          const getUserDetails = JSON.parse(
+            localStorage.getItem("userDetails") ?? ""
+          );
+          if (!!getUserDetails?.cred) {
+            setCookieClient("access_token", getUserDetails?.cred);
+            refetch()
+          } else {
+            // router.push("/login");
+          }
+        } else {
+          // router.push("/login");
+        }
       }
     }
   }, []);
 
-  // React.useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     const isUserLoggedIn =
-  //       !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
-  //     if (isUserLoggedIn) {
-  //       setUserLoggedIn(true);
-  //       let getUserDetails: any = {};
-  //       if (localStorage.getItem("userDetails")) {
-  //         getUserDetails = JSON.parse(
-  //           localStorage.getItem("userDetails") ?? ""
-  //         );
-  //       } else {
-  //         if (getCookie("userDetails")) {
-  //           try {
-  //             getUserDetails = JSON.parse(getCookie("userDetails") ?? "");
-  //             setAuthenticUser(true);
-  //           } catch (error) {
-  //             console.error("Error parsing user details:", error);
-  //           }
-  //         }
-  //         // getUserDetails = JSON.parse(getCookie("userDetails") ?? "");
-  //       }
-  //       // if (getUserDetails && getUserDetails?.cred)
-  //       // if (sessionStorage.getItem("session_id")) {
-  //         if (!!getUserDetails) {
-  //           setAuthenticUser(true);
-  //           setSessionId(getUserDetails?.cred ?? "");
-  //         }
-  //       // }
-  //       // if (sessionStorage.getItem("session_id")) {
-  //       //   if (!!getUserDetails) {
-  //       //     setAuthenticUser(true);
-  //       //   }
-  //       //   setSessionId(getUserDetails?.cred ?? "");
-  //       // }
-  //       console.log("getUserDetails", typeof getUserDetails, getUserDetails);
-
-  //       //  getUserDetails=JSON.parse()
-  //     } else {
-  //       setUserLoggedIn(false);
-  //     }
-  //   }
-  // }, []);
 
   const userNameString = user; //replace with your string.
   const maxLength = 8; // maximum number of characters to extract
@@ -527,7 +486,7 @@ export default React.memo((props: Props) => {
                               alt="image"
                               width={36}
                               height={36}
-                              key={refresh ? "render" : "no-render"}
+                              // key={refresh ? "render" : "no-render"}
                             />
                           )}
                         {/* <Typography

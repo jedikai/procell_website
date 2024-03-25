@@ -11,6 +11,7 @@ import {
 } from "@/hooks/react-qurey/query-hooks/paymentQuery.hooks";
 import useNotiStack from "@/hooks/useNotistack";
 import assest from "@/json/assest";
+import { getCookie } from "@/lib/functions/storage.lib";
 import { PaymentCardWrapper } from "@/styles/StyledComponents/PaymentCardWrapper";
 import InputFieldCommon from "@/ui/CommonInput/CommonInput";
 import CustomButtonPrimary from "@/ui/CustomButtons/CustomButtonPrimary";
@@ -22,14 +23,13 @@ import ListItem from "@mui/material/ListItem";
 import Typography from "@mui/material/Typography";
 import { Box, Stack } from "@mui/system";
 import { decryptData } from "common/functions/decryptCryptoToken";
-import React, { memo, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/router";
+import { memo, useEffect, useMemo, useState } from "react";
 import { useAcceptJs } from "react-acceptjs";
 import ButtonLoader from "../ButtonLoader/ButtonLoader";
 import ButtonLoaderSecondary from "../ButtonLoader/ButtonLoaderSecondary";
 import CustomCardExpDate from "../CustomCardExpDate/CustomCardExpDate";
-import { useRouter } from "next/router";
 import PaymentProcessingModal from "./PaymentProcessingModal";
-import { getCookie } from "@/lib/functions/storage.lib";
 
 interface PaymentCardProps {
   subtotal: number | null | string;
@@ -87,6 +87,7 @@ const PaymentCardDetailsCard = ({
     cardCode: ""
   });
   const [verificationLoader, setVerificationLoader] = useState(false);
+  const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const authData = {
     apiLoginID: authorizationCred?.apiLoginID,
     clientKey: authorizationCred?.clientKey
@@ -276,22 +277,22 @@ const PaymentCardDetailsCard = ({
   };
   const proceedPaymentHandler = () => {
     if (typeof window !== "undefined") {
-      const isUserLoggedIn =
-        !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
-      if (isUserLoggedIn) {
-        setVerificationLoader(true);
-        let userSelectedCardInfo = cardListData?.filter(
-          (_i: any) => _i?.checked == true
-        );
-        if (userSelectedCardInfo?.length > 0) {
-          let payment_option_id = userSelectedCardInfo[0]?.id;
-          proceedPaymentForSavedCard(payment_option_id);
-        } else {
-          proceedPayment();
-        }
+      // const isUserLoggedIn =
+      //   !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
+      // if (isUserLoggedIn) {
+      setVerificationLoader(true);
+      let userSelectedCardInfo = cardListData?.filter(
+        (_i: any) => _i?.checked == true
+      );
+      if (userSelectedCardInfo?.length > 0) {
+        let payment_option_id = userSelectedCardInfo[0]?.id;
+        proceedPaymentForSavedCard(payment_option_id);
       } else {
-        router.push("/login");
+        proceedPayment();
       }
+      // } else {
+      //   router.push("/login");
+      // }
     }
   };
   const proceedPayment = async () => {
@@ -493,6 +494,12 @@ const PaymentCardDetailsCard = ({
     }
   }, [showPaymentSection]);
 
+  useEffect(() => {
+    const userLoginStatus =
+      !!localStorage.getItem("userDetails") || !!getCookie("userDetails");
+    setIsUserLoggedIn(userLoginStatus);
+  }, []);
+
   const isButtonDisable = useMemo(() => {
     let { cardZipCode, cardNumber, month, year, cardCode, date }: any =
       cardData;
@@ -631,12 +638,14 @@ const PaymentCardDetailsCard = ({
                   </div>
                 )}
               </Box>
-              <FormControlLabel
-                className="chk_box"
-                onChange={(e: any) => setSaveCard(e.target.checked)}
-                control={<Checkbox checked={saveCard} />}
-                label="Save my payment details"
-              />
+              {!!isUserLoggedIn && (
+                <FormControlLabel
+                  className="chk_box"
+                  onChange={(e: any) => setSaveCard(e.target.checked)}
+                  control={<Checkbox checked={saveCard} />}
+                  label="Save my payment details"
+                />
+              )}
             </>
           ) : !isLoading ? (
             <Typography

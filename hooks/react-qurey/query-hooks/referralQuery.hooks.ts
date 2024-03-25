@@ -25,6 +25,7 @@ export const usePersonalReferralIsValid = (
     onError,
     enabled: false,
     retry: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -59,6 +60,7 @@ export const useCustomReferralIsValid = (
     onError,
     enabled: false,
     retry: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -93,6 +95,7 @@ export const useSchoolReferralIsValid = (
     onError,
     enabled: false,
     retry: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
