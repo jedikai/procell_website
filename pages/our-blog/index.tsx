@@ -22,7 +22,7 @@ function index() {
   const [blogList, setBloglist] = useState([]);
   const [selectedCategoriesId, setSelectedCategoriesId] =
     useState<any>(undefined);
-  const [loadMore, setLoadMore] = useState(5);
+  const [loadMore, setLoadMore] = useState(6);
   const [categoriesList, setCategorieslist] = useState([]);
   const onBlogListSuccess = (response: any) => {
     setBloglist(response);
@@ -43,7 +43,7 @@ function index() {
   const getCategoriesWiseBlog = (id: string | number) =>
     setSelectedCategoriesId(id);
 
-  const loadMoreHandler = () => setLoadMore(loadMore + 5);
+  const loadMoreHandler = () => setLoadMore(loadMore + 6);
   console.log("BLOG_LIST", blogList);
 
   return (

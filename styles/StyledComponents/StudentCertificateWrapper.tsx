@@ -23,6 +23,39 @@ export const StudentCertificateWrap = styled(Box)`
       padding: 30px;
       margin: 0 0 15px;
       text-align: center;
+      @media (max-width: 479px) {
+        padding: 10px;
+      }
+      .pdf_outer_scrollable {
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+        .react-pdf__Page {
+          min-width: auto !important;
+          min-height: auto !important;
+          .react-pdf__Page__canvas {
+            width: 100% !important;
+            height: auto !important;
+          }
+
+          .react-pdf__Page__textContent {
+            display: none;
+            /* width: 100% !important;
+            height: auto !important;
+            padding: 15px;
+            span {
+              line-height: 1.2;
+              @media (max-width: 479px) {
+                font-size: 14px !important;
+              }
+            } */
+          }
+          .react-pdf__Page__annotations {
+            width: 100% !important;
+            height: auto !important;
+          }
+        }
+      }
       img {
         max-width: 100%;
       }

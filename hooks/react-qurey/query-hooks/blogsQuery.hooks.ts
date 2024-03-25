@@ -27,6 +27,7 @@ export const useBlogsList = (
     onSuccess,
     onError,
     // enabled: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data ?? []
   });
 //   <------------------ CATEGORIES LIST ------------------->
@@ -43,6 +44,7 @@ export const useCategoriesList = (
     onSuccess,
     onError,
     // enabled: false,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data ?? []
   });
 //   <------------------ BLOG DETAILS LIST ------------------->
@@ -63,6 +65,7 @@ export const useBlogDetails = (
     onSuccess,
     onError,
     enabled,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data ?? []
   });
 //   <------------------ RELATED BLOG LIST ------------------->
@@ -83,6 +86,7 @@ export const useRelatedBlogList = (
     onSuccess,
     onError,
     enabled,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data ?? []
   });
 //   <------------------ BLOG COUNT ------------------->
@@ -104,7 +108,8 @@ export const useBlogCount = (
   useQuery([BLOG_COUNT, id], () => getBlogCount(id), {
     onSuccess,
     onError,
-    enabled
+    enabled,
+    refetchOnWindowFocus: false,
     // select: (data) => data?.data ?? []
   });
 //   <------------------ CREATE SESSION ID ------------------->
@@ -121,6 +126,7 @@ export const useCreateSessionId = (
   useQuery([CREATE_SESSION_ID], getSessionId, {
     onSuccess,
     onError,
-    enabled
+    enabled,
+    refetchOnWindowFocus: false,
     // select: (data) => data?.data ?? []
   });

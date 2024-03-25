@@ -161,12 +161,11 @@ export default memo(() => {
                       <Typography>
                         {data[sliderIndex]?.desc
                           ? data[sliderIndex]?.desc
-                          : `Procell Microchanneling treatments enhance cellular activity
-                    by creating hundreds of thousands of microchannels. Each
-                    micro-injury prompts an inflammatory response, initiating
-                    collagen formation. Over time, this repeated healing process
-                    significantly improves skin texture and overall appearance,
-                    rejuvenating the skin effectively.`}
+                          : `Procell Microchanneling enhances cellular activity by creating thousands of 
+                          microchannels. Each channel prompts an inflammatory response, initiating collagen 
+                          formation. Over time, this repeated healing process amplified by our stem cell derived 
+                          growth-factor serums significantly improves skin texture and overall appearance, 
+                          rejuvenating the skin effectively.`}
                       </Typography>
                     )}
                   </Box>

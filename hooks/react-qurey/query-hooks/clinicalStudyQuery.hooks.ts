@@ -17,5 +17,6 @@ const getClinicalStudyList = async () => {
     useQuery([CLINICAL_STUDY_LIST],getClinicalStudyList, {
       onSuccess,
       onError,
+      refetchOnWindowFocus: false,
       select: (data) => data?.data?.data ?? []
     });

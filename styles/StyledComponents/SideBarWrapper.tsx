@@ -279,7 +279,7 @@ export const SideBarWrapper = styled(Box)`
           font-weight: 500;
           line-height: 1.2;
           letter-spacing: 0.112px;
-          text-transform: capitalize;
+          /* text-transform: capitalize; */
           padding: 18px 20px;
           border-radius: 50px;
           background-color: transparent;

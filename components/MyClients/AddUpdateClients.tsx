@@ -118,7 +118,7 @@ const AddUpdateClients = ({
           phone: yup
             .string()
             .required(validationText.error.phone)
-            .matches(/^\d+$/, validationText.error.valid_phone_number)
+            // .matches(/^\d+$/, validationText.error.valid_phone_number)
             .test(
               "isValid",
               validationText.error.phone_number_range,

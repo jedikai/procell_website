@@ -63,20 +63,20 @@ export const BannerWrapper = styled(Box)`
     justify-content: center;
     z-index: 1;
 
-    .btn_holder{
-      @media(max-width: 599px){
+    .btn_holder {
+      justify-content: center;
+      align-items: center;
+      @media (max-width: 599px) {
         flex-direction: column;
       }
-      button{
-        @media(max-width: 599px){
+      button {
+        @media (max-width: 599px) {
           margin-left: 0 !important;
         }
-        &:not(:last-child){
-          @media(max-width: 599px){
+        &:not(:last-child) {
+          @media (max-width: 599px) {
             margin-bottom: 15px;
-            
           }
-         
         }
       }
     }
@@ -90,7 +90,7 @@ export const BannerWrapper = styled(Box)`
         max-width: 430px;
       }
       @media (max-width: 599px) {
-        max-width: 380px;
+        max-width: 100%;
         text-align: center;
       }
       h1 {

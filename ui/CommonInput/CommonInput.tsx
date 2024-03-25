@@ -201,8 +201,9 @@ const InputFieldCommon = forwardRef<HTMLInputElement, InputFieldCommonProps>(
           inputRef: ref,
 
           endAdornment: isPassword ? (
-            <InputAdornment position="end">
+            <InputAdornment position="end" tabIndex={-1}>
               <IconButton
+                tabIndex={-1}
                 onClick={handleClickShowPassword}
                 onMouseDown={handleMouseDownPassword}
                 disableRipple
@@ -211,8 +212,9 @@ const InputFieldCommon = forwardRef<HTMLInputElement, InputFieldCommonProps>(
               </IconButton>
             </InputAdornment>
           ) : (
-            <InputAdornment position="end">
+            <InputAdornment position="end" tabIndex={-1}>
               <IconButton
+                tabIndex={-1}
                 onClick={handleClickShowPassword}
                 onMouseDown={handleMouseDownPassword}
                 disableRipple

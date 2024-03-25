@@ -24,6 +24,7 @@ export const usePaymentCredAndData = (
     onSuccess,
     onError,
     enabled,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -71,6 +72,7 @@ export const usePaymentValidate = (
     onSuccess,
     onError,
     enabled,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data?.data ?? []
   });
 
@@ -88,6 +90,7 @@ export const useOrderConfirm = (
     onSuccess,
     onError,
     enabled,
+    refetchOnWindowFocus: false,
     select: (data) => data?.data ?? []
   });
 

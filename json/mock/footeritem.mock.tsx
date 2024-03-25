@@ -15,11 +15,11 @@ const foooterItems = [
     route: "/our-blog"
   },
   {
-    name: "Clinical studies",
+    name: "Clinical Studies",
     route: "/clinical-studies"
   },
   {
-    name: "The science",
+    name: "The Science",
     route: "/science"
   },
   {
@@ -35,7 +35,7 @@ const foooterItems = [
     route: "/product/shop"
   },
   {
-    name: "Contact us",
+    name: "Contact Us",
     route: "/contact"
   },
   {
@@ -43,13 +43,13 @@ const foooterItems = [
     route: "/contact-the-ceo"
   },
   {
-    name: "Get help",
+    name: "Get Help",
     route: "/help"
   },
-  {
-    name: "Get Treated",
-    route: "/get-treated"
-  },
+  // {
+  //   name: "Get Treated",
+  //   route: "/get-treated"
+  // },
 ];
 
 const social_links = [
