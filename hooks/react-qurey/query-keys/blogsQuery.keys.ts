@@ -1,5 +1,0 @@
-export const BLOGS_LIST = "BLOGS_LIST";
-export const BLOGS_DETAILS = "BLOGS_DETAILS";
-export const RELATED_BLOGS_LIST = "RELATED_BLOGS_LIST";
-export const BLOG_COUNT = "BLOG_COUNT";
-export const CREATE_SESSION_ID = "CREATE_SESSION_ID";

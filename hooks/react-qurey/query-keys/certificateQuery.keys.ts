@@ -1,1 +1,0 @@
-export const GET_CERTIFICATES = "GET_CERTIFICATES";
