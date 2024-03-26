@@ -1,0 +1,1 @@
+export const WORKSHOP_LIST = "WORKSHOP_LIST";
