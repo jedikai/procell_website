@@ -410,7 +410,8 @@ const PaymentCardDetailsCard = ({
       console.warn("errMsgs", errMsgs, errorList);
       setVerificationError(errMsgs);
       setVerificationLoader(false);
-      toastError("Card is Invalid.");
+      // toastError("Card is Invalid.");
+      toastError(JSON.stringify(error));
     }
   };
   const proceedPaymentForSavedCard = (payment_option_id: string | number) => {
